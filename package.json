@@ -34,7 +34,7 @@
       "explorer/context": [
         {
           "command": "extension.myContextMenuCommand",
-          "group": "navigation"
+          "group": "ecm-custom"
         }
       ]
     },
