@@ -16,8 +16,28 @@
       {
         "command": "co-locate.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "extension.myCommand",
+        "title": "My Command"
+      },
+      {
+        "command": "extension.myCommandInContextMenu",
+        "title": "My Command in Context Menu"
+      },
+      {
+        "command": "extension.myContextMenuCommand",
+        "title": "My Command in Context Menu"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "extension.myContextMenuCommand",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
