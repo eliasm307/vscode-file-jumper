@@ -37,6 +37,14 @@
           "group": "navigation"
         }
       ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "shortcutsTreeView",
+          "name": "Shortcuts"
+        }
+      ]
     }
   },
   "scripts": {
