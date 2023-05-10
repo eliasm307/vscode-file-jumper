@@ -10,7 +10,9 @@ class BadgeDecorationProvider implements vscode.FileDecorationProvider {
     uri: vscode.Uri,
     token: vscode.CancellationToken,
   ): vscode.ProviderResult<vscode.FileDecoration> {
-    const isJsonFile = uri.path.endsWith(".json");
+    const isJsonFile = uri.path.endsWith("test.ts");
+
+    debugger;
 
     if (isJsonFile) {
       return new vscode.FileDecoration(

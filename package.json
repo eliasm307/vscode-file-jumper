@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -45,6 +47,198 @@
           "name": "Shortcuts"
         }
       ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Co-Locate",
+      "properties": {
+        "coLocate.patternGroups": {
+          "description": "Defines the patterns of how to group files",
+          "scope": "window",
+          "type": "array",
+          "default": [
+            {
+              "groupName": "Default",
+              "groupItems": [
+                {
+                  "name": "Source",
+                  "pathPrefix": "/src/",
+                  "pathSuffix": [
+                    ".js",
+                    ".jsx",
+                    ".ts",
+                    ".tsx"
+                  ]
+                },
+                {
+                  "name": "Test",
+                  "pathPrefix": "/src/test/",
+                  "pathSuffix": [
+                    ".test.js",
+                    ".test.jsx",
+                    ".test.ts",
+                    ".test.tsx"
+                  ]
+                }
+              ]
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "groupName": {
+                "description": "Defines a group of files to co-locate",
+                "type": "string",
+                "default": ""
+              },
+              "groupItems": {
+                "title": "Co-Location Pattern Group",
+                "description": "Defines the patterns of related files that will be evaluated for co-location",
+                "type": "array",
+                "default": [],
+                "items": {
+                  "description": "A pattern to match files to be co-located, for a match to occur the file paths must match exactly from the text after the given prefix until before the given suffix.\n\nIf no prefix or suffix is given then the path start or end will need to match exactly.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "name": {
+                          "description": "A name for the type of file matched by the pattern, used in the UI",
+                          "type": "string",
+                          "default": ""
+                        },
+                        "pathPrefix": {
+                          "description": "A prefix to match the start of the file path",
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "default": ""
+                            },
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "default": [],
+                              "additionalProperties": false,
+                              "uniqueItems": true,
+                              "minItems": 1
+                            }
+                          ]
+                        },
+                        "pathSuffix": {
+                          "description": "A prefix to match the end of the file path",
+                          "oneOf": [
+                            [
+                              {
+                                "type": "string",
+                                "default": ""
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "default": [],
+                                "additionalProperties": false,
+                                "uniqueItems": true,
+                                "minItems": 1
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "pathPrefix",
+                        "pathSuffix"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "name": {
+                          "description": "A name for the type of file matched by the pattern, used in the UI",
+                          "default": "",
+                          "type": "string"
+                        },
+                        "pathSuffix": {
+                          "description": "A prefix to match the end of the file path",
+                          "oneOf": [
+                            [
+                              {
+                                "type": "string",
+                                "default": ""
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "default": [],
+                                "additionalProperties": false,
+                                "uniqueItems": true,
+                                "minItems": 1
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "pathSuffix"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "default": "",
+                          "description": "A name for the type of file matched by the pattern, used in the UI"
+                        },
+                        "pathSuffix": {
+                          "description": "A prefix to match the end of the file path",
+                          "oneOf": [
+                            [
+                              {
+                                "type": "string",
+                                "default": ""
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "default": [],
+                                "additionalProperties": false,
+                                "uniqueItems": true,
+                                "minItems": 1
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "pathSuffix"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
     }
   },
   "scripts": {
@@ -67,5 +261,8 @@
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
     "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.0"
   }
 }
