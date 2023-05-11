@@ -2,6 +2,7 @@
 
 import * as vscode from "vscode";
 import fs from "fs";
+import { FeatureContext } from "./types";
 
 function fileExists(filePath: string): boolean {
   try {
@@ -12,7 +13,7 @@ function fileExists(filePath: string): boolean {
   }
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate({ extension, coLocator }: FeatureContext) {
   const disposable = vscode.commands.registerCommand(
     "extension.myContextMenuCommand",
     (uri: vscode.Uri, ...args) => {
@@ -21,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
-  context.subscriptions.push(disposable);
+  extension.context.subscriptions.push(disposable);
 }
 
 export function deactivate() {}

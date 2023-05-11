@@ -8,14 +8,36 @@ import * as vscode from "vscode";
 import { activate as activateContextMenuCommand } from "./myContextMenuCommand";
 import { activate as activateShortcutsView } from "./shortcutsView";
 import { activate as activateTreeItemDecorator } from "./treeItemDecorator";
+import { getPatternGroupsConfig, configIsValid } from "./utils/config";
+import { FeatureContext } from "./types";
+import CoLocator from "./classes/CoLocator";
 
 export function activate(context: vscode.ExtensionContext) {
-  const config = vscode.workspace.getConfiguration("coLocate");
+  console.log("extension activating...");
 
-  console.log("extension patternGroups option:", config.inspect("patternGroups"));
-  debugger;
+  const patternGroupsConfig = getPatternGroupsConfig(context);
 
-  activateContextMenuCommand(context);
-  activateShortcutsView(context);
-  activateTreeItemDecorator(context);
+  if (!configIsValid(patternGroupsConfig)) {
+    console.error("Invalid extension configuration");
+    return;
+  }
+
+  console.log("extension loaded with patternGroupsConfig:", patternGroupsConfig[0]);
+
+  const featureContext: FeatureContext = {
+    extension: {
+      context: context,
+      patternGroupsConfig: patternGroupsConfig,
+    },
+    coLocator: new CoLocator({
+      context: context,
+      patternGroupsConfig: patternGroupsConfig,
+    }),
+  };
+
+  activateContextMenuCommand(featureContext);
+  // activateShortcutsView(featureContext);
+  activateTreeItemDecorator(featureContext);
+
+  console.log("extension activated");
 }

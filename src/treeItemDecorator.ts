@@ -1,20 +1,29 @@
 import * as vscode from "vscode";
+import CoLocator from "./classes/CoLocator";
+import { FeatureContext } from "./types";
 
-export function activate(context: vscode.ExtensionContext) {
-  const decorationProvider = new BadgeDecorationProvider();
-  context.subscriptions.push(vscode.window.registerFileDecorationProvider(decorationProvider));
+export function activate(context: FeatureContext) {
+  const decorationProvider = new BadgeDecorationProvider(context);
+  context.extension.context.subscriptions.push(
+    vscode.window.registerFileDecorationProvider(decorationProvider),
+  );
 }
 
 class BadgeDecorationProvider implements vscode.FileDecorationProvider {
+  constructor(public readonly context: FeatureContext) {}
+
   provideFileDecoration(
     uri: vscode.Uri,
     token: vscode.CancellationToken,
   ): vscode.ProviderResult<vscode.FileDecoration> {
-    const isJsonFile = uri.path.endsWith("test.ts");
+    const isMatch = uri.path.endsWith("test.ts");
 
-    debugger;
+    console.log("BadgeDecorationProvider", {
+      uri,
+      isMatch,
+    });
 
-    if (isJsonFile) {
+    if (isMatch) {
       return new vscode.FileDecoration(
         "🧩🔗", // Badge text
         "Decoration", // Badge color (optional)
