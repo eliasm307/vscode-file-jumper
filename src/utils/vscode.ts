@@ -19,10 +19,8 @@ export async function openFile(filePath: string) {
 }
 
 const MAX_PATH_SEGMENTS = 5;
-export function getShortPath(uriOrPath: vscode.Uri | string, options?: { maxSegments?: number }) {
-  const uri = typeof uriOrPath === "string" ? vscode.Uri.file(uriOrPath) : uriOrPath;
-  const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
-  const relativePath = uri.path.replace(workspaceFolder?.uri.path || "", "");
+export function getShortPath(pathOrUri: string | vscode.Uri, options?: { maxSegments?: number }) {
+  const relativePath = vscode.workspace.asRelativePath(pathOrUri, false);
 
   // limit path so theres some context for the user but dont overflow
   const maxSegments = options?.maxSegments || MAX_PATH_SEGMENTS;

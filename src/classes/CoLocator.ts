@@ -2,122 +2,8 @@ import * as vscode from "vscode"; // type only import to make sure we dont have 
 import { PatternGroupsConfig, PatternItem } from "../utils/config";
 import { QuickPickItemKind } from "vscode";
 import { getShortPath } from "../utils/vscode";
-import { BadgeDecorationProvider } from "../treeItemDecorator";
-
-type RelatedFileData = { name: string; marker: string; fullPath: string; shortPath: string };
-
-/**
- * @key the file path between the path prefix and suffix from patterns or the full path of a known related file
- * @value Details of found files that match the key path for this group
- */
-type PatternGroupFiles = Record<string, RelatedFileData[]>;
-
-class FileCandidates {
-  /**
-   * @key the index of the pattern group
-   */
-  private fileGroupsByPatternGroupIndexMap: Record<number, PatternGroupFiles> = {};
-
-  constructor(
-    public readonly extension: {
-      patternGroupsConfig: PatternGroupsConfig;
-    },
-  ) {}
-
-  addFile(newFilePath: string) {
-    // todo update file candidates and also update context for context menu conditional showing
-    // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
-
-    this.extension.patternGroupsConfig.forEach((patternGroup, patternGroupIndex) => {
-      this.fileGroupsByPatternGroupIndexMap[patternGroupIndex] ??= {};
-      const patternGroupFiles = this.fileGroupsByPatternGroupIndexMap[patternGroupIndex];
-
-      patternGroup.groupItems.forEach((patternItem) => {
-        const keyPath = this.getKeyPath(newFilePath, patternItem);
-        if (!keyPath) {
-          return;
-        }
-
-        const newFileData: RelatedFileData = {
-          name: patternItem.name,
-          marker: patternItem.marker,
-          fullPath: newFilePath,
-          shortPath: getShortPath(newFilePath),
-        };
-
-        patternGroupFiles[keyPath] ??= [];
-        patternGroupFiles[keyPath].push(newFileData);
-
-        patternGroupFiles[newFilePath] ??= [];
-        patternGroupFiles[newFilePath].push(newFileData);
-      });
-    });
-  }
-
-  getRelatedFileGroups(currentFilePath: string): RelatedFileData[][] {
-    const groupedRelatedFiles: RelatedFileData[][] = [];
-
-    this.extension.patternGroupsConfig.forEach((patternGroup, patternGroupIndex) => {
-      const groupFiles = this.fileGroupsByPatternGroupIndexMap[patternGroupIndex];
-      const groupOutput: RelatedFileData[] = [];
-
-      patternGroup.groupItems.forEach((patternItem) => {
-        // try the cheap lookup first
-        let relatedFilesForPattern = groupFiles[currentFilePath];
-
-        // if that fails, try the slightly more expensive lookup by calculating the key path
-        if (!relatedFilesForPattern) {
-          const keyPath = this.getKeyPath(currentFilePath, patternItem);
-          if (keyPath) {
-            relatedFilesForPattern = groupFiles[keyPath];
-          }
-
-          // if we still dont have any related files, skip this pattern
-          if (!relatedFilesForPattern) {
-            return;
-          }
-        }
-
-        groupOutput.push(...relatedFilesForPattern);
-      });
-
-      if (groupOutput.length) {
-        groupedRelatedFiles.push(groupOutput);
-      }
-    });
-
-    console.log("getRelatedFileGroups", { currentFilePath, groupedRelatedFiles });
-    return groupedRelatedFiles;
-  }
-
-  private getKeyPath(
-    filePath: string,
-    { pathPrefix = [], pathSuffix = [] }: PatternItem,
-  ): string | undefined {
-    const pathPrefixes = Array.isArray(pathPrefix) ? pathPrefix : [pathPrefix];
-    const pathSuffixes = Array.isArray(pathSuffix) ? pathSuffix : [pathSuffix];
-
-    const pathPrefixMatch = pathPrefixes.find((prefix) => filePath.includes(prefix));
-    if (!pathPrefixMatch) {
-      return;
-    }
-
-    const pathSuffixMatch = pathSuffixes.find((suffix) => filePath.endsWith(suffix));
-    if (!pathSuffixMatch) {
-      return;
-    }
-
-    let keyPath = filePath;
-
-    // remove everything before the prefix including the prefix
-    keyPath = keyPath.slice(keyPath.indexOf(pathPrefixMatch) + pathPrefixMatch.length);
-
-    // remove the suffix
-    keyPath = keyPath.slice(0, keyPath.indexOf(pathSuffixMatch));
-
-    return keyPath;
-  }
-}
+import BadgeDecorationProvider from "./BadgeDecorationProvider";
+import FileLinker from "./FileLinker";
 
 export type QuickPickItem = vscode.QuickPickItem &
   (
@@ -135,8 +21,8 @@ export type QuickPickItem = vscode.QuickPickItem &
  */
 export default class CoLocator implements vscode.Disposable {
   // todo use this to notify of updated decorations on change
-  private badgeDecorationProvider: BadgeDecorationProvider;
-  private fileCandidates: FileCandidates;
+  public readonly badgeDecorationProvider: BadgeDecorationProvider;
+  private fileCandidates: FileLinker;
 
   private subscriptions: vscode.Disposable[] = [];
 
@@ -146,19 +32,20 @@ export default class CoLocator implements vscode.Disposable {
       patternGroupsConfig: PatternGroupsConfig;
     },
   ) {
-    this.fileCandidates = new FileCandidates({
+    this.fileCandidates = new FileLinker({
       patternGroupsConfig: extension.patternGroupsConfig,
     });
 
-    // this.extension.context.
+    this.badgeDecorationProvider = new BadgeDecorationProvider((config) =>
+      this.getDecorationData(config),
+    );
+    this.fileCandidates = new FileLinker({
+      patternGroupsConfig: extension.patternGroupsConfig,
+    });
   }
 
   dispose() {
     this.subscriptions.forEach((s) => s.dispose());
-  }
-
-  setBadgeDecorationProvider(badgeDecorationProvider: BadgeDecorationProvider) {
-    this.badgeDecorationProvider = badgeDecorationProvider;
   }
 
   getDecorationData({
@@ -178,7 +65,7 @@ export default class CoLocator implements vscode.Disposable {
     });
 
     if (isMatch) {
-      // todo shouldnt add a file here, just use whats available
+      // todo should not add a file here, just use whats available
       this.fileCandidates.addFile(filePath);
       return {
         badge: "🧪",
