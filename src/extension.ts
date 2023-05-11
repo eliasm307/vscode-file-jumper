@@ -7,13 +7,13 @@
 
 import * as vscode from "vscode";
 import { activate as activateContextMenuCommand } from "./navigateCommand";
-import { getPatternGroupsConfig, configIsValid } from "./utils/config";
+import { getFileGroupConfigs, configIsValid } from "./utils/config";
 import CoLocator from "./classes/CoLocator";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log("extension activating...");
 
-  const patternGroupsConfig = getPatternGroupsConfig(context);
+  const patternGroupsConfig = getFileGroupConfigs(context);
 
   if (!configIsValid(patternGroupsConfig)) {
     console.error("Invalid extension configuration");
@@ -38,8 +38,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   activateContextMenuCommand(coLocator);
   // activateShortcutsView(coLocator);
-
-  context.subscriptions.push();
 
   // todo listen for config changes to update file decorations
   // todo listen for file deletions/creations/renames to update file decorations

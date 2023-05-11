@@ -41,34 +41,24 @@
       "type": "object",
       "title": "Co-Locate",
       "properties": {
-        "coLocate.patternGroups": {
+        "coLocate.fileGroups": {
           "description": "Defines the patterns of how to group files",
           "scope": "window",
           "type": "array",
           "maxItems": 1,
           "default": [
             {
-              "groupName": "Default",
-              "groupItems": [
+              "name": "Default",
+              "types": [
                 {
                   "name": "Source",
-                  "pathPrefix": "/src/",
-                  "pathSuffix": [
-                    ".js",
-                    ".jsx",
-                    ".ts",
-                    ".tsx"
-                  ]
+                  "marker": "💻",
+                  "regex": "\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"
                 },
                 {
                   "name": "Test",
-                  "pathPrefix": "/src/test/",
-                  "pathSuffix": [
-                    ".test.js",
-                    ".test.jsx",
-                    ".test.ts",
-                    ".test.tsx"
-                  ]
+                  "marker": "$(test-view-icon)",
+                  "regex": "\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"
                 }
               ]
             }
@@ -77,183 +67,56 @@
             "type": "object",
             "properties": {
               "required": [
-                "groupItems"
+                "types"
               ],
-              "groupName": {
-                "description": "Defines a group of files to co-locate",
+              "name": {
+                "description": "Defines a group of files to co-locate.\n\nDefaults to the group index if falsy",
                 "type": "string",
                 "default": ""
               },
-              "groupItems": {
+              "types": {
                 "title": "Co-Location Pattern Group",
-                "description": "Defines the patterns of related files that will be evaluated for co-location",
+                "description": "Defines the patterns of related files that will be evaluated for co-location. The patterns items extract a common portion of the path that will be used to link to related pattern item files",
                 "type": "array",
                 "default": [],
                 "minItems": 2,
                 "items": {
                   "description": "A pattern to match files to be co-located, for a match to occur the file paths must match exactly from the text after the given prefix until before the given suffix.\n\nIf no prefix or suffix is given then the path start or end will need to match exactly.",
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "default": {},
-                      "properties": {
-                        "name": {
-                          "description": "A name for the type of file matched by the pattern, used in the UI",
-                          "type": "string",
-                          "default": ""
-                        },
-                        "marker": {
-                          "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
-                          "type": "string",
-                          "default": "",
-                          "maxLength": 1
-                        },
-                        "pathPrefix": {
-                          "description": "A prefix to match the start of the file path",
-                          "oneOf": [
-                            {
-                              "type": "string",
-                              "default": ""
-                            },
-                            {
-                              "type": "array",
-                              "items": {
-                                "type": "string"
-                              },
-                              "default": [],
-                              "additionalProperties": false,
-                              "uniqueItems": true,
-                              "minItems": 1
-                            }
-                          ]
-                        },
-                        "pathSuffix": {
-                          "description": "A prefix to match the end of the file path",
-                          "oneOf": [
-                            [
-                              {
-                                "type": "string",
-                                "default": ""
-                              },
-                              {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                },
-                                "default": [],
-                                "additionalProperties": false,
-                                "uniqueItems": true,
-                                "minItems": 1
-                              }
-                            ]
-                          ]
-                        }
-                      },
-                      "required": [
-                        "name",
-                        "marker",
-                        "pathPrefix",
-                        "pathSuffix"
-                      ],
-                      "additionalProperties": false
+                  "type": "object",
+                  "default": {},
+                  "properties": {
+                    "name": {
+                      "description": "A name for the type of file matched by the pattern, used in the UI",
+                      "type": "string",
+                      "default": ""
                     },
-                    {
-                      "type": "object",
-                      "default": {},
-                      "properties": {
-                        "name": {
-                          "description": "A name for the type of file matched by the pattern, used in the UI",
-                          "default": "",
-                          "type": "string"
-                        },
-                        "marker": {
-                          "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
-                          "type": "string",
-                          "default": "",
-                          "maxLength": 1
-                        },
-                        "pathSuffix": {
-                          "description": "A prefix to match the end of the file path",
-                          "oneOf": [
-                            [
-                              {
-                                "type": "string",
-                                "default": ""
-                              },
-                              {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                },
-                                "default": [],
-                                "additionalProperties": false,
-                                "uniqueItems": true,
-                                "minItems": 1
-                              }
-                            ]
-                          ]
-                        }
-                      },
-                      "required": [
-                        "name",
-                        "marker",
-                        "pathSuffix"
-                      ],
-                      "additionalProperties": false
+                    "marker": {
+                      "markdownDescription": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file\n\n[Native VS Code](https://code.visualstudio.com/api/references/icons-in-labels) icons can be used here",
+                      "type": "string",
+                      "default": ""
                     },
-                    {
-                      "type": "object",
-                      "default": {},
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "default": "",
-                          "description": "A name for the type of file matched by the pattern, used in the UI"
-                        },
-                        "marker": {
-                          "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
-                          "type": "string",
-                          "default": "",
-                          "maxLength": 1
-                        },
-                        "pathSuffix": {
-                          "description": "A prefix to match the end of the file path",
-                          "oneOf": [
-                            [
-                              {
-                                "type": "string",
-                                "default": ""
-                              },
-                              {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                },
-                                "default": [],
-                                "additionalProperties": false,
-                                "uniqueItems": true,
-                                "minItems": 1
-                              }
-                            ]
-                          ]
-                        }
-                      },
-                      "required": [
-                        "name",
-                        "marker",
-                        "pathSuffix"
-                      ],
-                      "additionalProperties": false
+                    "regex": {
+                      "description": "A regex that should match relevant files and capture (as the first regex group) the part of the path that will be constant for sibling pattern group items",
+                      "type": "string",
+                      "default": ""
                     }
-                  ]
+                  },
+                  "required": [
+                    "name",
+                    "marker",
+                    "regex"
+                  ],
+                  "additionalProperties": false
                 },
                 "additionalProperties": false
               }
-            }
+            },
+            "additionalProperties": false
           },
           "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     }
   },
   "scripts": {

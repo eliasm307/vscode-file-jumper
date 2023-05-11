@@ -1,9 +1,9 @@
 import * as vscode from "vscode"; // type only import to make sure we dont have dependency on vscode effects to make testing easier
-import { PatternGroupsConfig, PatternItem } from "../utils/config";
+import { FileGroupConfigs, FileTypeConfig } from "../utils/config";
 import { QuickPickItemKind } from "vscode";
 import { getShortPath } from "../utils/vscode";
 import BadgeDecorationProvider from "./BadgeDecorationProvider";
-import FileLinker from "./FileLinker";
+import PatternMatcher from "./PatternMatcher";
 
 export type QuickPickItem = vscode.QuickPickItem &
   (
@@ -22,30 +22,31 @@ export type QuickPickItem = vscode.QuickPickItem &
 export default class CoLocator implements vscode.Disposable {
   // todo use this to notify of updated decorations on change
   public readonly badgeDecorationProvider: BadgeDecorationProvider;
-  private fileCandidates: FileLinker;
+  private fileLinker: PatternMatcher;
 
   private subscriptions: vscode.Disposable[] = [];
 
   constructor(
     public readonly extension: {
       context: vscode.ExtensionContext;
-      patternGroupsConfig: PatternGroupsConfig;
+      patternGroupsConfig: FileGroupConfigs;
     },
   ) {
-    this.fileCandidates = new FileLinker({
-      patternGroupsConfig: extension.patternGroupsConfig,
+    this.fileLinker = new PatternMatcher({
+      fileGroupConfigs: extension.patternGroupsConfig,
     });
 
     this.badgeDecorationProvider = new BadgeDecorationProvider((config) =>
       this.getDecorationData(config),
     );
-    this.fileCandidates = new FileLinker({
-      patternGroupsConfig: extension.patternGroupsConfig,
-    });
   }
 
   dispose() {
     this.subscriptions.forEach((s) => s.dispose());
+  }
+
+  loadFiles(filePaths: string[]): void {
+    this.fileLinker.clearAllAndLoad(filePaths);
   }
 
   getDecorationData({
@@ -66,7 +67,7 @@ export default class CoLocator implements vscode.Disposable {
 
     if (isMatch) {
       // todo should not add a file here, just use whats available
-      this.fileCandidates.addFile(filePath);
+      this.fileLinker.addFile(filePath);
       return {
         badge: "🧪",
         tooltip: "This file is a test file",
@@ -76,7 +77,7 @@ export default class CoLocator implements vscode.Disposable {
   }
 
   getRelatedFilesQuickPickItems(currentFilePath: string): QuickPickItem[] {
-    const relatedFileGroups = this.fileCandidates.getRelatedFileGroups(currentFilePath);
+    const relatedFileGroups = this.fileLinker.getRelatedFileGroups(currentFilePath);
 
     console.log("getRelatedFilesQuickPickItems", { currentFilePath, relatedFileGroups });
 

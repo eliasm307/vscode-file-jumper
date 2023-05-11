@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { PatternGroupsConfig, PatternItem } from "../utils/config";
+import { FileGroupConfigs, FileTypeConfig } from "../utils/config";
 import { getShortPath } from "../utils/vscode";
 
 type RelatedFileData = { name: string; marker: string; fullPath: string; shortPath: string };
@@ -10,7 +10,7 @@ type RelatedFileData = { name: string; marker: string; fullPath: string; shortPa
  */
 type PatternGroupFiles = Record<string, RelatedFileData[]>;
 
-export default class FileLinker {
+export default class PatternMatcher {
   /**
    * @key the index of the pattern group
    */
@@ -18,27 +18,31 @@ export default class FileLinker {
 
   constructor(
     private readonly config: {
-      patternGroupsConfig: PatternGroupsConfig;
+      fileGroupConfigs: FileGroupConfigs;
     },
   ) {}
+
+  clearAllAndLoad(filePaths: string[]) {
+    throw new Error("Method not implemented.");
+  }
 
   addFile(newFilePath: string) {
     // todo update file candidates and also update context for context menu conditional showing
     // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
 
-    this.config.patternGroupsConfig.forEach((patternGroup, patternGroupIndex) => {
+    this.config.fileGroupConfigs.forEach((fileGroupConfig, patternGroupIndex) => {
       this.fileGroupsByPatternGroupIndexMap[patternGroupIndex] ??= {};
       const patternGroupFiles = this.fileGroupsByPatternGroupIndexMap[patternGroupIndex];
 
-      patternGroup.groupItems.forEach((patternItem) => {
-        const keyPath = this.getKeyPath(newFilePath, patternItem);
+      fileGroupConfig.types.forEach((filetTypeConfig) => {
+        const keyPath = this.getKeyPath(newFilePath, filetTypeConfig);
         if (!keyPath) {
           return;
         }
 
         const newFileData: RelatedFileData = {
-          name: patternItem.name,
-          marker: patternItem.marker,
+          name: filetTypeConfig.name,
+          marker: filetTypeConfig.marker,
           fullPath: newFilePath,
           shortPath: getShortPath(newFilePath),
         };
@@ -55,17 +59,17 @@ export default class FileLinker {
   getRelatedFileGroups(currentFilePath: string): RelatedFileData[][] {
     const groupedRelatedFiles: RelatedFileData[][] = [];
 
-    this.config.patternGroupsConfig.forEach((patternGroup, patternGroupIndex) => {
+    this.config.fileGroupConfigs.forEach((patternGroup, patternGroupIndex) => {
       const groupFiles = this.fileGroupsByPatternGroupIndexMap[patternGroupIndex];
       const groupOutput: RelatedFileData[] = [];
 
-      patternGroup.groupItems.forEach((patternItem) => {
+      patternGroup.types.forEach((fileTypeConfig) => {
         // try the cheap lookup first
         let relatedFilesForPattern = groupFiles[currentFilePath];
 
         // if that fails, try the slightly more expensive lookup by calculating the key path
         if (!relatedFilesForPattern) {
-          const keyPath = this.getKeyPath(currentFilePath, patternItem);
+          const keyPath = this.getKeyPath(currentFilePath, fileTypeConfig);
           if (keyPath) {
             relatedFilesForPattern = groupFiles[keyPath];
           }
@@ -88,31 +92,8 @@ export default class FileLinker {
     return groupedRelatedFiles;
   }
 
-  private getKeyPath(
-    filePath: string,
-    { pathPrefix = [], pathSuffix = [] }: PatternItem,
-  ): string | undefined {
-    const pathPrefixes = Array.isArray(pathPrefix) ? pathPrefix : [pathPrefix];
-    const pathSuffixes = Array.isArray(pathSuffix) ? pathSuffix : [pathSuffix];
-
-    const pathPrefixMatch = pathPrefixes.find((prefix) => filePath.includes(prefix));
-    if (!pathPrefixMatch) {
-      return;
-    }
-
-    const pathSuffixMatch = pathSuffixes.find((suffix) => filePath.endsWith(suffix));
-    if (!pathSuffixMatch) {
-      return;
-    }
-
-    let keyPath = filePath;
-
-    // remove everything before the prefix including the prefix
-    keyPath = keyPath.slice(keyPath.indexOf(pathPrefixMatch) + pathPrefixMatch.length);
-
-    // remove the suffix
-    keyPath = keyPath.slice(0, keyPath.indexOf(pathSuffixMatch));
-
-    return keyPath;
+  private getKeyPath(filePath: string, { regex }: FileTypeConfig): string | undefined {
+    // todo this implicitly creates a regex for each call, we should create one before and reuse it
+    return filePath.match(regex)?.[1];
   }
 }
