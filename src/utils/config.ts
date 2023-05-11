@@ -1,13 +1,16 @@
 import * as vscode from "vscode";
 
+export type PatternItem = {
+  name: string;
+  // ? should this allow using built in icons also? https://code.visualstudio.com/api/references/icons-in-labels
+  marker: string;
+  pathPrefix?: string | string[];
+  pathSuffix?: string | string[];
+};
+
 type PatternGroupConfig = {
   groupName: string;
-  groupItems: {
-    name: string;
-    marker: string;
-    pathPrefix?: string | string[];
-    pathSuffix?: string | string[];
-  }[];
+  groupItems: PatternItem[];
 };
 
 /**

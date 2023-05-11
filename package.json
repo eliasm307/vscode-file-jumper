@@ -16,27 +16,15 @@
   "contributes": {
     "commands": [
       {
-        "command": "co-locate.helloWorld",
-        "title": "Hello World"
-      },
-      {
-        "command": "extension.myCommand",
-        "title": "My Command"
-      },
-      {
-        "command": "extension.myCommandInContextMenu",
-        "title": "My Command in Context Menu"
-      },
-      {
-        "command": "extension.myContextMenuCommand",
-        "title": "My Command in Context Menu"
+        "command": "coLocate.navigateCommand",
+        "title": "Navigate to related..."
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "command": "extension.myContextMenuCommand",
-          "when": "explorerResourceIsFile && explorerViewletVisible",
+          "command": "coLocate.navigateCommand",
+          "when": "!explorerResourceIsFolder",
           "group": "coLocate"
         }
       ]
