@@ -2,6 +2,7 @@ import * as vscode from "vscode"; // type only import to make sure we dont have 
 import { PatternGroupsConfig, PatternItem } from "../utils/config";
 import { QuickPickItemKind } from "vscode";
 import { getShortPath } from "../utils/vscode";
+import { BadgeDecorationProvider } from "../treeItemDecorator";
 
 type RelatedFileData = { name: string; marker: string; fullPath: string; shortPath: string };
 
@@ -133,6 +134,8 @@ export type QuickPickItem = vscode.QuickPickItem &
  * The main facade for the extension logic
  */
 export default class CoLocator implements vscode.Disposable {
+  // todo use this to notify of updated decorations on change
+  private badgeDecorationProvider: BadgeDecorationProvider;
   private fileCandidates: FileCandidates;
 
   private subscriptions: vscode.Disposable[] = [];
@@ -154,7 +157,11 @@ export default class CoLocator implements vscode.Disposable {
     this.subscriptions.forEach((s) => s.dispose());
   }
 
-  registerFileAndGetDecorationData({
+  setBadgeDecorationProvider(badgeDecorationProvider: BadgeDecorationProvider) {
+    this.badgeDecorationProvider = badgeDecorationProvider;
+  }
+
+  getDecorationData({
     filePath,
     cancelToken,
   }: {
@@ -171,6 +178,7 @@ export default class CoLocator implements vscode.Disposable {
     });
 
     if (isMatch) {
+      // todo shouldnt add a file here, just use whats available
       this.fileCandidates.addFile(filePath);
       return {
         badge: "🧪",

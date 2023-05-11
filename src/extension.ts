@@ -29,6 +29,8 @@ export function activate(context: vscode.ExtensionContext) {
     patternGroupsConfig: patternGroupsConfig,
   });
 
+  // todo load current files on startup
+
   activateContextMenuCommand(coLocator);
   // activateShortcutsView(coLocator);
   activateTreeItemDecorator(coLocator);
@@ -50,7 +52,11 @@ export function activate(context: vscode.ExtensionContext) {
       // todo handle workspace folder change
       console.log("onDidChangeWorkspaceFolders", e);
       // ? could use this to handle workspace folder change?
-      // vscode.workspace.textDocuments
+      // vscode.workspace.textDocuments[0]
+    }),
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      // todo handle configuration change
+      console.log("onDidChangeConfiguration", e);
     }),
   );
 

@@ -11,17 +11,21 @@ export function activate(coLocator: CoLocator) {
   // todo listen for file deletions/creations/renames to update file decorations
 }
 
-class BadgeDecorationProvider implements vscode.FileDecorationProvider {
-  constructor(public readonly coLocator: CoLocator) {}
+export class BadgeDecorationProvider implements vscode.FileDecorationProvider {
+  constructor(public readonly coLocator: CoLocator) {
+    coLocator.setBadgeDecorationProvider(this);
+  }
 
-  onDidChangeFileDecorations?: vscode.Event<vscode.Uri | vscode.Uri[] | undefined> | undefined;
+  onDidChangeFileDecorationsEmitter = new vscode.EventEmitter<
+    vscode.Uri | vscode.Uri[] | undefined
+  >();
+  onDidChangeFileDecorations = this.onDidChangeFileDecorationsEmitter.event;
 
   provideFileDecoration(
     uri: vscode.Uri,
     cancelToken: vscode.CancellationToken,
   ): vscode.ProviderResult<vscode.FileDecoration> {
-    // todo fix, this isnt accurate as the decorations could change as more files are discovered, the files need to be processed in one go at the start then changes managed
-    const decoration = this.coLocator.registerFileAndGetDecorationData({
+    const decoration = this.coLocator.getDecorationData({
       filePath: uri.path,
       cancelToken,
     });

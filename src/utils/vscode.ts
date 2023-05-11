@@ -13,6 +13,9 @@ export async function openFile(filePath: string) {
 
   debugger;
   await vscode.commands.executeCommand("vscode.open", uri);
+
+  // can also try
+  // vscode.workspace.openTextDocument(uri)
 }
 
 const MAX_PATH_SEGMENTS = 5;
