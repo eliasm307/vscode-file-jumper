@@ -1,11 +1,9 @@
-import { FileGroupConfigs, FileTypeConfig } from "../utils/config";
-import { getShortPath } from "../utils/vscode";
+import type { FileTypeConfig } from "../utils/config";
 
 export type RelatedFileData = {
-  name: string;
+  typeName: string;
   marker: string;
   fullPath: string;
-  shortPath: string;
 };
 
 /**
@@ -15,10 +13,9 @@ export type RelatedFileData = {
 type PatternGroupFiles = Record<string, RelatedFileData[]>;
 
 export default class FileType {
-  /**
-   * @key the index of the pattern group
-   */
-  private fileGroupsByPatternGroupIndexMap: Record<number, PatternGroupFiles> = {};
+  private keyPathToFullPathMap: Record<string, string> = {};
+
+  private regex: RegExp;
 
   constructor(
     public readonly config: FileTypeConfig,
@@ -26,19 +23,43 @@ export default class FileType {
       // todo when does this get fired
       onFileRelationshipChange: (filePath: string) => void;
     },
-  ) {}
+  ) {
+    this.regex = new RegExp(config.regex);
+  }
 
   matches(filePath: string): boolean {
     throw new Error("Method not implemented.");
   }
-  getRelatedFile(filePath: string): RelatedFileData | undefined {
-    throw new Error("Method not implemented.");
+
+  getRelatedFile(keyPath: string): RelatedFileData | undefined {
+    const fullPath = this.keyPathToFullPathMap[keyPath];
+    if (!fullPath) {
+      return;
+    }
+
+    return {
+      typeName: this.config.name,
+      marker: this.config.marker,
+      fullPath,
+    };
   }
+
   registerPaths(filePaths: string[]) {
-    throw new Error("Method not implemented.");
+    filePaths.forEach((fullPath) => {
+      const keyPath = this.getKeyPath(fullPath);
+      if (keyPath) {
+        this.keyPathToFullPathMap[keyPath] = fullPath;
+      }
+    });
   }
+
   reset() {
-    throw new Error("Method not implemented.");
+    this.keyPathToFullPathMap = {};
+  }
+
+  private getKeyPath(filePath: string): string | undefined {
+    // todo this implicitly creates a regex for each call, we should create one before and reuse it
+    return filePath.match(this.regex)?.[1];
   }
 
   /*
@@ -106,11 +127,6 @@ export default class FileType {
 
     console.log("getRelatedFileGroups", { currentFilePath, groupedRelatedFiles });
     return groupedRelatedFiles;
-  }
-
-  private getKeyPath(filePath: string, { regex }: FileTypeConfig): string | undefined {
-    // todo this implicitly creates a regex for each call, we should create one before and reuse it
-    return filePath.match(regex)?.[1];
   }
   */
 }

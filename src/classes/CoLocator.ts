@@ -1,9 +1,11 @@
 import type * as vscode from "vscode"; // type only import to make sure we dont have dependency on vscode effects to make testing easier
-import { FileGroupConfigs, FileTypeConfig } from "../utils/config";
 import { QuickPickItemKind } from "vscode";
+import type { FileGroupConfigs } from "../utils/config";
+import { FileTypeConfig } from "../utils/config";
 import { getShortPath } from "../utils/vscode";
 import BadgeDecorationProvider from "./BadgeDecorationProvider";
-import FileType, { RelatedFileData } from "./FileType";
+import type { RelatedFileData } from "./FileType";
+import FileType from "./FileType";
 import { isNotNullOrUndefined } from "../utils/predicates";
 
 export type QuickPickItem = vscode.QuickPickItem &
@@ -91,7 +93,7 @@ export default class CoLocator implements vscode.Disposable {
     });
 
     return {
-      fileType: fileType,
+      fileType,
       relatedFileGroups,
     };
   }
@@ -137,7 +139,7 @@ export default class CoLocator implements vscode.Disposable {
         .map((relatedFile): QuickPickItem => {
           return {
             kind: QuickPickItemKind.Default,
-            label: `${relatedFile.marker} ${relatedFile.name}`,
+            label: `${relatedFile.marker} ${relatedFile.typeName}`,
             detail: relatedFile.shortPath,
             filePath: relatedFile.fullPath,
           };
