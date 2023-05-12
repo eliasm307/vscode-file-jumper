@@ -1,12 +1,11 @@
 import type * as vscode from "vscode"; // type only import to make sure we dont have dependency on vscode effects to make testing easier
 import { QuickPickItemKind } from "vscode";
 import type { FileGroupConfigs } from "../utils/config";
-import { FileTypeConfig } from "../utils/config";
-import { getShortPath } from "../utils/vscode";
 import BadgeDecorationProvider from "./BadgeDecorationProvider";
-import type { RelatedFileData } from "./FileType";
 import FileType from "./FileType";
 import { isNotNullOrUndefined } from "../utils/predicates";
+import type { FileMetaData } from "../types";
+import { getShortPath } from "../utils/vscode";
 
 export type QuickPickItem = vscode.QuickPickItem &
   (
@@ -38,17 +37,13 @@ export default class CoLocator implements vscode.Disposable {
   ) {
     this.fileTypeGroups = this.extension.patternGroupsConfig.map((fileGroupConfig) => {
       return fileGroupConfig.types.map((config) => {
-        return new FileType(config, {
-          onFileRelationshipChange: (filePath) => {
-            this.badgeDecorationProvider.notifyFileDecorationsChanged();
-          },
-        });
+        return new FileType(config);
       });
     });
 
-    this.badgeDecorationProvider = new BadgeDecorationProvider((config) =>
-      this.getDecorationData(config),
-    );
+    this.badgeDecorationProvider = new BadgeDecorationProvider((config) => {
+      return this.getFileMetaData(config);
+    });
   }
 
   dispose() {
@@ -74,53 +69,36 @@ export default class CoLocator implements vscode.Disposable {
     }
   }
 
-  getFileMetaData(
-    filePath: string,
-  ): { fileType: FileType; relatedFileGroups: RelatedFileData[][] } | undefined {
-    const fileType = this.getFileType(filePath);
-    if (!fileType) {
+  getFileMetaData(targetFilePath: string): FileMetaData | undefined {
+    const targetFileType = this.getFileType(targetFilePath);
+    if (!targetFileType) {
+      console.warn(
+        "CoLocator#getFileMetaData",
+        `No file type found for "${targetFilePath}" assuming it is not part of any group`,
+      );
       return; // file is not part of any group
     }
 
     const relatedFileGroups = this.fileTypeGroups.map((fileGroup) => {
-      return fileGroup
-        .map((fileType) => {
-          if (fileType !== fileType) {
-            return fileType.getRelatedFile(filePath);
-          }
-        })
-        .filter(isNotNullOrUndefined);
+      return (
+        fileGroup
+          // eslint-disable-next-line array-callback-return
+          .map((fileType) => {
+            if (fileType === targetFileType) {
+              return;
+            }
+            const keyPath = targetFileType.getKeyPath(targetFilePath);
+            if (keyPath) {
+              return fileType.getRelatedFile(keyPath);
+            }
+          })
+          .filter(isNotNullOrUndefined)
+      );
     });
 
     return {
-      fileType,
+      fileType: targetFileType,
       relatedFileGroups,
-    };
-  }
-
-  getDecorationData({
-    filePath,
-    cancelToken,
-  }: {
-    filePath: string;
-    cancelToken?: vscode.CancellationToken;
-  }): { badge: string; tooltip: string } | undefined {
-    // todo handle cancel
-
-    const fileMeta = this.getFileMetaData(filePath);
-    if (!fileMeta || !fileMeta.relatedFileGroups?.length) {
-      return; // file has no known related files
-    }
-
-    const relatedFileMarkers = fileMeta.relatedFileGroups
-      .flat()
-      .map(({ marker }) => marker)
-      .join("");
-
-    console.log("getDecorationData", filePath, { fileMeta, relatedFileMarkers });
-    return {
-      badge: relatedFileMarkers,
-      tooltip: `This file is a "${fileMeta.fileType.config.name}" file`,
     };
   }
 
@@ -140,7 +118,7 @@ export default class CoLocator implements vscode.Disposable {
           return {
             kind: QuickPickItemKind.Default,
             label: `${relatedFile.marker} ${relatedFile.typeName}`,
-            detail: relatedFile.shortPath,
+            detail: getShortPath(relatedFile.fullPath),
             filePath: relatedFile.fullPath,
           };
         });

@@ -1,3 +1,14 @@
-import type * as vscode from "vscode";
-import CoLocator from "./classes/CoLocator";
-import { FileGroupConfigs } from "./utils/config";
+import type FileType from "./classes/FileType";
+
+export type FileMetaData = {
+  fileType: FileType;
+  relatedFileGroups: RelatedFileData[][];
+};
+
+export type RelatedFileData = {
+  typeName: string;
+  marker: string;
+  fullPath: string;
+};
+
+export type KeyPath = string & { __brand: "keyPath" };

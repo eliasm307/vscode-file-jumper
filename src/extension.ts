@@ -30,9 +30,11 @@ export async function activate(context: vscode.ExtensionContext) {
   console.log("allFilePaths", allFilePaths);
 
   const coLocator = new CoLocator({
-    context: context,
-    patternGroupsConfig: patternGroupsConfig,
+    context,
+    patternGroupsConfig,
   });
+
+  coLocator.loadNewWorkspaceFiles(allFilePaths);
 
   // todo load current files on startup
 

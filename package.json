@@ -91,9 +91,10 @@
                       "default": ""
                     },
                     "marker": {
-                      "markdownDescription": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file\n\n[Native VS Code](https://code.visualstudio.com/api/references/icons-in-labels) icons can be used here",
+                      "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
                       "type": "string",
-                      "default": ""
+                      "default": "",
+                      "maxLeng": 1
                     },
                     "regex": {
                       "description": "A regex that should match relevant files and capture (as the first regex group) the part of the path that will be constant for sibling pattern group items",
