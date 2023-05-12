@@ -32,3 +32,7 @@ export function getShortPath(pathOrUri: string | vscode.Uri, options?: { maxSegm
 
   return uriSegments.join("/").trim();
 }
+
+export function createUri(path: string) {
+  return vscode.Uri.file(path);
+}

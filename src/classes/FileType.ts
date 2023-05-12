@@ -1,8 +1,12 @@
-import * as vscode from "vscode";
 import { FileGroupConfigs, FileTypeConfig } from "../utils/config";
 import { getShortPath } from "../utils/vscode";
 
-type RelatedFileData = { name: string; marker: string; fullPath: string; shortPath: string };
+export type RelatedFileData = {
+  name: string;
+  marker: string;
+  fullPath: string;
+  shortPath: string;
+};
 
 /**
  * @key the file path between the path prefix and suffix from patterns or the full path of a known related file
@@ -10,22 +14,34 @@ type RelatedFileData = { name: string; marker: string; fullPath: string; shortPa
  */
 type PatternGroupFiles = Record<string, RelatedFileData[]>;
 
-export default class PatternMatcher {
+export default class FileType {
   /**
    * @key the index of the pattern group
    */
   private fileGroupsByPatternGroupIndexMap: Record<number, PatternGroupFiles> = {};
 
   constructor(
-    private readonly config: {
-      fileGroupConfigs: FileGroupConfigs;
+    public readonly config: FileTypeConfig,
+    private readonly options?: {
+      // todo when does this get fired
+      onFileRelationshipChange: (filePath: string) => void;
     },
   ) {}
 
-  clearAllAndLoad(filePaths: string[]) {
+  matches(filePath: string): boolean {
+    throw new Error("Method not implemented.");
+  }
+  getRelatedFile(filePath: string): RelatedFileData | undefined {
+    throw new Error("Method not implemented.");
+  }
+  registerPaths(filePaths: string[]) {
+    throw new Error("Method not implemented.");
+  }
+  reset() {
     throw new Error("Method not implemented.");
   }
 
+  /*
   addFile(newFilePath: string) {
     // todo update file candidates and also update context for context menu conditional showing
     // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
@@ -96,4 +112,5 @@ export default class PatternMatcher {
     // todo this implicitly creates a regex for each call, we should create one before and reuse it
     return filePath.match(regex)?.[1];
   }
+  */
 }

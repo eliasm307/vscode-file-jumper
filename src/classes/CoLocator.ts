@@ -1,9 +1,10 @@
-import * as vscode from "vscode"; // type only import to make sure we dont have dependency on vscode effects to make testing easier
+import type * as vscode from "vscode"; // type only import to make sure we dont have dependency on vscode effects to make testing easier
 import { FileGroupConfigs, FileTypeConfig } from "../utils/config";
 import { QuickPickItemKind } from "vscode";
 import { getShortPath } from "../utils/vscode";
 import BadgeDecorationProvider from "./BadgeDecorationProvider";
-import PatternMatcher from "./PatternMatcher";
+import FileType, { RelatedFileData } from "./FileType";
+import { isNotNullOrUndefined } from "../utils/predicates";
 
 export type QuickPickItem = vscode.QuickPickItem &
   (
@@ -22,9 +23,10 @@ export type QuickPickItem = vscode.QuickPickItem &
 export default class CoLocator implements vscode.Disposable {
   // todo use this to notify of updated decorations on change
   public readonly badgeDecorationProvider: BadgeDecorationProvider;
-  private fileLinker: PatternMatcher;
 
   private subscriptions: vscode.Disposable[] = [];
+
+  private fileTypeGroups: FileType[][] = [];
 
   constructor(
     public readonly extension: {
@@ -32,8 +34,14 @@ export default class CoLocator implements vscode.Disposable {
       patternGroupsConfig: FileGroupConfigs;
     },
   ) {
-    this.fileLinker = new PatternMatcher({
-      fileGroupConfigs: extension.patternGroupsConfig,
+    this.fileTypeGroups = this.extension.patternGroupsConfig.map((fileGroupConfig) => {
+      return fileGroupConfig.types.map((config) => {
+        return new FileType(config, {
+          onFileRelationshipChange: (filePath) => {
+            this.badgeDecorationProvider.notifyFileDecorationsChanged();
+          },
+        });
+      });
     });
 
     this.badgeDecorationProvider = new BadgeDecorationProvider((config) =>
@@ -45,8 +53,47 @@ export default class CoLocator implements vscode.Disposable {
     this.subscriptions.forEach((s) => s.dispose());
   }
 
-  loadFiles(filePaths: string[]): void {
-    this.fileLinker.clearAllAndLoad(filePaths);
+  loadNewWorkspaceFiles(filePaths: string[]): void {
+    this.fileTypeGroups.forEach((fileGroup) => {
+      fileGroup.forEach((fileTypeMatcher) => {
+        fileTypeMatcher.reset();
+        fileTypeMatcher.registerPaths(filePaths);
+      });
+    });
+  }
+
+  getFileType(filePath: string): FileType | undefined {
+    for (const fileTypeGroup of this.fileTypeGroups) {
+      for (const fileType of fileTypeGroup) {
+        if (fileType.matches(filePath)) {
+          return fileType;
+        }
+      }
+    }
+  }
+
+  getFileMetaData(
+    filePath: string,
+  ): { fileType: FileType; relatedFileGroups: RelatedFileData[][] } | undefined {
+    const fileType = this.getFileType(filePath);
+    if (!fileType) {
+      return; // file is not part of any group
+    }
+
+    const relatedFileGroups = this.fileTypeGroups.map((fileGroup) => {
+      return fileGroup
+        .map((fileType) => {
+          if (fileType !== fileType) {
+            return fileType.getRelatedFile(filePath);
+          }
+        })
+        .filter(isNotNullOrUndefined);
+    });
+
+    return {
+      fileType: fileType,
+      relatedFileGroups,
+    };
   }
 
   getDecorationData({
@@ -58,30 +105,32 @@ export default class CoLocator implements vscode.Disposable {
   }): { badge: string; tooltip: string } | undefined {
     // todo handle cancel
 
-    const isMatch = filePath.endsWith("test.ts");
-
-    console.log("BadgeDecorationProvider", {
-      filePath,
-      isMatch,
-    });
-
-    if (isMatch) {
-      // todo should not add a file here, just use whats available
-      this.fileLinker.addFile(filePath);
-      return {
-        badge: "🧪",
-        tooltip: "This file is a test file",
-      };
+    const fileMeta = this.getFileMetaData(filePath);
+    if (!fileMeta || !fileMeta.relatedFileGroups?.length) {
+      return; // file has no known related files
     }
-    return undefined;
+
+    const relatedFileMarkers = fileMeta.relatedFileGroups
+      .flat()
+      .map(({ marker }) => marker)
+      .join("");
+
+    console.log("getDecorationData", filePath, { fileMeta, relatedFileMarkers });
+    return {
+      badge: relatedFileMarkers,
+      tooltip: `This file is a "${fileMeta.fileType.config.name}" file`,
+    };
   }
 
   getRelatedFilesQuickPickItems(currentFilePath: string): QuickPickItem[] {
-    const relatedFileGroups = this.fileLinker.getRelatedFileGroups(currentFilePath);
+    const fileMeta = this.getFileMetaData(currentFilePath);
+    if (!fileMeta || !fileMeta.relatedFileGroups?.length) {
+      return []; // file has no known related files
+    }
 
-    console.log("getRelatedFilesQuickPickItems", { currentFilePath, relatedFileGroups });
+    console.log("getRelatedFilesQuickPickItems", { currentFilePath, fileMeta });
 
-    return relatedFileGroups.flatMap((relatedFileGroup, i) => {
+    return fileMeta.relatedFileGroups.flatMap((relatedFileGroup, i) => {
       const groupItems = relatedFileGroup
         // dont include the current file as a related file
         .filter((relatedFile) => relatedFile.fullPath !== currentFilePath)
@@ -94,7 +143,7 @@ export default class CoLocator implements vscode.Disposable {
           };
         });
 
-      const isLastGroup = i === relatedFileGroups.length - 1;
+      const isLastGroup = i === fileMeta.relatedFileGroups.length - 1;
       if (!isLastGroup) {
         groupItems.push({
           kind: QuickPickItemKind.Separator,
