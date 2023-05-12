@@ -130,7 +130,9 @@
     "watch": "tsc -watch -p ./",
     "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",
     "pretest": "npm run compile",
-    "test": "echo 'Testing...' && vitest run --coverage"
+    "test": "echo 'Testing...' && vitest run --coverage",
+    "pretest:changed": "npm run compile",
+    "test:changed": "echo 'Testing...' && vitest run --coverage --changed HEAD~1"
   },
   "devDependencies": {
     "@eliasm307/config": "^0.17.0",
