@@ -122,14 +122,14 @@
   },
   "scripts": {
     "vscode:package": "echo 'Packaging...' && vsce package",
-    "vscode:prepublish": "yarn test",
+    "vscode:prepublish": "yarn lint && yarn test",
     "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch",
     "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor",
     "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major",
     "compile": "echo 'Compiling...' tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "echo 'Linting...' && eslint src --ext ts --fix",
-    "pretest": "yarn run compile && yarn run lint",
+    "pretest": "yarn run compile",
     "test": "echo 'Testing...' && vitest run --coverage"
   },
   "devDependencies": {
