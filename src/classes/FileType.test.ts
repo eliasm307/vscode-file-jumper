@@ -1,7 +1,8 @@
 import { describe, it, assert } from "vitest";
 import FileType from "./FileType";
+import type { KeyPath } from "../types";
 
-describe.only("FileType", () => {
+describe("FileType", () => {
   function createFileTypeWithRegisteredFiles(): FileType {
     const fileType = new FileType({
       name: "test",
@@ -21,7 +22,7 @@ describe.only("FileType", () => {
       const fileType = createFileTypeWithRegisteredFiles();
 
       assert.deepStrictEqual(
-        fileType.getRelatedFile("dir1/relatedFile1"),
+        fileType.getRelatedFile("dir1/relatedFile1" as KeyPath),
         {
           typeName: "test",
           marker: "🧪",
@@ -31,7 +32,7 @@ describe.only("FileType", () => {
       );
 
       assert.deepStrictEqual(
-        fileType.getRelatedFile("dir1/dir2/relatedFile2"),
+        fileType.getRelatedFile("dir1/dir2/relatedFile2" as KeyPath),
         {
           typeName: "test",
           marker: "🧪",
@@ -43,7 +44,7 @@ describe.only("FileType", () => {
 
     it("should return undefined if the file is not related", () => {
       const fileType = createFileTypeWithRegisteredFiles();
-      const relatedFile = fileType.getRelatedFile("dir1/otherFile.ts");
+      const relatedFile = fileType.getRelatedFile("dir1/otherFile.ts" as KeyPath);
       assert.isUndefined(relatedFile, "related file should not be found");
     });
   });
@@ -63,8 +64,12 @@ describe.only("FileType", () => {
   describe("#reset", () => {
     it("should clear the registered files", () => {
       const fileType = createFileTypeWithRegisteredFiles();
+
+      const validKeyPath = "dir1/relatedFile1" as KeyPath;
+      const matchingFullPath = "/test/dir1/relatedFile1.test.ts";
+
       assert.deepStrictEqual(
-        fileType.getRelatedFile("dir1/relatedFile1"),
+        fileType.getRelatedFile(validKeyPath),
         {
           typeName: "test",
           marker: "🧪",
@@ -72,17 +77,12 @@ describe.only("FileType", () => {
         },
         "related file should be found",
       );
-
-      assert.isTrue(fileType.matches("/test/dir1/relatedFile1.test.ts"), "file should match");
+      assert.isTrue(fileType.matches(matchingFullPath), "file should match");
 
       fileType.reset();
 
-      assert.isUndefined(
-        fileType.getRelatedFile("dir1/relatedFile1"),
-        "related file should not be found",
-      );
-
-      assert.isFalse(fileType.matches("/test/dir1/relatedFile1.test.ts"), "file should not match");
+      assert.isUndefined(fileType.getRelatedFile(validKeyPath), "related file should not be found");
+      assert.isTrue(fileType.matches(matchingFullPath), "file should still match after reset");
     });
   });
 });

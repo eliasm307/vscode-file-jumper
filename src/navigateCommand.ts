@@ -1,18 +1,9 @@
+/* eslint-disable no-console */
 // managing tree items: https://code.visualstudio.com/api/extension-guides/tree-view
 
 import * as vscode from "vscode";
-import fs from "fs";
-import CoLocator from "./classes/CoLocator";
+import type CoLocator from "./classes/CoLocator";
 import { getShortPath, openFile } from "./utils/vscode";
-
-function fileExists(filePath: string): boolean {
-  try {
-    fs.accessSync(filePath, fs.constants.F_OK);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
 
 export function activate(coLocator: CoLocator) {
   // command is conditionally triggered based on context:
@@ -44,8 +35,8 @@ export function activate(coLocator: CoLocator) {
         return;
       }
 
-      openFile(selection.filePath);
-      vscode.window.showInformationMessage(`Context Menu Option Clicked: ${shortPath}`); // todo remove
+      await openFile(selection.filePath);
+      await vscode.window.showInformationMessage(`Context Menu Option Clicked: ${shortPath}`); // todo remove
     },
   );
 

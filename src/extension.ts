@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // for adding configuration options: https://code.visualstudio.com/api/references/contribution-points#contributes.configuration
 // overall structure: https://code.visualstudio.com/api/get-started/extension-anatomy
 // full api reference: https://code.visualstudio.com/api/references/vscode-api
@@ -7,6 +8,7 @@
 // todo
 // - detect and handle configuration changes
 // - make context menu only show on files with known related files
+// - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
 
 import * as vscode from "vscode";
 import { activate as activateContextMenuCommand } from "./navigateCommand";

@@ -94,7 +94,7 @@
                       "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
                       "type": "string",
                       "default": "",
-                      "maxLeng": 1
+                      "maxLength": 1
                     },
                     "regex": {
                       "description": "A regex that should match relevant files and capture (as the first regex group) the part of the path that will be constant for sibling pattern group items",
@@ -121,13 +121,16 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "yarn run compile",
-    "compile": "tsc -p ./",
+    "vscode:package": "echo 'Packaging...' && vsce package",
+    "vscode:prepublish": "yarn test",
+    "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch",
+    "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor",
+    "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major",
+    "compile": "echo 'Compiling...' tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "lint": "echo 'Linting...' && eslint src --ext ts --fix",
     "pretest": "yarn run compile && yarn run lint",
-    "lint": "eslint src --ext ts",
-    "testold": "node ./out/test/runTest.js",
-    "test": "vitest run --coverage"
+    "test": "echo 'Testing...' && vitest run --coverage"
   },
   "devDependencies": {
     "@eliasm307/config": "^0.17.0",
@@ -139,6 +142,7 @@
     "@typescript-eslint/parser": "^5.59.1",
     "@vitest/coverage-c8": "^0.31.0",
     "@vscode/test-electron": "^2.3.0",
+    "@vscode/vsce": "^2.19.0",
     "eslint": "^8.39.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",

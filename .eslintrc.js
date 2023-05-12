@@ -8,4 +8,8 @@ module.exports = {
     sourceType: "module",
   },
   ignorePatterns: ["out", "dist", "**/*.d.ts"],
+  rules: {
+    ...ecmConfig.rules,
+    "no-console": "warn",
+  },
 };
