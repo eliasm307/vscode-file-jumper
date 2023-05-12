@@ -123,9 +123,9 @@
   "scripts": {
     "vscode:package": "echo 'Packaging...' && vsce package",
     "vscode:prepublish": "npm run lint && npm run test",
-    "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch",
-    "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor",
-    "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major",
+    "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --pre-release",
+    "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --pre-release",
+    "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --pre-release",
     "compile": "echo 'Compiling...' tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",
@@ -155,6 +155,7 @@
   "dependencies": {
     "minimatch": "^9.0.0"
   },
+  "publisher": "ecm",
   "vsce": {
     "dependencies": true,
     "yarn": false
