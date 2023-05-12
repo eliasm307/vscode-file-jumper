@@ -1,17 +1,7 @@
 import * as vscode from "vscode";
 
 export async function openFile(filePath: string) {
-  // see built in commands: https://code.visualstudio.com/api/references/commands
-  const uri = vscode.Uri.file(filePath);
-  const uri2 = vscode.Uri.parse(filePath);
-
-  console.log("openFile", {
-    filePath,
-    uri,
-    uri2,
-  });
-
-  await vscode.commands.executeCommand("vscode.open", uri);
+  await vscode.commands.executeCommand("vscode.open", createUri(filePath));
 
   // can also try
   // vscode.workspace.openTextDocument(uri)

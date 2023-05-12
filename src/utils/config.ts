@@ -17,56 +17,47 @@ export type FileTypeConfig = {
  */
 export type FileGroupConfigs = [FileGroupConfig];
 
-export function getFileGroupConfigs(context: vscode.ExtensionContext) {
+export function getFileGroupConfigs() {
   const config = vscode.workspace.getConfiguration("coLocate");
   const fileGroupConfigs = config.get<FileGroupConfigs>("fileGroups");
   return fileGroupConfigs;
 }
 
-export function configIsValid(
+export function findReasonConfigIsInvalid(
   fileGroupConfigs: FileGroupConfigs | undefined,
-): fileGroupConfigs is FileGroupConfigs {
+): string | undefined {
   if (!fileGroupConfigs?.length) {
-    console.error("No config found");
-    return false;
+    return "No config found";
   }
 
   if (fileGroupConfigs.length !== 1) {
-    console.error("Only one file group is supported at this time");
-    return false;
+    return "Only one file group is supported at this time";
   }
 
   const fileGroup = fileGroupConfigs[0];
   const groupName = fileGroup.name || "0";
 
   if (!fileGroup.types?.length) {
-    console.error(`No group items found in group "${groupName}"`);
-    return false;
+    return `No group items found in group "${groupName}"`;
   }
 
   if (fileGroup.types.length < 2) {
-    console.error(`Less than 2 items found in group "${groupName}"`);
-    return false;
+    return `Less than 2 items found in group "${groupName}"`;
   }
 
   let i = 0;
   for (const groupItem of fileGroup.types) {
     if (!groupItem.name) {
-      console.error(`No name found for group item ${i} in group "${groupName}"`);
-      return false;
+      return `No name found for group item ${i} in group "${groupName}"`;
     }
 
     if (!groupItem.marker) {
-      console.error(`No marker found for group item "${groupItem.name}" in group "${groupName}"`);
-      return false;
+      return `No marker found for group item "${groupItem.name}" in group "${groupName}"`;
     }
 
     if (!groupItem.regex) {
-      console.error(`No regex found for group item "${groupItem.name}" in group "${groupName}"`);
-      return false;
+      return `No regex found for group item "${groupItem.name}" in group "${groupName}"`;
     }
     i++;
   }
-
-  return true;
 }

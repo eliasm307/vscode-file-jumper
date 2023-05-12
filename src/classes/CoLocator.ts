@@ -50,7 +50,7 @@ export default class CoLocator implements vscode.Disposable {
     this.subscriptions.forEach((s) => s.dispose());
   }
 
-  loadNewWorkspaceFiles(filePaths: string[]): void {
+  initWorkspaceFiles(filePaths: string[]): void {
     this.fileTypeGroups.forEach((fileGroup) => {
       fileGroup.forEach((fileTypeMatcher) => {
         fileTypeMatcher.reset();
@@ -107,8 +107,6 @@ export default class CoLocator implements vscode.Disposable {
     if (!fileMeta || !fileMeta.relatedFileGroups?.length) {
       return []; // file has no known related files
     }
-
-    console.log("getRelatedFilesQuickPickItems", { currentFilePath, fileMeta });
 
     return fileMeta.relatedFileGroups.flatMap((relatedFileGroup, i) => {
       const groupItems = relatedFileGroup
