@@ -128,8 +128,8 @@
     "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major",
     "compile": "echo 'Compiling...' tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "lint": "echo 'Linting...' && eslint src --ext ts --fix",
-    "pretest": "npm run run compile",
+    "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",
+    "pretest": "npm run compile",
     "test": "echo 'Testing...' && vitest run --coverage"
   },
   "devDependencies": {
@@ -153,5 +153,8 @@
   "dependencies": {
     "minimatch": "^9.0.0"
   },
-  "packageManager": "yarn@3.5.1"
+  "vsce": {
+    "dependencies": true,
+    "yarn": false
+  }
 }
