@@ -6,3 +6,7 @@ node_modules
 
 .vscode/
 .yarn/
+
+coverage/
+
+*.js.map
