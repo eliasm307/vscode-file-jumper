@@ -29,8 +29,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const coLocator = new CoLocator(mainConfig);
 
-  const badgeDecorationProvider = new BadgeDecorationProvider((filePath) => {
-    return coLocator.getRelatedFileMarkers(filePath);
+  const badgeDecorationProvider = new BadgeDecorationProvider({
+    getRelatedFileMarkers: (filePath) => coLocator.getRelatedFileMarkers(filePath),
   });
 
   const allFileUris = await vscode.workspace.findFiles("**/*");
@@ -114,7 +114,7 @@ function registerNavigateCommand(coLocator: CoLocator) {
 
       // todo check what this looks like
       // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
-      const selection = await vscode.window.showQuickPick(quickPickItems, {
+      const selectedItem = await vscode.window.showQuickPick(quickPickItems, {
         title: `Navigate to file related to "${shortPath}"`,
         placeHolder: "Select a related file",
         // match on any info
@@ -122,19 +122,13 @@ function registerNavigateCommand(coLocator: CoLocator) {
         matchOnDetail: true,
       });
 
-      console.log("Quick pick selection", selection);
+      console.log("Quick pick selection", selectedItem);
 
-      if (selection?.kind !== vscode.QuickPickItemKind.Default) {
-        return;
+      if (!selectedItem?.filePath) {
+        return; // the user canceled the selection
       }
 
-      // the user canceled the selection
-      if (!selection?.filePath) {
-        return;
-      }
-
-      await openFile(selection.filePath);
-      await vscode.window.showInformationMessage(`Context Menu Option Clicked: ${shortPath}`); // todo remove
+      await openFile(selectedItem.filePath);
     },
   );
 

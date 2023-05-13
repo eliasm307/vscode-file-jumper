@@ -2,7 +2,7 @@ import { describe, it, assert } from "vitest";
 import FileType from "./FileType";
 import type { KeyPath } from "../types";
 
-describe.only("FileType", () => {
+describe("FileType", () => {
   function createFileTypeWithRegisteredFiles(): FileType {
     const fileType = new FileType({
       name: "test",
@@ -55,7 +55,7 @@ describe.only("FileType", () => {
       assert.isTrue(fileType.matches("/test/dir1/relatedFile1.test.ts"), "file should match");
     });
 
-    it.only("should return false if the file is not related", () => {
+    it("should return false if the file is not related", () => {
       const fileType = createFileTypeWithRegisteredFiles();
       assert.isFalse(fileType.matches("/test/dir1/otherFile.ts"), "file should not match");
     });

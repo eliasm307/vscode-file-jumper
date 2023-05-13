@@ -1,7 +1,11 @@
 import * as vscode from "vscode";
 
 export default class BadgeDecorationProvider implements vscode.FileDecorationProvider {
-  constructor(private readonly getRelatedFileMarkers: (filePath: string) => string | undefined) {}
+  constructor(
+    private readonly config: {
+      getRelatedFileMarkers: (filePath: string) => string | undefined;
+    },
+  ) {}
 
   private onDidChangeFileDecorationsEmitter = new vscode.EventEmitter<
     vscode.Uri | vscode.Uri[] | undefined
@@ -24,17 +28,22 @@ export default class BadgeDecorationProvider implements vscode.FileDecorationPro
   }
 
   async getBadgeText(uri: vscode.Uri): Promise<string | undefined> {
-    const filePath = uri.path;
-    try {
-      const stat = await vscode.workspace.fs.stat(uri);
-      if (stat.type === vscode.FileType.Directory) {
-        return; // not a file
-      }
-    } catch (error) {
-      console.warn("BadgeDecorationProvider#createDecorationResult", error);
-      return; // not a file
+    if (await this.isFileUri(uri)) {
+      return this.config.getRelatedFileMarkers(uri.path);
+    }
+  }
+
+  async isFileUri(uri: vscode.Uri): Promise<boolean> {
+    if (uri.scheme !== "file") {
+      return false;
     }
 
-    return this.getRelatedFileMarkers(filePath);
+    try {
+      const stat = await vscode.workspace.fs.stat(uri);
+      return stat.type === vscode.FileType.File; // could be a folder
+    } catch (error) {
+      console.warn("BadgeDecorationProvider#isFile", error);
+      return false;
+    }
   }
 }

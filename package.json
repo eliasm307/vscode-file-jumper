@@ -25,7 +25,7 @@
         {
           "command": "coLocate.navigateCommand",
           "when": "!explorerResourceIsFolder",
-          "group": "coLocate"
+          "group": "navigation@1"
         }
       ]
     },
