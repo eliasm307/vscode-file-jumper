@@ -13,7 +13,7 @@
 import * as vscode from "vscode";
 import { getFileGroupConfigs, findReasonConfigIsInvalid } from "./utils/config";
 import CoLocator from "./classes/CoLocator";
-import BadgeDecorationProvider from "./classes/BadgeDecorationProvider";
+import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { getShortPath, openFile } from "./utils/vscode";
 
 export async function activate(context: vscode.ExtensionContext) {
