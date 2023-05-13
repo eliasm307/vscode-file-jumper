@@ -32,12 +32,6 @@ describe("CoLocator", () => {
     coLocator?.reset();
   });
 
-  describe("#initWorkspaceFiles", () => {
-    it("should register files", () => {
-      assert.fail("not implemented");
-    });
-  });
-
   describe("#getFileType", () => {
     it("returns the correct file type", () => {
       coLocator = createDefaultTestCoLocator();
@@ -79,7 +73,8 @@ describe("CoLocator", () => {
     });
 
     it("returns the correct file meta data with all related files", () => {
-      const sourceFileMetaData = coLocator.getFileMetaData("/root/src/classes/Entity.ts");
+      const filePath = "/root/src/classes/Entity.ts";
+      const sourceFileMetaData = coLocator.getFileMetaData(filePath);
       assert.strictEqual(
         sourceFileMetaData?.fileType.name,
         "Source",
@@ -97,6 +92,11 @@ describe("CoLocator", () => {
           fullPath: "/root/docs/classes/Entity.md",
         },
       ]);
+      assert.strictEqual(
+        coLocator.getRelatedFileMarkers(filePath),
+        "🧪📖",
+        "correct related file markers found",
+      );
     });
 
     it("returns the correct file meta data with all related files, using helpers", () => {
@@ -118,11 +118,6 @@ describe("CoLocator", () => {
           fullPath: "/root/docs/classes/Entity.md",
         },
       ]);
-      assert.strictEqual(
-        coLocator.getRelatedFileMarkers(filePath),
-        "💻",
-        "correct related file markers found",
-      );
     });
 
     it("returns correct file meta data with no related files", () => {
