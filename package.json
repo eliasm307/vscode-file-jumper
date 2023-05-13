@@ -149,8 +149,6 @@
   },
   "devDependencies": {
     "@eliasm307/config": "^0.18.0",
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
     "@types/vscode": "^1.78.0",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
@@ -159,14 +157,9 @@
     "@vscode/test-electron": "^2.3.0",
     "@vscode/vsce": "^2.19.0",
     "eslint": "^8.39.0",
-    "glob": "^8.1.0",
-    "mocha": "^10.2.0",
     "typescript": "^5.0.4",
     "vitest": "^0.31.0",
     "yarn": "^1.22.19"
-  },
-  "dependencies": {
-    "minimatch": "^9.0.0"
   },
   "publisher": "ecm",
   "vsce": {
