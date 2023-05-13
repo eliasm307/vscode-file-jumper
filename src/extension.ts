@@ -11,7 +11,7 @@
 // - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
 
 import * as vscode from "vscode";
-import { getFileGroupConfigs, findReasonConfigIsInvalid } from "./utils/config";
+import { findReasonMainConfigIsInvalid, getMainConfig } from "./utils/config";
 import CoLocator from "./classes/CoLocator";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { getShortPath, openFile } from "./utils/vscode";
@@ -19,15 +19,15 @@ import { getShortPath, openFile } from "./utils/vscode";
 export async function activate(context: vscode.ExtensionContext) {
   console.log("extension activating...");
 
-  const patternGroupsConfig = getFileGroupConfigs()!;
-  const reasonConfigIsInvalid = findReasonConfigIsInvalid(patternGroupsConfig);
+  const mainConfig = getMainConfig();
+  const reasonConfigIsInvalid = findReasonMainConfigIsInvalid(mainConfig);
   if (reasonConfigIsInvalid) {
     return vscode.window.showErrorMessage(`Invalid configuration: ${reasonConfigIsInvalid}`);
   }
 
-  console.log("extension loaded with patternGroupsConfig:", patternGroupsConfig[0]);
+  console.log("extension loaded with patternGroupsConfig:", mainConfig);
 
-  const coLocator = new CoLocator(patternGroupsConfig);
+  const coLocator = new CoLocator(mainConfig);
 
   const badgeDecorationProvider = new BadgeDecorationProvider((filePath) => {
     return coLocator.getRelatedFileMarkers(filePath);
@@ -42,19 +42,27 @@ export async function activate(context: vscode.ExtensionContext) {
   // todo listen for config changes to update file decorations
   // todo listen for file deletions/creations/renames to update file decorations
   context.subscriptions.push(
+    { dispose: () => coLocator.reset() },
     registerNavigateCommand(coLocator),
     vscode.window.registerFileDecorationProvider(badgeDecorationProvider),
     vscode.workspace.onDidRenameFiles((e) => {
       // todo handle file rename
       console.warn("onDidRenameFiles", e);
+      coLocator.removeFiles(e.files.map((file) => file.oldUri.path));
+      coLocator.addFiles(e.files.map((file) => file.newUri.path));
+      badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidCreateFiles((e) => {
       // todo handle file create
       console.warn("onDidCreateFiles", e);
+      coLocator.addFiles(e.files.map((file) => file.path));
+      badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidDeleteFiles((e) => {
       // todo handle file delete
       console.warn("onDidDeleteFiles", e);
+      coLocator.removeFiles(e.files.map((file) => file.path));
+      badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidChangeWorkspaceFolders((e) => {
       // todo handle workspace folder change
@@ -64,6 +72,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration((e) => {
       // todo handle configuration change
       console.warn("onDidChangeConfiguration", e);
+      coLocator.setConfig(getMainConfig());
+      badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
   );
 
@@ -79,7 +89,7 @@ function registerNavigateCommand(coLocator: CoLocator) {
     "coLocate.navigateCommand",
     async (uri: vscode.Uri) => {
       const shortPath = getShortPath(uri);
-      const groupedRelatedFiles = coLocator.getRelatedFilesQuickPickItems(uri.path);
+      const groupedRelatedFiles = coLocator.getFileMetaData(uri.path)?.relatedFileGroups || [];
 
       const lastGroupIndex = groupedRelatedFiles.length - 1;
       const quickPickItems = groupedRelatedFiles.flatMap((group, i) => {

@@ -148,7 +148,7 @@
     "test:changed": "echo 'Testing...' && vitest run --coverage --changed HEAD~1"
   },
   "devDependencies": {
-    "@eliasm307/config": "^0.17.0",
+    "@eliasm307/config": "^0.18.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",

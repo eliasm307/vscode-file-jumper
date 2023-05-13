@@ -1,3 +1,3 @@
-export function isNotNullOrUndefined<T>(x: T | undefined | null): x is T {
+export function isTruthy<T>(x: T | undefined | null | "" | 0): x is T {
   return !!x;
 }

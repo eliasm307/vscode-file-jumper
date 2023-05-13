@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-type FileGroupConfig = {
+export type FileGroupConfig = {
   name?: string;
   types: FileTypeConfig[];
 };
@@ -12,52 +12,73 @@ export type FileTypeConfig = {
   regex: string;
 };
 
-/**
- * @remark Only allowing one pattern group initially, but this could be expanded to allow multiple groups in the future
- */
-export type FileGroupConfigs = [FileGroupConfig];
+export type MainConfig = {
+  fileGroups: FileGroupConfig[];
+  ignoreRegexs: string[];
+};
 
 export function getFileGroupConfigs() {
   const config = vscode.workspace.getConfiguration("coLocate");
-  const fileGroupConfigs = config.get<FileGroupConfigs>("fileGroups");
-  return fileGroupConfigs;
+  return config.get<FileGroupConfig[]>("fileGroups");
 }
 
-export function findReasonConfigIsInvalid(
-  fileGroupConfigs: FileGroupConfigs | undefined,
-): string | undefined {
-  if (!fileGroupConfigs?.length) {
+export function getIgnoreRegexsConfig() {
+  const config = vscode.workspace.getConfiguration("coLocate");
+  return config.get<string[]>("ignoreRegexs");
+}
+
+export function getMainConfig(): MainConfig {
+  return {
+    fileGroups: getFileGroupConfigs() || [],
+    ignoreRegexs: getIgnoreRegexsConfig() || [],
+  };
+}
+
+// todo look into json schema validation to use one source of truth
+export function findReasonMainConfigIsInvalid(config: MainConfig): string | undefined {
+  if (!config.fileGroups?.length) {
     return "No config found";
   }
 
-  if (fileGroupConfigs.length !== 1) {
-    return "Only one file group is supported at this time";
+  if (!config.ignoreRegexs?.length) {
+    for (const regex of config.ignoreRegexs) {
+      if (typeof regex !== "string") {
+        return `Invalid ignore regex: ${regex}`;
+      }
+      try {
+        // eslint-disable-next-line no-new
+        new RegExp(regex);
+      } catch (e) {
+        return `Invalid ignore regex: ${regex}`;
+      }
+    }
   }
 
-  const fileGroup = fileGroupConfigs[0];
-  const groupName = fileGroup.name || "0";
-
-  if (!fileGroup.types?.length) {
-    return `No group items found in group "${groupName}"`;
-  }
-
-  if (fileGroup.types.length < 2) {
-    return `Less than 2 items found in group "${groupName}"`;
-  }
-
-  let i = 0;
-  for (const groupItem of fileGroup.types) {
-    if (!groupItem.name) {
-      return `No name found for group item ${i} in group "${groupName}"`;
+  const fileGroupIndex = 0;
+  for (const fileGroup of config.fileGroups) {
+    const groupName = fileGroup.name || fileGroupIndex.toString();
+    if (!fileGroup.types?.length) {
+      return `No group items found in group "${groupName}"`;
     }
 
-    if (!groupItem.marker) {
-      return `No marker found for group item "${groupItem.name}" in group "${groupName}"`;
+    if (fileGroup.types.length < 2) {
+      return `Less than 2 items found in group "${groupName}"`;
     }
 
-    if (!groupItem.regex) {
-      return `No regex found for group item "${groupItem.name}" in group "${groupName}"`;
+    let fileTypeIndex = 0;
+    for (const fileType of fileGroup.types) {
+      if (!fileType.name) {
+        return `No name found for group item ${fileTypeIndex} in group "${groupName}"`;
+      }
+
+      if (!fileType.marker) {
+        return `No marker found for group item "${fileType.name}" in group "${groupName}"`;
+      }
+
+      if (!fileType.regex) {
+        return `No regex found for group item "${fileType.name}" in group "${groupName}"`;
+      }
+      fileTypeIndex++;
     }
-    i++;
   }
 }

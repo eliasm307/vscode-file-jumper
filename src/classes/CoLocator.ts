@@ -1,23 +1,36 @@
-import type { FileGroupConfigs } from "../utils/config";
 import FileType from "./FileType";
-import { isNotNullOrUndefined } from "../utils/predicates";
+import { isTruthy } from "../utils/predicates";
 import type { FileMetaData, RelatedFileData } from "../types";
+import type { MainConfig } from "../utils/config";
 
-/**
- * The main facade for the extension logic
- */
 export default class CoLocator {
-  private fileTypeGroups: FileType[][] = [];
-
-  constructor(public readonly patternGroupsConfig: FileGroupConfigs) {
-    this.fileTypeGroups = this.patternGroupsConfig.map((fileGroupConfig) => {
-      return fileGroupConfig.types.map((config) => {
-        return new FileType(config);
-      });
-    });
+  addFiles(arg0: string[]) {
+    throw new Error("Method not implemented.");
   }
 
-  dispose() {
+  removeFiles(arg0: string[]) {
+    throw new Error("Method not implemented.");
+  }
+
+  setConfig(arg0: MainConfig) {
+    throw new Error("Method not implemented.");
+  }
+
+  private fileTypeGroups: FileType[][] = [];
+
+  private ignoreRegexs: RegExp[] = [];
+
+  constructor(config: MainConfig) {
+    this.fileTypeGroups = config.fileGroups.map((fileGroupConfig) => {
+      return fileGroupConfig.types.map((fileTypeConfig) => {
+        return new FileType(fileTypeConfig);
+      });
+    });
+
+    this.ignoreRegexs = config.ignoreRegexs.map((pattern) => new RegExp(pattern));
+  }
+
+  reset() {
     this.fileTypeGroups.forEach((fileGroup) => {
       fileGroup.forEach((fileType) => {
         fileType.reset();
@@ -26,9 +39,17 @@ export default class CoLocator {
   }
 
   initWorkspaceFiles(filePaths: string[]): void {
+    // todo test it doesn't include ignored files
+    filePaths = filePaths.filter((filePath) => {
+      return !this.ignoreRegexs.some((regex) => regex.test(filePath));
+    });
+
+    if (!filePaths.length) {
+      return;
+    }
+
     this.fileTypeGroups.forEach((fileGroup) => {
       fileGroup.forEach((fileType) => {
-        fileType.reset();
         fileType.registerPaths(filePaths);
       });
     });
@@ -44,6 +65,7 @@ export default class CoLocator {
     }
   }
 
+  // todo test it doesn't include the given file as a related file to itself
   getFileMetaData(targetFilePath: string): FileMetaData | undefined {
     const targetFileType = this.getFileType(targetFilePath);
     if (!targetFileType) {
@@ -53,23 +75,17 @@ export default class CoLocator {
       );
       return; // file is not part of any group
     }
+    const keyPath = targetFileType.getKeyPath(targetFilePath);
 
-    const relatedFileGroups = this.fileTypeGroups.map((fileGroup) => {
-      return (
-        fileGroup
-          // eslint-disable-next-line array-callback-return
-          .map((fileType) => {
-            if (fileType === targetFileType) {
-              return;
-            }
-            const keyPath = targetFileType.getKeyPath(targetFilePath);
-            if (keyPath) {
-              return fileType.getRelatedFile(keyPath);
-            }
-          })
-          .filter(isNotNullOrUndefined)
-      );
-    });
+    let relatedFileGroups: RelatedFileData[][] = [];
+    if (keyPath) {
+      relatedFileGroups = this.fileTypeGroups.map((fileGroup) => {
+        return fileGroup
+          .filter((fileType) => fileType !== targetFileType) // prevent a file from being related to itself
+          .map((fileType) => fileType.getRelatedFile(keyPath))
+          .filter(isTruthy);
+      });
+    }
 
     return {
       fileType: targetFileType,
@@ -77,30 +93,19 @@ export default class CoLocator {
     };
   }
 
-  getRelatedFilesQuickPickItems(currentFilePath: string): RelatedFileData[][] {
-    const fileMeta = this.getFileMetaData(currentFilePath);
-    if (!fileMeta || !fileMeta.relatedFileGroups?.length) {
-      return []; // file has no known related files
-    }
-
-    return fileMeta.relatedFileGroups.map((relatedFileGroup) => {
-      // dont include the current file as a related file
-      return relatedFileGroup.filter((relatedFile) => relatedFile.fullPath !== currentFilePath);
-    });
+  getRelatedFiles(filePath: string): string[] {
+    return (
+      this.getFileMetaData(filePath)
+        ?.relatedFileGroups.flat()
+        .map(({ fullPath }) => fullPath) || []
+    );
   }
 
   getRelatedFileMarkers(filePath: string) {
-    const fileMeta = this.getFileMetaData(filePath);
-    if (!fileMeta || !fileMeta.relatedFileGroups?.length) {
-      return; // file has no known related files
-    }
-
-    const relatedFileMarkers = fileMeta.relatedFileGroups
-      .flat()
+    return this.getFileMetaData(filePath)
+      ?.relatedFileGroups.flat()
       .map(({ marker }) => marker)
       .join("")
       .trim();
-
-    return relatedFileMarkers;
   }
 }
