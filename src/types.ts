@@ -2,7 +2,7 @@ import type FileType from "./classes/FileType";
 
 export type FileMetaData = {
   fileType: FileType;
-  relatedFileGroups: RelatedFileData[][];
+  relatedFiles: RelatedFileData[];
 };
 
 export type RelatedFileData = {

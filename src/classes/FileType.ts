@@ -3,28 +3,34 @@ import type { KeyPath, RelatedFileData } from "../types";
 import type { FileTypeConfig } from "../utils/config";
 
 export default class FileType {
-  private regex: RegExp;
+  private readonly regex: RegExp;
 
-  private keyPathToFullPathMap: Map<string, string> = new Map();
+  private readonly onlyLinkToTypeNamesSet?: Set<string>;
+
+  private readonly keyPathToFullPathMap: Map<string, string> = new Map();
 
   /**
+   * Regex can be expensive to run repeatedly depending on how complex the pattern is, so cache the result
+   *
    * @remark cache not cleared on reset as it doesn't affect behaviour
    */
-  private testCache: Map<string, boolean> = new Map();
+  // todo investigate if this is actually worth it
+  private readonly regexMatchCache: Map<string, boolean> = new Map();
 
   /**
    * @key full file name
    *
    * @remark cache not cleared on reset as it doesn't affect behaviour
    */
-  private keyPathCache: Map<string, KeyPath> = new Map();
+  private readonly keyPathCache: Map<string, KeyPath> = new Map();
 
   constructor(public readonly config: FileTypeConfig) {
     this.regex = new RegExp(config.regex);
+    this.onlyLinkToTypeNamesSet = config.onlyLinkTo ? new Set(config.onlyLinkTo) : undefined;
   }
 
   matches(filePath: string): boolean {
-    const cachedResult = this.testCache.get(filePath);
+    const cachedResult = this.regexMatchCache.get(filePath);
     if (typeof cachedResult === "boolean") {
       console.log("FileType#matches using cache", {
         name: this.config.name,
@@ -34,8 +40,7 @@ export default class FileType {
       return cachedResult;
     }
     const isMatch = this.regex.test(filePath);
-    this.testCache.set(filePath, isMatch);
-    console.log("FileType#matches", { name: this.config.name, filePath, isMatch });
+    this.regexMatchCache.set(filePath, isMatch);
     return isMatch;
   }
 
@@ -69,8 +74,11 @@ export default class FileType {
     });
   }
 
-  reset() {
-    this.keyPathToFullPathMap.clear();
+  canRelateTo(otherFileType: FileType): unknown {
+    if (!this.onlyLinkToTypeNamesSet) {
+      return true; // defaults to all file types can link to all other file types
+    }
+    return this.onlyLinkToTypeNamesSet.has(otherFileType.config.name);
   }
 
   public getKeyPath(filePath: string): KeyPath | undefined {
@@ -91,5 +99,9 @@ export default class FileType {
     }
     console.log("FileType#getKeyPath", { name: this.config.name, filePath, keyPath });
     return keyPath;
+  }
+
+  reset() {
+    this.keyPathToFullPathMap.clear();
   }
 }

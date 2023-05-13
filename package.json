@@ -41,77 +41,51 @@
       "type": "object",
       "title": "Co-Locate",
       "properties": {
-        "coLocate.fileGroups": {
-          "description": "Defines the patterns of how to group files",
+        "coLocate.fileTypes": {
+          "description": "Defines the file types in a project that will be evaluated for co-location linking",
+          "title": "Co-Location Pattern Group",
           "scope": "window",
           "type": "array",
-          "maxItems": 1,
+          "minItems": 2,
           "default": [
             {
-              "name": "Default",
-              "types": [
-                {
-                  "name": "Source",
-                  "marker": "💻",
-                  "regex": "\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"
-                },
-                {
-                  "name": "Test",
-                  "marker": "$(test-view-icon)",
-                  "regex": "\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"
-                }
-              ]
+              "name": "Source",
+              "marker": "🧾",
+              "regex": "\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"
+            },
+            {
+              "name": "Test",
+              "marker": "🧪",
+              "regex": "\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"
             }
           ],
           "items": {
+            "description": "A pattern to match files to be co-located, for a match to occur the file paths must match exactly from the text after the given prefix until before the given suffix.\n\nIf no prefix or suffix is given then the path start or end will need to match exactly.",
             "type": "object",
+            "default": {},
             "properties": {
-              "required": [
-                "types"
-              ],
               "name": {
-                "description": "Defines a group of files to co-locate.\n\nDefaults to the group index if falsy",
+                "description": "A name for the type of file matched by the pattern, used in the UI",
                 "type": "string",
                 "default": ""
               },
-              "types": {
-                "title": "Co-Location Pattern Group",
-                "description": "Defines the patterns of related files that will be evaluated for co-location. The patterns items extract a common portion of the path that will be used to link to related pattern item files",
-                "type": "array",
-                "default": [],
-                "minItems": 2,
-                "items": {
-                  "description": "A pattern to match files to be co-located, for a match to occur the file paths must match exactly from the text after the given prefix until before the given suffix.\n\nIf no prefix or suffix is given then the path start or end will need to match exactly.",
-                  "type": "object",
-                  "default": {},
-                  "properties": {
-                    "name": {
-                      "description": "A name for the type of file matched by the pattern, used in the UI",
-                      "type": "string",
-                      "default": ""
-                    },
-                    "marker": {
-                      "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
-                      "type": "string",
-                      "default": "",
-                      "maxLength": 1
-                    },
-                    "regex": {
-                      "description": "A regex that should match relevant files and capture (as the first regex group) the part of the path that will be constant for sibling pattern group items",
-                      "type": "string",
-                      "default": ""
-                    }
-                  },
-                  "required": [
-                    "name",
-                    "marker",
-                    "regex"
-                  ],
-                  "additionalProperties": false
-                },
-                "additionalProperties": false
+              "marker": {
+                "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
+                "type": "string",
+                "default": "",
+                "maxLength": 1
+              },
+              "regex": {
+                "markdownDescription": "A regex that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the key path).\n\nThe key path capture group can either be:\n1. the first unnamed group\n2. a group named 'key' (for example `\\\\/(test|tests)\\\\/(?<key>.*)\\\\.test\\\\.ts$`).\n\n**NOTE** This should only match 1 related file type, if multiple can be matched then they should be defined as separate types",
+                "type": "string",
+                "default": ""
               }
             },
+            "required": [
+              "name",
+              "marker",
+              "regex"
+            ],
             "additionalProperties": false
           },
           "additionalProperties": false
@@ -121,13 +95,13 @@
           "scope": "window",
           "type": "array",
           "default": [
-            "\\/node_modules\\/",
-            "\\/\\.git\\/"
+            "\\/node_modules\\/"
           ],
           "items": {
             "type": "string",
             "default": ""
-          }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -143,7 +117,7 @@
     "watch": "tsc -watch -p ./",
     "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",
     "pretest": "npm run compile",
-    "test": "echo 'Testing...' && vitest run --coverage",
+    "test": "echo 'Testing...' && vitest run --coverage -- ",
     "pretest:changed": "npm run compile",
     "test:changed": "echo 'Testing...' && vitest run --coverage --changed HEAD~1"
   },

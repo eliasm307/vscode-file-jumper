@@ -4,6 +4,7 @@
 // full api reference: https://code.visualstudio.com/api/references/vscode-api
 // sorting of context menu items: https://code.visualstudio.com/api/references/contribution-points#Sorting-of-groups
 // see built in commands: https://code.visualstudio.com/api/references/commands
+// can use built in icons in some cases: https://code.visualstudio.com/api/references/icons-in-labels
 
 // todo
 // - detect and handle configuration changes
@@ -11,7 +12,8 @@
 // - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
 
 import * as vscode from "vscode";
-import { findReasonMainConfigIsInvalid, getMainConfig } from "./utils/config";
+import type { MainConfig } from "./utils/config";
+import { getMainConfig } from "./utils/config";
 import CoLocator from "./classes/CoLocator";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { getShortPath, openFile } from "./utils/vscode";
@@ -19,10 +21,13 @@ import { getShortPath, openFile } from "./utils/vscode";
 export async function activate(context: vscode.ExtensionContext) {
   console.log("extension activating...");
 
-  const mainConfig = getMainConfig();
-  const reasonConfigIsInvalid = findReasonMainConfigIsInvalid(mainConfig);
-  if (reasonConfigIsInvalid) {
-    return vscode.window.showErrorMessage(`Invalid configuration: ${reasonConfigIsInvalid}`);
+  let mainConfig: MainConfig;
+  try {
+    // I dont think its worth adding a JSON schema validator package for this, we can just catch the error and show it to the user
+    mainConfig = getMainConfig();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return vscode.window.showErrorMessage(`Configuration issue: ${message}`);
   }
 
   console.log("extension loaded with patternGroupsConfig:", mainConfig);
@@ -72,15 +77,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration((e) => {
       // todo handle configuration change
       console.warn("onDidChangeConfiguration", e);
-      coLocator.setConfig(getMainConfig());
+      coLocator.updateConfig(getMainConfig());
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
   );
 
   console.log("extension activated");
 }
-
-type QuickPickItem = vscode.QuickPickItem & { filePath?: string };
 
 function registerNavigateCommand(coLocator: CoLocator) {
   // command is conditionally triggered based on context:
@@ -89,27 +92,14 @@ function registerNavigateCommand(coLocator: CoLocator) {
     "coLocate.navigateCommand",
     async (uri: vscode.Uri) => {
       const shortPath = getShortPath(uri);
-      const groupedRelatedFiles = coLocator.getFileMetaData(uri.path)?.relatedFileGroups || [];
+      const relatedFiles = coLocator.getFileMetaData(uri.path)?.relatedFiles || [];
 
-      const lastGroupIndex = groupedRelatedFiles.length - 1;
-      const quickPickItems = groupedRelatedFiles.flatMap((group, i) => {
-        const quickPickGroupItems = group.map((relatedFile): QuickPickItem => {
-          return {
-            label: `${relatedFile.marker} ${relatedFile.typeName}`,
-            detail: getShortPath(relatedFile.fullPath),
-            filePath: relatedFile.fullPath,
-          };
-        });
-
-        const isLastGroup = i === lastGroupIndex;
-        if (!isLastGroup) {
-          quickPickGroupItems.push({
-            kind: vscode.QuickPickItemKind.Separator,
-            label: "──────────────────────────────────",
-          });
-        }
-
-        return quickPickGroupItems;
+      const quickPickItems = relatedFiles.map((relatedFile) => {
+        return {
+          label: `${relatedFile.marker} ${relatedFile.typeName}`,
+          detail: getShortPath(relatedFile.fullPath),
+          filePath: relatedFile.fullPath,
+        } satisfies vscode.QuickPickItem & { filePath: string };
       });
 
       // todo check what this looks like
