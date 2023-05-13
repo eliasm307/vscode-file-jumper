@@ -7,10 +7,15 @@ export default class FileType {
 
   private keyPathToFullPathMap: Map<string, string> = new Map();
 
+  /**
+   * @remark cache not cleared on reset as it doesn't affect behaviour
+   */
   private testCache: Map<string, boolean> = new Map();
 
   /**
    * @key full file name
+   *
+   * @remark cache not cleared on reset as it doesn't affect behaviour
    */
   private keyPathCache: Map<string, KeyPath> = new Map();
 
@@ -66,8 +71,6 @@ export default class FileType {
 
   reset() {
     this.keyPathToFullPathMap.clear();
-    this.testCache.clear();
-    this.keyPathCache.clear();
   }
 
   public getKeyPath(filePath: string): KeyPath | undefined {

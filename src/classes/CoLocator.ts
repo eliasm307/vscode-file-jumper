@@ -4,21 +4,14 @@ import type { FileMetaData, RelatedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
 
 export default class CoLocator {
-  addFiles(arg0: string[]) {
-    throw new Error("Method not implemented.");
-  }
-
-  removeFiles(arg0: string[]) {
-    throw new Error("Method not implemented.");
-  }
-
-  setConfig(arg0: MainConfig) {
-    throw new Error("Method not implemented.");
-  }
-
   private fileTypeGroups: FileType[][] = [];
 
   private ignoreRegexs: RegExp[] = [];
+
+  /**
+   * @remark cache not cleared on reset as it doesn't affect behaviour
+   */
+  private filePathToFileTypeCache: Map<string, FileType> = new Map();
 
   constructor(config: MainConfig) {
     this.fileTypeGroups = config.fileGroups.map((fileGroupConfig) => {
@@ -28,14 +21,6 @@ export default class CoLocator {
     });
 
     this.ignoreRegexs = config.ignoreRegexs.map((pattern) => new RegExp(pattern));
-  }
-
-  reset() {
-    this.fileTypeGroups.forEach((fileGroup) => {
-      fileGroup.forEach((fileType) => {
-        fileType.reset();
-      });
-    });
   }
 
   initWorkspaceFiles(filePaths: string[]): void {
@@ -55,10 +40,15 @@ export default class CoLocator {
     });
   }
 
-  getFileType(filePath: string): FileType | undefined {
+  getFileTypes(filePath: string): FileType | undefined {
+    const cachedFileType = this.filePathToFileTypeCache.get(filePath);
+    if (cachedFileType) {
+      return cachedFileType;
+    }
     for (const fileTypeGroup of this.fileTypeGroups) {
       for (const fileType of fileTypeGroup) {
         if (fileType.matches(filePath)) {
+          this.filePathToFileTypeCache.set(filePath, fileType);
           return fileType;
         }
       }
@@ -67,7 +57,7 @@ export default class CoLocator {
 
   // todo test it doesn't include the given file as a related file to itself
   getFileMetaData(targetFilePath: string): FileMetaData | undefined {
-    const targetFileType = this.getFileType(targetFilePath);
+    const targetFileType = this.getFileTypes(targetFilePath);
     if (!targetFileType) {
       console.warn(
         "CoLocator#getFileMetaData",
@@ -107,5 +97,25 @@ export default class CoLocator {
       .map(({ marker }) => marker)
       .join("")
       .trim();
+  }
+
+  reset() {
+    this.fileTypeGroups.forEach((fileGroup) => {
+      fileGroup.forEach((fileType) => {
+        fileType.reset();
+      });
+    });
+  }
+
+  addFiles(arg0: string[]) {
+    throw new Error("Method not implemented.");
+  }
+
+  removeFiles(arg0: string[]) {
+    throw new Error("Method not implemented.");
+  }
+
+  setConfig(arg0: MainConfig) {
+    throw new Error("Method not implemented.");
   }
 }
