@@ -42,17 +42,13 @@ describe("CoLocator", () => {
     it("returns the correct file type", () => {
       coLocator = createDefaultTestCoLocator();
       const sourceFileType = coLocator.getFileType("/src/classes/CoLocator.ts");
-      assert.strictEqual(sourceFileType?.config.name, "Source", "Source file type should be found");
+      assert.strictEqual(sourceFileType?.name, "Source", "Source file type should be found");
 
       const testFileType = coLocator.getFileType("/test/classes/CoLocator.test.ts");
-      assert.strictEqual(testFileType?.config.name, "Test", "Test file type should be found");
+      assert.strictEqual(testFileType?.name, "Test", "Test file type should be found");
 
       const docsFileType = coLocator.getFileType("/docs/classes/CoLocator.md");
-      assert.strictEqual(
-        docsFileType?.config.name,
-        "Documentation",
-        "Docs file type should be found",
-      );
+      assert.strictEqual(docsFileType?.name, "Documentation", "Docs file type should be found");
     });
 
     it("should return undefined if the file type is not found", () => {
@@ -63,13 +59,16 @@ describe("CoLocator", () => {
     });
   });
 
-  describe("#getFileMetaData", () => {
+  describe("meta data functionality", () => {
     beforeEach(() => {
       coLocator = createDefaultTestCoLocator();
-      coLocator.initWorkspaceFiles([
+      coLocator.registerFiles([
+        // ignored files
         "/root/node_modules/package/src/classes/Entity.ts",
         "/root/node_modules/package/test/classes/Entity.test.ts",
         "/root/node_modules/package/docs/classes/Entity.md",
+
+        // non-ignored files
         "/root/src/classes/Entity.ts",
         "/root/test/classes/Entity.test.ts",
         "/root/test/classes/Entity2.test.ts",
@@ -82,7 +81,7 @@ describe("CoLocator", () => {
     it("returns the correct file meta data with all related files", () => {
       const sourceFileMetaData = coLocator.getFileMetaData("/root/src/classes/Entity.ts");
       assert.strictEqual(
-        sourceFileMetaData?.fileType.config.name,
+        sourceFileMetaData?.fileType.name,
         "Source",
         "Source file type should be found",
       );
@@ -100,43 +99,69 @@ describe("CoLocator", () => {
       ]);
     });
 
-    it("returns correct file meta data with no related files", () => {
-      const testFileMetaData = coLocator.getFileMetaData("/root/test/classes/Entity2.test.ts");
+    it("returns the correct file meta data with all related files, using helpers", () => {
+      const filePath = "/root/src/classes/Entity.ts";
       assert.strictEqual(
-        testFileMetaData?.fileType.config.name,
-        "Test",
-        "Test file type should be found",
+        coLocator.getFileType(filePath)?.name,
+        "Source",
+        "Source file type should be found",
       );
-      assert.deepStrictEqual(
-        testFileMetaData?.relatedFiles,
-        [],
-        "No related files should be found",
+      assert.deepStrictEqual(coLocator.getRelatedFiles(filePath), [
+        {
+          typeName: "Test",
+          marker: "🧪",
+          fullPath: "/root/test/classes/Entity.test.ts",
+        },
+        {
+          typeName: "Documentation",
+          marker: "📖",
+          fullPath: "/root/docs/classes/Entity.md",
+        },
+      ]);
+      assert.strictEqual(
+        coLocator.getRelatedFileMarkers(filePath),
+        "💻",
+        "correct related file markers found",
+      );
+    });
+
+    it("returns correct file meta data with no related files", () => {
+      const filePath = "/root/test/classes/Entity2.test.ts";
+      const fileMetaData = coLocator.getFileMetaData(filePath);
+      assert.strictEqual(fileMetaData?.fileType.name, "Test", "Test file type should be found");
+      assert.deepStrictEqual(fileMetaData?.relatedFiles, [], "No related files should be found");
+      assert.strictEqual(
+        coLocator.getRelatedFileMarkers(filePath),
+        "",
+        "no file markers when no related files found",
       );
     });
 
     it("returns correct file meta data when file is not related to all other possible types", () => {
-      const sourceFileMetaData = coLocator.getFileMetaData("/root/docs/classes/Entity.md");
-      assert.strictEqual(
-        sourceFileMetaData?.fileType.config.name,
-        "Documentation",
-        "correct file type found",
+      const filePath = "/root/docs/classes/Entity.md";
+      const fileMetaData = coLocator.getFileMetaData("/root/docs/classes/Entity.md");
+      assert.strictEqual(fileMetaData?.fileType.name, "Documentation", "correct file type found");
+      assert.deepStrictEqual(
+        fileMetaData?.relatedFiles,
+        [
+          {
+            typeName: "Source",
+            marker: "💻",
+            fullPath: "/root/src/classes/Entity.ts",
+          },
+        ],
+        "correct related files found",
       );
-      assert.deepStrictEqual(sourceFileMetaData?.relatedFiles, [
-        {
-          typeName: "Source",
-          marker: "💻",
-          fullPath: "/root/src/classes/Entity.ts",
-        },
-      ]);
+      assert.strictEqual(
+        coLocator.getRelatedFileMarkers(filePath),
+        "💻",
+        "correct related file markers found with partial relationship",
+      );
     });
 
     it("allows files to link to other files that dont link back to them", () => {
       const testFileMetaData = coLocator.getFileMetaData("/root/test/classes/Entity.test.ts");
-      assert.strictEqual(
-        testFileMetaData?.fileType.config.name,
-        "Test",
-        "Test file type should be found",
-      );
+      assert.strictEqual(testFileMetaData?.fileType.name, "Test", "Test file type should be found");
       assert.deepStrictEqual(testFileMetaData?.relatedFiles, [
         {
           typeName: "Source",
@@ -158,22 +183,37 @@ describe("CoLocator", () => {
       assert.isUndefined(ignoredFileMetaData, "Ignored file should not be found");
     });
 
-    it("should return undefined if the file is not found", () => {
-      assert.fail("not implemented");
-    });
-
-    it("should return undefined if the file type is not found", () => {
-      assert.fail("not implemented");
-    });
-
-    it("should return undefined if the file type is not registered", () => {
-      assert.fail("not implemented");
+    it("should return undefined if the file doesn't exist/isn't registered", () => {
+      const unknownFileMetaData = coLocator.getFileMetaData("/root/unknown/file/path.ts");
+      assert.isUndefined(unknownFileMetaData, "Unknown file should not be found");
     });
   });
 
   describe("#reset", () => {
     it("should reset all file types", () => {
-      assert.fail("not implemented");
+      coLocator = createDefaultTestCoLocator();
+      coLocator.registerFiles([
+        "/root/src/classes/Entity.ts",
+        "/root/test/classes/Entity.test.ts",
+        "/root/test/classes/Entity2.test.ts",
+        "/root/docs/classes/Entity.md",
+        "/root/unknown/file/path.ts",
+        "/root/src/unknown/file/path.ts",
+      ]);
+
+      const sourceFilePath = "/root/src/classes/Entity.ts";
+
+      assert.isTrue(
+        coLocator.getRelatedFiles(sourceFilePath).length > 0,
+        "Files related to Source file should be found",
+      );
+
+      coLocator.reset();
+
+      assert.isTrue(
+        coLocator.getRelatedFiles(sourceFilePath).length === 0,
+        "Files related to Source file should not be found after reset",
+      );
     });
   });
 });

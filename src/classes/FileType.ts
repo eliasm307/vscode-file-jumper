@@ -3,6 +3,8 @@ import type { KeyPath, RelatedFileData } from "../types";
 import type { FileTypeConfig } from "../utils/config";
 
 export default class FileType {
+  public readonly name: string;
+
   private readonly regex: RegExp;
 
   private readonly onlyLinkToTypeNamesSet?: Set<string>;
@@ -18,22 +20,23 @@ export default class FileType {
   private readonly regexMatchCache: Map<string, boolean> = new Map();
 
   /**
-   * @key full file name
+   * @key full file path
    *
    * @remark cache not cleared on reset as it doesn't affect behaviour
    */
-  private readonly keyPathCache: Map<string, KeyPath> = new Map();
+  private readonly fullPathToKeyPathCache: Map<string, KeyPath> = new Map();
 
-  constructor(public readonly config: FileTypeConfig) {
+  constructor(private readonly config: FileTypeConfig) {
     this.regex = new RegExp(config.regex);
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo ? new Set(config.onlyLinkTo) : undefined;
+    this.name = config.name;
   }
 
   matches(filePath: string): boolean {
     const cachedResult = this.regexMatchCache.get(filePath);
     if (typeof cachedResult === "boolean") {
       console.log("FileType#matches using cache", {
-        name: this.config.name,
+        name: this.name,
         filePath,
         cachedResult,
       });
@@ -48,13 +51,13 @@ export default class FileType {
     const fullPath = this.keyPathToFullPathMap.get(keyPath);
     if (!fullPath) {
       console.warn("FileType#getRelatedFile", `No file found for keyPath: ${keyPath}`, {
-        name: this.config.name,
+        name: this.name,
       });
       return;
     }
 
     const relatedFile = {
-      typeName: this.config.name,
+      typeName: this.name,
       marker: this.config.marker,
       fullPath,
     };
@@ -66,7 +69,7 @@ export default class FileType {
       const keyPath = this.getKeyPath(fullPath);
       if (keyPath) {
         console.log("FileType#registerPaths registering", fullPath, {
-          name: this.config.name,
+          name: this.name,
           keyPath,
         });
         this.keyPathToFullPathMap.set(keyPath, fullPath);
@@ -78,14 +81,14 @@ export default class FileType {
     if (!this.onlyLinkToTypeNamesSet) {
       return true; // defaults to all file types can link to all other file types
     }
-    return this.onlyLinkToTypeNamesSet.has(otherFileType.config.name);
+    return this.onlyLinkToTypeNamesSet.has(otherFileType.name);
   }
 
   public getKeyPath(filePath: string): KeyPath | undefined {
-    const cachedKeyPath = this.keyPathCache.get(filePath);
+    const cachedKeyPath = this.fullPathToKeyPathCache.get(filePath);
     if (cachedKeyPath) {
       console.log("FileType#getKeyPath using cache", {
-        name: this.config.name,
+        name: this.name,
         filePath,
         cachedKeyPath,
       });
@@ -95,9 +98,9 @@ export default class FileType {
     const regexMatch = filePath.match(this.regex);
     const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
     if (keyPath) {
-      this.keyPathCache.set(filePath, keyPath);
+      this.fullPathToKeyPathCache.set(filePath, keyPath);
     }
-    console.log("FileType#getKeyPath", { name: this.config.name, filePath, keyPath });
+    console.log("FileType#getKeyPath", { name: this.name, filePath, keyPath });
     return keyPath;
   }
 

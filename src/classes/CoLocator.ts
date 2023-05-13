@@ -23,16 +23,12 @@ export default class CoLocator {
     return this.ignoreRegexs.some((regex) => regex.test(filePath));
   }
 
-  initWorkspaceFiles(filePaths: string[]): void {
+  registerFiles(filePaths: string[]): void {
     // todo test it doesn't include ignored files
     filePaths = filePaths.filter((filePath) => !this.fileShouldBeIgnored(filePath));
-    if (!filePaths.length) {
-      return;
+    if (filePaths.length) {
+      this.fileTypes.forEach((fileType) => fileType.registerPaths(filePaths));
     }
-
-    this.fileTypes.forEach((fileType) => {
-      fileType.registerPaths(filePaths);
-    });
   }
 
   getFileType(filePath: string): FileType | undefined {
@@ -53,7 +49,6 @@ export default class CoLocator {
     }
   }
 
-  // todo test it doesn't include the given file as a related file to itself
   getFileMetaData(inputFilePath: string): FileMetaData | undefined {
     const inputFileType = this.getFileType(inputFilePath);
     if (!inputFileType) {
@@ -80,12 +75,8 @@ export default class CoLocator {
     };
   }
 
-  getRelatedFiles(filePath: string): string[] {
-    return (
-      this.getFileMetaData(filePath)
-        ?.relatedFiles.flat()
-        .map(({ fullPath }) => fullPath) || []
-    );
+  getRelatedFiles(filePath: string): RelatedFileData[] {
+    return this.getFileMetaData(filePath)?.relatedFiles || [];
   }
 
   getRelatedFileMarkers(filePath: string) {
