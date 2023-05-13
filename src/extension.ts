@@ -13,10 +13,10 @@
 
 import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
-import { getMainConfig } from "./utils/config";
+import { getIssuesWithMainConfig } from "./utils/config";
 import CoLocator from "./classes/CoLocator";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
-import { getShortPath, openFile } from "./utils/vscode";
+import { getMainConfig, getShortPath, openFile } from "./utils/vscode";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log("extension activating...");
@@ -30,7 +30,16 @@ export async function activate(context: vscode.ExtensionContext) {
     return vscode.window.showErrorMessage(`Configuration issue: ${message}`);
   }
 
-  console.log("extension loaded with patternGroupsConfig:", mainConfig);
+  // show any config issues to the user
+  const configIssues = getIssuesWithMainConfig(mainConfig);
+  for (const issue of configIssues) {
+    await vscode.window.showWarningMessage(`Configuration issue: ${issue}`);
+  }
+  if (configIssues.length) {
+    return;
+  }
+
+  console.log("extension loaded with valid config:", mainConfig);
 
   const coLocator = new CoLocator(mainConfig);
 

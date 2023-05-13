@@ -7,7 +7,7 @@ describe("FileType", () => {
     const fileType = new FileType({
       name: "test",
       marker: "🧪",
-      regex: "\\/test\\/(.*)\\.test\\.ts",
+      regex: ["\\/test\\/(.*)\\.test\\.ts"],
     });
     fileType.registerPaths([
       "/test/relatedFile0.test.ts",
@@ -83,10 +83,46 @@ describe("FileType", () => {
       const fileType = new FileType({
         name: "test",
         marker: "🧪",
-        regex: "\\/(test|src)\\/(?<key>.*)\\.test\\.ts",
+        regex: ["\\/(test|src)\\/(?<key>.*)\\.test\\.ts"],
       });
       assert.strictEqual(
         fileType.getKeyPath("/test/dir1/relatedFile1.test.ts"),
+        "dir1/relatedFile1",
+        "key path should be found",
+      );
+    });
+
+    it("supports multiple regex", () => {
+      const fileType = new FileType({
+        name: "test",
+        marker: "🧪",
+        regex: ["\\/test\\/(.*)\\.test\\.ts", "\\/test\\/(.*)\\.spec\\.ts"],
+      });
+      assert.strictEqual(
+        fileType.getKeyPath("/test/dir1/relatedFile1.test.ts"),
+        "dir1/relatedFile1",
+        "key path should be found",
+      );
+      assert.strictEqual(
+        fileType.getKeyPath("/test/dir1/relatedFile1.spec.ts"),
+        "dir1/relatedFile1",
+        "key path should be found",
+      );
+    });
+
+    it("supports multiple regex with named capture groups", () => {
+      const fileType = new FileType({
+        name: "test",
+        marker: "🧪",
+        regex: ["\\/(test|src)\\/(?<key>.*)\\.test\\.ts", "\\/(test|src)\\/(?<key>.*)\\.spec\\.ts"],
+      });
+      assert.strictEqual(
+        fileType.getKeyPath("/test/dir1/relatedFile1.test.ts"),
+        "dir1/relatedFile1",
+        "key path should be found",
+      );
+      assert.strictEqual(
+        fileType.getKeyPath("/test/dir1/relatedFile1.spec.ts"),
         "dir1/relatedFile1",
         "key path should be found",
       );
@@ -122,20 +158,20 @@ describe("FileType", () => {
     const srcFileType = new FileType({
       name: "src",
       marker: "📁",
-      regex: "\\/src\\/(.*)\\.ts",
+      regex: ["\\/src\\/(.*)\\.ts"],
     });
 
     const testFileType = new FileType({
       name: "test",
       marker: "🧪",
-      regex: "\\/test\\/(.*)\\.test\\.ts",
+      regex: ["\\/test\\/(.*)\\.test\\.ts"],
     });
 
     it("should relate to all file types if no onlyLinkTo is specified", () => {
       const fileTypeWithDefault = new FileType({
         name: "other",
         marker: "🧪",
-        regex: "other",
+        regex: ["other"],
       });
       assert.isTrue(fileTypeWithDefault.canRelateTo(srcFileType), "relates to src file type");
       assert.isTrue(fileTypeWithDefault.canRelateTo(testFileType), "relates to test file type");
@@ -145,7 +181,7 @@ describe("FileType", () => {
       const fileTypeOnlyLinkingToSrc = new FileType({
         name: "other",
         marker: "🧪",
-        regex: "other",
+        regex: ["other"],
         onlyLinkTo: ["src"],
       });
       assert.isTrue(fileTypeOnlyLinkingToSrc.canRelateTo(srcFileType), "relates to src file type");
@@ -153,6 +189,17 @@ describe("FileType", () => {
         fileTypeOnlyLinkingToSrc.canRelateTo(testFileType),
         "does not relate to test file type",
       );
+    });
+
+    it("does not relate to any file type if the onlyLinkTo constraint is an empty array", () => {
+      const fileType = new FileType({
+        name: "other",
+        marker: "🧪",
+        regex: ["other"],
+        onlyLinkTo: [],
+      });
+      assert.isFalse(fileType.canRelateTo(srcFileType), "does not relate to src file");
+      assert.isFalse(fileType.canRelateTo(testFileType), "does not relate to test file");
     });
   });
 });

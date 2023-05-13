@@ -10,17 +10,17 @@ describe("CoLocator", () => {
         {
           name: "Source",
           marker: "💻",
-          regex: "\\/src\\/(.*)\\.ts$",
+          regex: ["\\/src\\/(.*)\\.ts$"],
         },
         {
           name: "Test",
           marker: "🧪",
-          regex: "\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$",
+          regex: ["\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$"],
         },
         {
           name: "Documentation",
           marker: "📖",
-          regex: "\\/(docs|docs)\\/(?<key>.*)\\.md$",
+          regex: ["\\/(docs|docs)\\/(?<key>.*)\\.md$"],
           onlyLinkTo: ["Source"],
         },
       ],

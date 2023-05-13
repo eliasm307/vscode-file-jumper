@@ -5,7 +5,7 @@ import type { FileTypeConfig } from "../utils/config";
 export default class FileType {
   public readonly name: string;
 
-  private readonly regex: RegExp;
+  private readonly regexs: RegExp[];
 
   private readonly onlyLinkToTypeNamesSet?: Set<string>;
 
@@ -27,8 +27,8 @@ export default class FileType {
   private readonly fullPathToKeyPathCache: Map<string, KeyPath> = new Map();
 
   constructor(private readonly config: FileTypeConfig) {
-    this.regex = new RegExp(config.regex);
-    this.onlyLinkToTypeNamesSet = config.onlyLinkTo ? new Set(config.onlyLinkTo) : undefined;
+    this.regexs = config.regex.map((pattern) => new RegExp(pattern));
+    this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
     this.name = config.name;
   }
 
@@ -42,7 +42,7 @@ export default class FileType {
       });
       return cachedResult;
     }
-    const isMatch = this.regex.test(filePath);
+    const isMatch = this.regexs.some((regex) => regex.test(filePath));
     this.regexMatchCache.set(filePath, isMatch);
     return isMatch;
   }
@@ -95,13 +95,15 @@ export default class FileType {
       return cachedKeyPath;
     }
 
-    const regexMatch = filePath.match(this.regex);
-    const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
-    if (keyPath) {
-      this.fullPathToKeyPathCache.set(filePath, keyPath);
+    for (const regex of this.regexs) {
+      const regexMatch = filePath.match(regex);
+      const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
+      if (keyPath) {
+        console.log("FileType#getKeyPath", { name: this.name, filePath, keyPath });
+        this.fullPathToKeyPathCache.set(filePath, keyPath);
+        return keyPath;
+      }
     }
-    console.log("FileType#getKeyPath", { name: this.name, filePath, keyPath });
-    return keyPath;
   }
 
   reset() {

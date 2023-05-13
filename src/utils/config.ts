@@ -1,15 +1,13 @@
-import * as vscode from "vscode";
-
 export type FileTypeConfig = {
   name: string;
   marker: string;
-  regex: string;
+  regex: string[];
   /**
    * The names of other file types that this file type produces links to
    *
-   * @remark by default (when not defined), all file types can be linked to all other file types
+   * @remark By default (when not defined), all file types can be linked to all other file types
    *
-   * @remark setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it
+   * @remark Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it
    */
   onlyLinkTo?: string[];
 };
@@ -19,19 +17,24 @@ export type MainConfig = {
   ignoreRegexs: string[];
 };
 
-function getFileGroupConfigs() {
-  const config = vscode.workspace.getConfiguration("coLocate");
-  return config.get<FileTypeConfig[]>("fileTypes");
-}
+/** This focuses on issues the JSON schema cant catch */
+export function getIssuesWithMainConfig(mainConfig: MainConfig): string[] {
+  const issues: string[] = [];
 
-function getIgnoreRegexsConfig() {
-  const config = vscode.workspace.getConfiguration("coLocate");
-  return config.get<string[]>("ignoreRegexs");
-}
+  const usedFileTypeNamesSet = new Set<string>();
+  const duplicatedFileTypeNamesSet = new Set<string>();
+  mainConfig.fileTypes.forEach((fileTypeConfig) => {
+    const isUsed = usedFileTypeNamesSet.has(fileTypeConfig.name);
+    if (isUsed) {
+      duplicatedFileTypeNamesSet.add(fileTypeConfig.name);
+    }
+    usedFileTypeNamesSet.add(fileTypeConfig.name);
+  });
 
-export function getMainConfig(): MainConfig {
-  return {
-    fileTypes: getFileGroupConfigs() || [],
-    ignoreRegexs: getIgnoreRegexsConfig() || [],
-  };
+  if (duplicatedFileTypeNamesSet.size) {
+    const duplicatedFileTypeNames = Array.from(duplicatedFileTypeNamesSet).join(", ");
+    issues.push(`The following file type names are not unique: ${duplicatedFileTypeNames}`);
+  }
+
+  return issues;
 }
