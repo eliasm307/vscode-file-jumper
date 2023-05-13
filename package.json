@@ -1,10 +1,15 @@
 {
   "name": "co-locate",
-  "displayName": "co-locate",
-  "description": "",
+  "displayName": "Co-Locate",
+  "publisher": "ecm",
+  "description": "A VS Code extension to allow you to define relationships and navigate easily between related files in your project",
   "version": "0.6.0",
   "engines": {
     "vscode": "^1.78.0"
+  },
+  "vsce": {
+    "dependencies": true,
+    "yarn": false
   },
   "categories": [
     "Other"
@@ -13,6 +18,34 @@
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
+  "scripts": {
+    "vscode:package": "echo 'Packaging...' && vsce package",
+    "vscode:prepublish": "npm run lint && npm run test",
+    "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --pre-release",
+    "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --pre-release",
+    "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --pre-release",
+    "compile": "echo 'Compiling...' tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",
+    "pretest": "npm run compile",
+    "test": "echo 'Testing...' && vitest run --coverage -- ",
+    "pretest:changed": "npm run compile",
+    "test:changed": "echo 'Testing...' && vitest run --coverage --changed HEAD~1"
+  },
+  "devDependencies": {
+    "@eliasm307/config": "^0.18.0",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.78.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "@vitest/coverage-c8": "^0.31.0",
+    "@vscode/test-electron": "^2.3.0",
+    "@vscode/vsce": "^2.19.0",
+    "eslint": "^8.39.0",
+    "typescript": "^5.0.4",
+    "vitest": "^0.31.0",
+    "yarn": "^1.22.19"
+  },
   "contributes": {
     "commands": [
       {
@@ -121,38 +154,5 @@
       },
       "additionalProperties": false
     }
-  },
-  "scripts": {
-    "vscode:package": "echo 'Packaging...' && vsce package",
-    "vscode:prepublish": "npm run lint && npm run test",
-    "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --pre-release",
-    "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --pre-release",
-    "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --pre-release",
-    "compile": "echo 'Compiling...' tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",
-    "pretest": "npm run compile",
-    "test": "echo 'Testing...' && vitest run --coverage -- ",
-    "pretest:changed": "npm run compile",
-    "test:changed": "echo 'Testing...' && vitest run --coverage --changed HEAD~1"
-  },
-  "devDependencies": {
-    "@eliasm307/config": "^0.18.0",
-    "@types/node": "16.x",
-    "@types/vscode": "^1.78.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.1",
-    "@typescript-eslint/parser": "^5.59.1",
-    "@vitest/coverage-c8": "^0.31.0",
-    "@vscode/test-electron": "^2.3.0",
-    "@vscode/vsce": "^2.19.0",
-    "eslint": "^8.39.0",
-    "typescript": "^5.0.4",
-    "vitest": "^0.31.0",
-    "yarn": "^1.22.19"
-  },
-  "publisher": "ecm",
-  "vsce": {
-    "dependencies": true,
-    "yarn": false
   }
 }
