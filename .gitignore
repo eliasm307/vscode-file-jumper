@@ -12,3 +12,5 @@ coverage/
 *.js.map
 
 *.env
+
+*.tsbuildinfo

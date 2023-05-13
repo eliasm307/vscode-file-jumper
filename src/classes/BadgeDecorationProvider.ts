@@ -1,10 +1,7 @@
 import * as vscode from "vscode";
-import type { FileMetaData } from "../types";
-
-type FileMetaDataProvider = (filePath: string) => FileMetaData | undefined;
 
 export default class BadgeDecorationProvider implements vscode.FileDecorationProvider {
-  constructor(private readonly getFileMetaData: FileMetaDataProvider) {}
+  constructor(private readonly getRelatedFileMarkers: (filePath: string) => string | undefined) {}
 
   private onDidChangeFileDecorationsEmitter = new vscode.EventEmitter<
     vscode.Uri | vscode.Uri[] | undefined
@@ -22,22 +19,22 @@ export default class BadgeDecorationProvider implements vscode.FileDecorationPro
   }
 
   async createDecorationResult(uri: vscode.Uri): Promise<vscode.FileDecoration | undefined> {
+    const badgeText = await this.getBadgeText(uri);
+    return new vscode.FileDecoration(badgeText);
+  }
+
+  async getBadgeText(uri: vscode.Uri): Promise<string | undefined> {
     const filePath = uri.path;
-    const stat = await vscode.workspace.fs.stat(uri);
-    if (stat.type === vscode.FileType.Directory) {
+    try {
+      const stat = await vscode.workspace.fs.stat(uri);
+      if (stat.type === vscode.FileType.Directory) {
+        return; // not a file
+      }
+    } catch (error) {
+      console.warn("BadgeDecorationProvider#createDecorationResult", error);
       return; // not a file
     }
 
-    const fileMeta = this.getFileMetaData(filePath);
-    if (!fileMeta || !fileMeta.relatedFileGroups?.length) {
-      return; // file has no known related files
-    }
-
-    const relatedFileMarkers = fileMeta.relatedFileGroups
-      .flat()
-      .map(({ marker }) => marker)
-      .join("")
-      .trim();
-    return new vscode.FileDecoration(relatedFileMarkers);
+    return this.getRelatedFileMarkers(filePath);
   }
 }

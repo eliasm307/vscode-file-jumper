@@ -115,6 +115,19 @@
             "additionalProperties": false
           },
           "additionalProperties": false
+        },
+        "coLocate.ignoreRegexs": {
+          "description": "Defines the patterns of files to ignore",
+          "scope": "window",
+          "type": "array",
+          "default": [
+            "\\/node_modules\\/",
+            "\\/\\.git\\/"
+          ],
+          "items": {
+            "type": "string",
+            "default": ""
+          }
         }
       },
       "additionalProperties": false
