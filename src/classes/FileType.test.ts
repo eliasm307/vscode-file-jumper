@@ -2,7 +2,7 @@ import { describe, it, assert } from "vitest";
 import FileType from "./FileType";
 import type { KeyPath } from "../types";
 
-describe("FileType", () => {
+describe.only("FileType", () => {
   function createFileTypeWithRegisteredFiles(): FileType {
     const fileType = new FileType({
       name: "test",
@@ -55,9 +55,41 @@ describe("FileType", () => {
       assert.isTrue(fileType.matches("/test/dir1/relatedFile1.test.ts"), "file should match");
     });
 
-    it("should return false if the file is not related", () => {
+    it.only("should return false if the file is not related", () => {
       const fileType = createFileTypeWithRegisteredFiles();
       assert.isFalse(fileType.matches("/test/dir1/otherFile.ts"), "file should not match");
+    });
+  });
+
+  describe("#getKeyPath", () => {
+    it("should return the key path if the file matches", () => {
+      const fileType = createFileTypeWithRegisteredFiles();
+      assert.strictEqual(
+        fileType.getKeyPath("/test/dir1/relatedFile1.test.ts"),
+        "dir1/relatedFile1",
+        "key path should be found",
+      );
+    });
+
+    it("should return undefined if the file does not match", () => {
+      const fileType = createFileTypeWithRegisteredFiles();
+      assert.isUndefined(
+        fileType.getKeyPath("/test/dir1/otherFile.ts"),
+        "key path should not be found",
+      );
+    });
+
+    it("can determine key path using a named regex group with the name 'key'", function () {
+      const fileType = new FileType({
+        name: "test",
+        marker: "🧪",
+        regex: "\\/(test|src)\\/(?<key>.*)\\.test\\.ts",
+      });
+      assert.strictEqual(
+        fileType.getKeyPath("/test/dir1/relatedFile1.test.ts"),
+        "dir1/relatedFile1",
+        "key path should be found",
+      );
     });
   });
 

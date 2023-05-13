@@ -19,7 +19,7 @@ export default class FileType {
   }
 
   matches(filePath: string): boolean {
-    const cachedResult = !this.testCache.get(filePath);
+    const cachedResult = this.testCache.get(filePath);
     if (typeof cachedResult === "boolean") {
       console.log("FileType#matches using cache", {
         name: this.config.name,
@@ -48,7 +48,6 @@ export default class FileType {
       marker: this.config.marker,
       fullPath,
     };
-    console.log("FileType#getRelatedFile", { name: this.config.name, keyPath, relatedFile });
     return relatedFile;
   }
 
@@ -82,7 +81,8 @@ export default class FileType {
       return cachedKeyPath;
     }
 
-    const keyPath = filePath.match(this.regex)?.[1] as KeyPath | undefined;
+    const regexMatch = filePath.match(this.regex);
+    const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
     if (keyPath) {
       this.keyPathCache.set(filePath, keyPath);
     }
