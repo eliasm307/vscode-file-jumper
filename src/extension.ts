@@ -42,7 +42,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const allFilePaths = allFileUris.map((file) => file.path);
   console.log("allFilePaths", allFilePaths);
 
-  coLocator.initWorkspaceFiles(allFilePaths);
+  coLocator.registerFiles(allFilePaths);
 
   // todo listen for config changes to update file decorations
   // todo listen for file deletions/creations/renames to update file decorations
@@ -91,10 +91,7 @@ function registerNavigateCommand(coLocator: CoLocator) {
   const disposable = vscode.commands.registerCommand(
     "coLocate.navigateCommand",
     async (uri: vscode.Uri) => {
-      const shortPath = getShortPath(uri);
-      const relatedFiles = coLocator.getFileMetaData(uri.path)?.relatedFiles || [];
-
-      const quickPickItems = relatedFiles.map((relatedFile) => {
+      const quickPickItems = coLocator.getRelatedFiles(uri.path).map((relatedFile) => {
         return {
           label: `${relatedFile.marker} ${relatedFile.typeName}`,
           detail: getShortPath(relatedFile.fullPath),
@@ -105,7 +102,7 @@ function registerNavigateCommand(coLocator: CoLocator) {
       // todo check what this looks like
       // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
       const selectedItem = await vscode.window.showQuickPick(quickPickItems, {
-        title: `Navigate to file related to "${shortPath}"`,
+        title: `Navigate to file related to "${getShortPath(uri)}"`,
         placeHolder: "Select a related file",
         // match on any info
         matchOnDescription: true,
