@@ -11,5 +11,6 @@ module.exports = {
   rules: {
     ...ecmConfig.rules,
     "no-console": "warn",
+    "import/no-unresolved": ["error", { ignore: ["vscode"] }],
   },
 };
