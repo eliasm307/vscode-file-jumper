@@ -7,6 +7,7 @@
 // can use built in icons in some cases: https://code.visualstudio.com/api/references/icons-in-labels
 // inspecting context keys of items in the editor, e.g. explorer tree items: https://code.visualstudio.com/api/references/when-clause-contexts#inspect-context-keys-utility
 // integration testing: https://code.visualstudio.com/api/working-with-extensions/testing-extension
+// manage extensions at: https://marketplace.visualstudio.com/manage
 
 // todo
 // - detect and handle configuration changes
