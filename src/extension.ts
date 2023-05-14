@@ -21,7 +21,7 @@ import { mainConfigsAreEqual, getIssuesWithMainConfig } from "./utils/config";
 
 import CoLocator from "./classes/CoLocator";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
-import { createUri, getMainConfig, getShortPath, openFile } from "./utils/vscode";
+import { createUri, getMainConfig, getShortPath, openFileInNewTab } from "./utils/vscode";
 
 async function validateConfigAndShowAnyErrors(config: MainConfig): Promise<boolean> {
   const configIssues = getIssuesWithMainConfig(config);
@@ -160,7 +160,7 @@ function registerNavigateCommand(coLocator: CoLocator) {
         return; // the user canceled the selection
       }
 
-      await openFile(selectedItem.filePath);
+      await openFileInNewTab(selectedItem.filePath);
     },
   );
 

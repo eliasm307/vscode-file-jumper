@@ -1,11 +1,9 @@
 import * as vscode from "vscode";
 import type { MainConfig } from "./config";
 
-export async function openFile(filePath: string) {
-  await vscode.commands.executeCommand("vscode.open", createUri(filePath));
-
-  // can also try
-  // vscode.workspace.openTextDocument(uri)
+export async function openFileInNewTab(filePath: string) {
+  const doc = await vscode.workspace.openTextDocument(createUri(filePath));
+  await vscode.window.showTextDocument(doc, { preview: false });
 }
 
 export function getShortPath(pathOrUri: string | vscode.Uri) {
