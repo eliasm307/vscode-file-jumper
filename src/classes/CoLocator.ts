@@ -40,7 +40,7 @@ export default class CoLocator {
   }
 
   private notifyFileRelationshipsUpdated() {
-    this.options?.onFileRelationshipsUpdated(this.getFilePathsWithRelatedFiles());
+    this.options?.onFileRelationshipsUpdated();
   }
 
   getFileType(filePath: string): FileType | undefined {

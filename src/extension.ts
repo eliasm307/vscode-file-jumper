@@ -5,6 +5,8 @@
 // sorting of context menu items: https://code.visualstudio.com/api/references/contribution-points#Sorting-of-groups
 // see built in commands: https://code.visualstudio.com/api/references/commands
 // can use built in icons in some cases: https://code.visualstudio.com/api/references/icons-in-labels
+// inspecting context keys of items in the editor, e.g. explorer tree items: https://code.visualstudio.com/api/references/when-clause-contexts#inspect-context-keys-utility
+// integration testing: https://code.visualstudio.com/api/working-with-extensions/testing-extension
 
 // todo
 // - detect and handle configuration changes
@@ -16,7 +18,7 @@ import type { MainConfig } from "./utils/config";
 import { getIssuesWithMainConfig } from "./utils/config";
 import CoLocator from "./classes/CoLocator";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
-import { getMainConfig, getShortPath, openFile } from "./utils/vscode";
+import { createUri, getMainConfig, getShortPath, openFile } from "./utils/vscode";
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log("extension activating...");
@@ -41,7 +43,23 @@ export async function activate(context: vscode.ExtensionContext) {
 
   console.log("extension loaded with valid config:", mainConfig);
 
-  const coLocator = new CoLocator(mainConfig);
+  const coLocator = new CoLocator(mainConfig, {
+    onFileRelationshipsUpdated() {
+      const fsFilePathsWithRelationships = coLocator
+        .getFilePathsWithRelatedFiles()
+        .map((normalisedPath) => createUri(normalisedPath).fsPath);
+
+      console.log(
+        "onFileRelationshipsUpdated: fsFilePathsWithRelationships = ",
+        fsFilePathsWithRelationships,
+      );
+      void vscode.commands.executeCommand(
+        "setContext",
+        "coLocate.filePathsWithLinks",
+        fsFilePathsWithRelationships,
+      );
+    },
+  });
 
   const badgeDecorationProvider = new BadgeDecorationProvider({
     getRelatedFileMarkers: (filePath) => coLocator.getRelatedFileMarkers(filePath),
