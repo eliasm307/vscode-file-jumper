@@ -3,7 +3,7 @@
   "displayName": "Co-Locate",
   "publisher": "ecm",
   "description": "A VS Code extension to allow you to define relationships and navigate easily between related files in your project",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "engines": {
     "vscode": "^1.78.0"
   },
