@@ -1,7 +1,7 @@
 .vscode/**
 .vscode-test/**
 src/**
-test/**
+**/test/**
 .gitignore
 .yarnrc
 vsc-extension-quickstart.md
@@ -13,7 +13,11 @@ vsc-extension-quickstart.md
 **/*.test.ts
 **/*.env
 **/.env
+**/*.tsbuildinfo
+**/*.eslintcache
+**/*.eslintignore
 coverage/**
 .yarn/**
 .vitest/**
 vite.config.js
+README_TEMPLATE.md
