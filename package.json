@@ -53,7 +53,7 @@
     "commands": [
       {
         "command": "coLocate.navigateCommand",
-        "title": "Navigate to related..."
+        "title": "Open related..."
       }
     ],
     "menus": {
@@ -77,72 +77,62 @@
       "title": "Co-Locate",
       "properties": {
         "coLocate.fileTypes": {
-          "title": "File Types",
-          "description": "Defines the file types in a project that will be evaluated for co-location linking",
+          "markdownDescription": "Defines the file types in a project that will be evaluated for co-location linking.\n\n**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI",
           "scope": "window",
-          "type": "array",
-          "minItems": 2,
-          "default": [
-            {
-              "name": "Source",
-              "marker": "🧾",
-              "regex": [
+          "type": "object",
+          "minProperties": 2,
+          "default": {
+            "Source": {
+              "marker": "💻",
+              "regexs": [
                 "\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"
               ]
             },
-            {
-              "name": "Test",
+            "Test": {
               "marker": "🧪",
-              "regex": [
+              "regexs": [
                 "\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"
               ]
             }
-          ],
-          "items": {
-            "description": "A pattern to match files to be co-located, for a match to occur the file paths must match exactly from the text after the given prefix until before the given suffix.\n\nIf no prefix or suffix is given then the path start or end will need to match exactly.",
-            "type": "object",
-            "default": {},
-            "properties": {
-              "name": {
-                "markdownDescription": "A name for the type of file matched by the pattern, used in the UI\n\n**NOTE** This should be unique across all file types",
-                "type": "string",
-                "default": ""
-              },
-              "marker": {
-                "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
-                "type": "string",
-                "default": "",
-                "maxLength": 1
-              },
-              "regex": {
-                "markdownDescription": "A regex that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the key path).\n\nThe key path capture group can either be:\n1. the first unnamed group\n2. a group named 'key' (for example `\\\\/(test|tests)\\\\/(?<key>.*)\\\\.test\\\\.ts$`).\n\n**NOTE** This should only match 1 related file type, if multiple can be matched then they should be defined as separate types",
-                "type": "array",
-                "items": {
+          },
+          "patternProperties": {
+            ".+": {
+              "type": "object",
+              "properties": {
+                "marker": {
+                  "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
                   "type": "string",
-                  "minLength": 1
+                  "default": "",
+                  "maxLength": 1
                 },
-                "minItems": 1,
-                "default": []
-              },
-              "onlyLinkTo": {
-                "markdownDescription": "The names of other file types that this file type produces links to.\n\nBy default (ie when not defined), all file types can be linked to all other file types.\n\n**NOTE** Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it",
-                "type": "array",
-                "items": {
-                  "type": "string"
+                "regexs": {
+                  "markdownDescription": "RegEx pattern(s) that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the key path).\n\nThe key path capture group can either be:\n1. the first unnamed group\n2. a group named 'key' (for example `\\\\/(test|tests)\\\\/(?<key>.*)\\\\.test\\\\.ts$`).\n\n**NOTE** This should only match 1 related file type, if multiple can be matched then they should be defined as separate types",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 1,
+                  "default": []
+                },
+                "onlyLinkTo": {
+                  "markdownDescription": "(**OPTIONAL**) The names of other file types that this file type produces links to.\n\nBy default (ie when not defined), all file types can be linked to all other file types.\n\n**NOTE** Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
-              }
-            },
-            "required": [
-              "name",
-              "marker",
-              "regex"
-            ],
-            "additionalProperties": false
+              },
+              "required": [
+                "marker",
+                "regexs"
+              ]
+            }
           },
           "additionalProperties": false
         },
         "coLocate.ignoreRegexs": {
-          "description": "Defines the patterns of files to ignore when determining file links",
+          "description": "Defines the RegEx pattern(s) of files to ignore when determining file links",
           "scope": "window",
           "type": "array",
           "default": [

@@ -3,7 +3,7 @@
 export type FileTypeConfig = {
   name: string;
   marker: string;
-  regex: string[];
+  regexs: string[];
   /**
    * The names of other file types that this file type produces links to
    *
@@ -18,6 +18,35 @@ export type MainConfig = {
   fileTypes: FileTypeConfig[];
   ignoreRegexs: string[];
 };
+
+/**
+ * This is the raw config that is passed in from the user as an object so names are unique
+ * but an array is more convenient for the rest of the code
+ *
+ * @key file type name
+ */
+type RawFileTypesConfig = Record<string, Omit<FileTypeConfig, "name">>;
+
+export function formatRawFileTypesConfig(
+  rawConfig: RawFileTypesConfig | undefined,
+): FileTypeConfig[] {
+  if (!rawConfig) {
+    return [];
+  }
+  return Object.entries(rawConfig).map(([name, rawFileTypeConfig]) => {
+    return {
+      ...rawFileTypeConfig,
+      name, // name is not in the raw config, so we add it here
+    };
+  });
+}
+
+export function formatRawIgnoreRegexsConfig(rawConfig: string[] | undefined): string[] {
+  if (!rawConfig) {
+    return ["\\/node_modules\\/"]; // default ignore node_modules
+  }
+  return rawConfig;
+}
 
 export function mainConfigsAreEqual(a: MainConfig, b: MainConfig): boolean {
   return JSON.stringify(a) === JSON.stringify(b);

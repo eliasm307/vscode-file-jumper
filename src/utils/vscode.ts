@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import type { MainConfig } from "./config";
+import { formatRawIgnoreRegexsConfig, formatRawFileTypesConfig } from "./config";
 
 export async function openFileInNewTab(filePath: string) {
   const doc = await vscode.workspace.openTextDocument(createUri(filePath));
@@ -16,8 +17,9 @@ export function createUri(path: string) {
 
 export function getMainConfig(): MainConfig {
   const extensionConfig = vscode.workspace.getConfiguration("coLocate");
+
   return {
-    fileTypes: extensionConfig.get("fileTypes") || [],
-    ignoreRegexs: extensionConfig.get("ignoreRegexs") || ["\\/node_modules\\/"],
+    fileTypes: formatRawFileTypesConfig(extensionConfig.get("fileTypes")),
+    ignoreRegexs: formatRawIgnoreRegexsConfig(extensionConfig.get("ignoreRegexs")),
   };
 }

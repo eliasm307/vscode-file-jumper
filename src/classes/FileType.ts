@@ -28,7 +28,7 @@ export default class FileType {
   private readonly fullPathToKeyPathCache: Map<string, KeyPath | null> = new Map();
 
   constructor(private readonly config: FileTypeConfig) {
-    this.regexs = config.regex.map((pattern) => new RegExp(pattern));
+    this.regexs = config.regexs.map((pattern) => new RegExp(pattern));
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
     this.name = config.name;
   }

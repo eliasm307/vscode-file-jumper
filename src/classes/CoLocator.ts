@@ -1,8 +1,11 @@
 /* eslint-disable no-console */
 import FileType from "./FileType";
-import { isTruthy } from "../utils/predicates";
 import type { DecorationData, FileMetaData, RelatedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
+
+function isTruthy<T>(x: T | undefined | null | "" | 0 | false): x is T {
+  return !!x;
+}
 
 export default class CoLocator {
   private fileTypes: FileType[] = [];

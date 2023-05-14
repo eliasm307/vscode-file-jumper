@@ -147,8 +147,8 @@ function registerNavigateCommand(coLocator: CoLocator) {
 
       // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
       const selectedItem = await vscode.window.showQuickPick(quickPickItems, {
-        title: `Navigate to file related to "${getShortPath(uri)}"`,
-        placeHolder: "Select a related file",
+        title: `Open file related to "${getShortPath(uri)}"`,
+        placeHolder: "Type here to filter results",
         // match on any info
         matchOnDescription: true,
         matchOnDetail: true,
