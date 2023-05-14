@@ -1,3 +1,5 @@
+// todo test
+
 export type FileTypeConfig = {
   name: string;
   marker: string;
@@ -16,6 +18,10 @@ export type MainConfig = {
   fileTypes: FileTypeConfig[];
   ignoreRegexs: string[];
 };
+
+export function mainConfigsAreEqual(a: MainConfig, b: MainConfig): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
 
 /** This focuses on issues the JSON schema cant catch */
 export function getIssuesWithMainConfig(mainConfig: MainConfig): string[] {

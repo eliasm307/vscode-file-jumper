@@ -16,7 +16,8 @@
 
 import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
-import { getIssuesWithMainConfig } from "./utils/config";
+import { mainConfigsAreEqual, getIssuesWithMainConfig } from "./utils/config";
+
 import CoLocator from "./classes/CoLocator";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { createUri, getMainConfig, getShortPath, openFile } from "./utils/vscode";
@@ -108,10 +109,16 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
     vscode.workspace.onDidChangeConfiguration(async (e) => {
       const newMainConfig = getMainConfig();
-      // todo handle configuration change
-      console.warn("onDidChangeConfiguration", e, "newMainConfig", newMainConfig);
 
-      if (!(await validateConfigAndShowAnyErrors(mainConfig))) {
+      const configHasChanged = !mainConfigsAreEqual(mainConfig, newMainConfig);
+      // todo handle configuration change
+      console.warn("onDidChangeConfiguration", e, "newMainConfig", {
+        configHasChanged,
+        mainConfig,
+        newMainConfig,
+      });
+
+      if (!configHasChanged || !(await validateConfigAndShowAnyErrors(mainConfig))) {
         return;
       }
 
@@ -137,7 +144,6 @@ function registerNavigateCommand(coLocator: CoLocator) {
         } satisfies vscode.QuickPickItem & { filePath: string };
       });
 
-      // todo check what this looks like
       // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
       const selectedItem = await vscode.window.showQuickPick(quickPickItems, {
         title: `Navigate to file related to "${getShortPath(uri)}"`,

@@ -61,6 +61,13 @@
           "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in coLocate.filePathsWithLinks",
           "group": "navigation@1"
         }
+      ],
+      "editor/title/context": [
+        {
+          "command": "coLocate.navigateCommand",
+          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in coLocate.filePathsWithLinks",
+          "group": "1_close@1"
+        }
       ]
     },
     "configuration": {
