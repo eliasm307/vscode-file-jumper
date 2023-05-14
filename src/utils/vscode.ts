@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import type { MainConfig } from "./config";
-import { formatRawIgnoreRegexsConfig, formatRawFileTypesConfig } from "./config";
+import { formatRawIgnorePatternsConfig, formatRawFileTypesConfig } from "./config";
 
 export async function openFileInNewTab(filePath: string) {
   const doc = await vscode.workspace.openTextDocument(createUri(filePath));
@@ -20,6 +20,6 @@ export function getMainConfig(): MainConfig {
 
   return {
     fileTypes: formatRawFileTypesConfig(extensionConfig.get("fileTypes")),
-    ignoreRegexs: formatRawIgnoreRegexsConfig(extensionConfig.get("ignoreRegexs")),
+    ignorePatterns: formatRawIgnorePatternsConfig(extensionConfig.get("ignorePatterns")),
   };
 }

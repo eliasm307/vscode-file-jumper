@@ -10,7 +10,7 @@ function isTruthy<T>(x: T | undefined | null | "" | 0 | false): x is T {
 export default class CoLocator {
   private fileTypes: FileType[] = [];
 
-  private ignoreRegexs: RegExp[] = [];
+  private ignorePatterns: RegExp[] = [];
 
   private registeredFilePaths: string[] = [];
 
@@ -27,11 +27,11 @@ export default class CoLocator {
     },
   ) {
     this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
-    this.ignoreRegexs = config.ignoreRegexs.map((pattern) => new RegExp(pattern));
+    this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
   }
 
   fileShouldBeIgnored(filePath: string): boolean {
-    return this.ignoreRegexs.some((regex) => regex.test(filePath));
+    return this.ignorePatterns.some((regex) => regex.test(filePath));
   }
 
   registerFiles(filePaths: string[]): void {

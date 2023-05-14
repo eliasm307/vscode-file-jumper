@@ -7,7 +7,7 @@ describe("FileType", () => {
     const fileType = new FileType({
       name: "test",
       marker: "🧪",
-      regexs: ["\\/test\\/(.*)\\.test\\.ts"],
+      patterns: ["\\/test\\/(.*)\\.test\\.ts"],
     });
     fileType.registerPaths([
       "/test/relatedFile0.test.ts",
@@ -83,7 +83,7 @@ describe("FileType", () => {
       const fileType = new FileType({
         name: "test",
         marker: "🧪",
-        regexs: ["\\/(test|src)\\/(?<key>.*)\\.test\\.ts"],
+        patterns: ["\\/(test|src)\\/(?<key>.*)\\.test\\.ts"],
       });
       assert.strictEqual(
         fileType.getKeyPath("/test/dir1/relatedFile1.test.ts"),
@@ -96,7 +96,7 @@ describe("FileType", () => {
       const fileType = new FileType({
         name: "test",
         marker: "🧪",
-        regexs: ["\\/test\\/(.*)\\.test\\.ts", "\\/test\\/(.*)\\.spec\\.ts"],
+        patterns: ["\\/test\\/(.*)\\.test\\.ts", "\\/test\\/(.*)\\.spec\\.ts"],
       });
       assert.strictEqual(
         fileType.getKeyPath("/test/dir1/relatedFile1.test.ts"),
@@ -114,7 +114,7 @@ describe("FileType", () => {
       const fileType = new FileType({
         name: "test",
         marker: "🧪",
-        regexs: [
+        patterns: [
           "\\/(test|src)\\/(?<key>.*)\\.test\\.ts",
           "\\/(test|src)\\/(?<key>.*)\\.spec\\.ts",
         ],
@@ -161,20 +161,20 @@ describe("FileType", () => {
     const srcFileType = new FileType({
       name: "src",
       marker: "📁",
-      regexs: ["\\/src\\/(.*)\\.ts"],
+      patterns: ["\\/src\\/(.*)\\.ts"],
     });
 
     const testFileType = new FileType({
       name: "test",
       marker: "🧪",
-      regexs: ["\\/test\\/(.*)\\.test\\.ts"],
+      patterns: ["\\/test\\/(.*)\\.test\\.ts"],
     });
 
     it("should relate to all file types if no onlyLinkTo is specified", () => {
       const fileTypeWithDefault = new FileType({
         name: "other",
         marker: "🧪",
-        regexs: ["other"],
+        patterns: ["other"],
       });
       assert.isTrue(fileTypeWithDefault.canRelateTo(srcFileType), "relates to src file type");
       assert.isTrue(fileTypeWithDefault.canRelateTo(testFileType), "relates to test file type");
@@ -184,7 +184,7 @@ describe("FileType", () => {
       const fileTypeOnlyLinkingToSrc = new FileType({
         name: "other",
         marker: "🧪",
-        regexs: ["other"],
+        patterns: ["other"],
         onlyLinkTo: ["src"],
       });
       assert.isTrue(fileTypeOnlyLinkingToSrc.canRelateTo(srcFileType), "relates to src file type");
@@ -198,7 +198,7 @@ describe("FileType", () => {
       const fileType = new FileType({
         name: "other",
         marker: "🧪",
-        regexs: ["other"],
+        patterns: ["other"],
         onlyLinkTo: [],
       });
       assert.isFalse(fileType.canRelateTo(srcFileType), "does not relate to src file");

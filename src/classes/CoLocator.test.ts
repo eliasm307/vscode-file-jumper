@@ -10,21 +10,21 @@ describe("CoLocator", () => {
         {
           name: "Source",
           marker: "💻",
-          regexs: ["\\/src\\/(.*)\\.ts$"],
+          patterns: ["\\/src\\/(.*)\\.ts$"],
         },
         {
           name: "Test",
           marker: "🧪",
-          regexs: ["\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$"],
+          patterns: ["\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$"],
         },
         {
           name: "Documentation",
           marker: "📖",
-          regexs: ["\\/(docs|docs)\\/(?<key>.*)\\.md$"],
+          patterns: ["\\/(docs|docs)\\/(?<key>.*)\\.md$"],
           onlyLinkTo: ["Source"],
         },
       ],
-      ignoreRegexs: ["\\/node_modules\\/"],
+      ignorePatterns: ["\\/node_modules\\/"],
     });
   }
 

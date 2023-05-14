@@ -3,7 +3,7 @@
 export type FileTypeConfig = {
   name: string;
   marker: string;
-  regexs: string[];
+  patterns: string[];
   /**
    * The names of other file types that this file type produces links to
    *
@@ -16,7 +16,7 @@ export type FileTypeConfig = {
 
 export type MainConfig = {
   fileTypes: FileTypeConfig[];
-  ignoreRegexs: string[];
+  ignorePatterns: string[];
 };
 
 /**
@@ -41,7 +41,7 @@ export function formatRawFileTypesConfig(
   });
 }
 
-export function formatRawIgnoreRegexsConfig(rawConfig: string[] | undefined): string[] {
+export function formatRawIgnorePatternsConfig(rawConfig: string[] | undefined): string[] {
   if (!rawConfig) {
     return ["\\/node_modules\\/"]; // default ignore node_modules
   }

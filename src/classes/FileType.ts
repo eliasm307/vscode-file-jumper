@@ -5,7 +5,7 @@ import type { FileTypeConfig } from "../utils/config";
 export default class FileType {
   public readonly name: string;
 
-  private readonly regexs: RegExp[];
+  private readonly patterns: RegExp[];
 
   private readonly onlyLinkToTypeNamesSet?: Set<string>;
 
@@ -28,7 +28,7 @@ export default class FileType {
   private readonly fullPathToKeyPathCache: Map<string, KeyPath | null> = new Map();
 
   constructor(private readonly config: FileTypeConfig) {
-    this.regexs = config.regexs.map((pattern) => new RegExp(pattern));
+    this.patterns = config.patterns.map((pattern) => new RegExp(pattern));
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
     this.name = config.name;
   }
@@ -43,7 +43,7 @@ export default class FileType {
       });
       return cachedResult;
     }
-    const isMatch = this.regexs.some((regex) => regex.test(filePath));
+    const isMatch = this.patterns.some((regex) => regex.test(filePath));
     this.regexTestCache.set(filePath, isMatch);
     return isMatch;
   }
@@ -81,7 +81,7 @@ export default class FileType {
       return cachedKeyPath;
     }
 
-    for (const regex of this.regexs) {
+    for (const regex of this.patterns) {
       const regexMatch = filePath.match(regex);
       const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
       if (keyPath) {
