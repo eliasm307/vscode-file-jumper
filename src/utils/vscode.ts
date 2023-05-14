@@ -20,6 +20,6 @@ export function getMainConfig(): MainConfig {
   const extensionConfig = vscode.workspace.getConfiguration("coLocate");
   return {
     fileTypes: extensionConfig.get("fileTypes") || [],
-    ignoreRegexs: extensionConfig.get("ignoreRegexs") || [],
+    ignoreRegexs: extensionConfig.get("ignoreRegexs") || ["\\/node_modules\\/"],
   };
 }

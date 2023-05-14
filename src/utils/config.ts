@@ -21,6 +21,10 @@ export type MainConfig = {
 export function getIssuesWithMainConfig(mainConfig: MainConfig): string[] {
   const issues: string[] = [];
 
+  if (mainConfig.fileTypes.length < 2) {
+    issues.push("There must be at least 2 file types defined");
+  }
+
   const usedFileTypeNamesSet = new Set<string>();
   const duplicatedFileTypeNamesSet = new Set<string>();
   mainConfig.fileTypes.forEach((fileTypeConfig) => {

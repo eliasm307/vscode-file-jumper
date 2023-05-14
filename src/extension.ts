@@ -12,6 +12,7 @@
 // - detect and handle configuration changes
 // - make context menu only show on files with known related files
 // - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
+// - add context menu for tab item
 
 import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
@@ -19,6 +20,15 @@ import { getIssuesWithMainConfig } from "./utils/config";
 import CoLocator from "./classes/CoLocator";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { createUri, getMainConfig, getShortPath, openFile } from "./utils/vscode";
+
+async function validateConfigAndShowAnyErrors(config: MainConfig): Promise<boolean> {
+  const configIssues = getIssuesWithMainConfig(config);
+  if (configIssues.length) {
+    await vscode.window.showErrorMessage(`Configuration issue: ${configIssues[0]}`);
+  }
+
+  return configIssues.length === 0;
+}
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log("extension activating...");
@@ -32,12 +42,7 @@ export async function activate(context: vscode.ExtensionContext) {
     return vscode.window.showErrorMessage(`Configuration issue: ${message}`);
   }
 
-  // show any config issues to the user
-  const configIssues = getIssuesWithMainConfig(mainConfig);
-  for (const issue of configIssues) {
-    await vscode.window.showWarningMessage(`Configuration issue: ${issue}`);
-  }
-  if (configIssues.length) {
+  if (!(await validateConfigAndShowAnyErrors(mainConfig))) {
     return;
   }
 
@@ -101,10 +106,16 @@ export async function activate(context: vscode.ExtensionContext) {
       console.warn("onDidChangeWorkspaceFolders", e);
       // ? could use this to handle workspace folder change?
     }),
-    vscode.workspace.onDidChangeConfiguration((e) => {
+    vscode.workspace.onDidChangeConfiguration(async (e) => {
+      const newMainConfig = getMainConfig();
       // todo handle configuration change
-      console.warn("onDidChangeConfiguration", e);
-      coLocator.updateConfig(getMainConfig());
+      console.warn("onDidChangeConfiguration", e, "newMainConfig", newMainConfig);
+
+      if (!(await validateConfigAndShowAnyErrors(mainConfig))) {
+        return;
+      }
+
+      coLocator.updateConfig(newMainConfig);
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
   );
