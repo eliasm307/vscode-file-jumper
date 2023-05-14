@@ -24,6 +24,7 @@
     "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --pre-release",
     "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --pre-release",
     "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --pre-release",
+    "vscode:login": "vsce login ecm",
     "compile": "echo 'Compiling...' tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",

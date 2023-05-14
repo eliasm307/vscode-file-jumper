@@ -10,7 +10,7 @@ export default defineConfig({
       truncateThreshold: 0,
     },
     cache: {
-      dir: ".vitest/cache",
+      dir: "node_modules/.cache/.vitest",
     },
     sequence: { shuffle: true },
     typecheck: {
