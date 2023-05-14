@@ -211,4 +211,36 @@ describe("CoLocator", () => {
       );
     });
   });
+
+  describe("#getFilePathsWithRelatedFiles", () => {
+    it("should return all files that have related files", () => {
+      coLocator = createDefaultTestCoLocator();
+      coLocator.registerFiles([
+        // ignored files
+        "/root/node_modules/package/src/classes/Entity.ts",
+        "/root/node_modules/package/test/classes/Entity.test.ts",
+        "/root/node_modules/package/docs/classes/Entity.md",
+
+        // non-ignored files
+        "/root/src/classes/Entity.ts",
+        "/root/src/classes/EntityNoLinks2.ts",
+        "/root/test/classes/Entity.test.ts",
+        "/root/test/classes/EntityNoLinks1.test.ts",
+        "/root/docs/classes/Entity.md",
+        "/root/docs/classes/EntityNoLinks3.md",
+        "/root/unknown/file/path.ts",
+        "/root/src/unknown/file/path.ts",
+      ]);
+
+      assert.deepStrictEqual(
+        coLocator.getFilePathsWithRelatedFiles(),
+        [
+          "/root/src/classes/Entity.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/docs/classes/Entity.md",
+        ],
+        "correct files found",
+      );
+    });
+  });
 });

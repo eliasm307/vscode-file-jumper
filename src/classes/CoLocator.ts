@@ -8,13 +8,20 @@ export default class CoLocator {
 
   private ignoreRegexs: RegExp[] = [];
 
+  private registeredFilePaths: string[] = [];
+
   /**
    * @remark cache not cleared on reset as it doesn't affect behaviour
    */
   // todo investigate if this is actually worth it
   private filePathToFileTypeCache: Map<string, FileType> = new Map();
 
-  constructor(config: MainConfig) {
+  constructor(
+    config: MainConfig,
+    private readonly options?: {
+      onFileRelationshipsUpdated: () => void;
+    },
+  ) {
     this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
     this.ignoreRegexs = config.ignoreRegexs.map((pattern) => new RegExp(pattern));
   }
@@ -24,11 +31,16 @@ export default class CoLocator {
   }
 
   registerFiles(filePaths: string[]): void {
-    // todo test it doesn't include ignored files
-    filePaths = filePaths.filter((filePath) => !this.fileShouldBeIgnored(filePath));
-    if (filePaths.length) {
-      this.fileTypes.forEach((fileType) => fileType.registerPaths(filePaths));
+    this.registeredFilePaths = filePaths.filter((filePath) => !this.fileShouldBeIgnored(filePath));
+    if (this.registeredFilePaths.length) {
+      this.fileTypes.forEach((fileType) => fileType.registerPaths(this.registeredFilePaths));
     }
+
+    this.notifyFileRelationshipsUpdated();
+  }
+
+  private notifyFileRelationshipsUpdated() {
+    this.options?.onFileRelationshipsUpdated(this.getFilePathsWithRelatedFiles());
   }
 
   getFileType(filePath: string): FileType | undefined {
@@ -87,22 +99,30 @@ export default class CoLocator {
       .trim();
   }
 
+  getFilePathsWithRelatedFiles(): string[] {
+    return this.registeredFilePaths.filter((filePath) => this.getRelatedFiles(filePath).length);
+  }
+
   reset() {
     this.fileTypes.forEach((fileType) => fileType.reset());
+    this.registeredFilePaths = [];
   }
 
   addFiles(arg0: string[]) {
     console.warn("CoLocator#addFiles", arg0);
+    this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
 
   removeFiles(arg0: string[]) {
     console.warn("CoLocator#removeFiles", arg0);
+    this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
 
   updateConfig(arg0: MainConfig) {
     console.warn("CoLocator#updateConfig", arg0);
+    this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
 }
