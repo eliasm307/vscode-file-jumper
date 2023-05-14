@@ -13,6 +13,7 @@
 // - make context menu only show on files with known related files
 // - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
 // - add context menu for tab item
+// - use object for file types config instead of array, to prevent duplicates
 
 import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
