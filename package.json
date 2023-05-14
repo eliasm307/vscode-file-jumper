@@ -84,13 +84,13 @@
           "default": {
             "Source": {
               "marker": "💻",
-              "regexs": [
+              "patterns": [
                 "\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"
               ]
             },
             "Test": {
               "marker": "🧪",
-              "regexs": [
+              "patterns": [
                 "\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"
               ]
             }
@@ -105,34 +105,36 @@
                   "default": "",
                   "maxLength": 1
                 },
-                "regexs": {
-                  "markdownDescription": "RegEx pattern(s) that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the key path).\n\nThe key path capture group can either be:\n1. the first unnamed group\n2. a group named 'key' (for example `\\\\/(test|tests)\\\\/(?<key>.*)\\\\.test\\\\.ts$`).\n\n**NOTES**\n1. This should only match 1 related file type, if multiple can be matched then they should be defined as separate types.\n2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders",
+                "patterns": {
+                  "markdownDescription": "RegEx patterns that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the key path).\n\nThe key path capture group can either be:\n1. the first unnamed group\n2. a group named 'key' (for example `\\\\/(test|tests)\\\\/(?<key>.*)\\\\.test\\\\.ts$`).\n\n**NOTES**\n1. This should only match 1 related file type, if multiple can be matched then they should be defined as separate types.\n2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders",
                   "type": "array",
                   "items": {
                     "type": "string",
                     "minLength": 1
                   },
                   "minItems": 1,
-                  "default": []
+                  "default": [],
+                  "uniqueItems": true
                 },
                 "onlyLinkTo": {
                   "markdownDescription": "(**OPTIONAL**) The names of other file types that this file type produces links to.\n\nBy default (ie when not defined), all file types can be linked to all other file types.\n\n**NOTE** Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it",
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "uniqueItems": true
                 }
               },
               "required": [
                 "marker",
-                "regexs"
+                "patterns"
               ]
             }
           },
           "additionalProperties": false
         },
-        "coLocate.ignoreRegexs": {
-          "description": "Defines the RegEx pattern(s) of files to ignore when determining file links",
+        "coLocate.ignorePatterns": {
+          "description": "Defines the RegEx patterns of files to ignore when determining file links",
           "scope": "window",
           "type": "array",
           "default": [
