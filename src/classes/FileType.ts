@@ -75,13 +75,10 @@ export default class FileType {
     return this.onlyLinkToTypeNamesSet.has(otherFileType.name);
   }
 
-  public getKeyPath(filePath: string): KeyPath | undefined {
+  public getKeyPath(filePath: string): KeyPath | null | undefined {
     const cachedKeyPath = this.fullPathToKeyPathCache.get(filePath);
-    if (cachedKeyPath) {
+    if (typeof cachedKeyPath !== "undefined") {
       return cachedKeyPath;
-    }
-    if (cachedKeyPath === null) {
-      return; // no keypath found previously
     }
 
     for (const regex of this.regexs) {

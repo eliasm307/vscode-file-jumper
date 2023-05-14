@@ -46,7 +46,6 @@ export default class CoLocator {
 
   getFileType(filePath: string): FileType | undefined {
     if (this.fileShouldBeIgnored(filePath)) {
-      console.warn("CoLocator#getFileType", `File "${filePath}" is ignored`);
       return;
     }
 
@@ -65,10 +64,6 @@ export default class CoLocator {
   getFileMetaData(inputFilePath: string): FileMetaData | undefined {
     const inputFileType = this.getFileType(inputFilePath);
     if (!inputFileType) {
-      console.warn(
-        "CoLocator#getFileMetaData",
-        `File "${inputFilePath}" does not match any known file types or is ignored`,
-      );
       return; // file is not of a known type
     }
     const keyPath = inputFileType.getKeyPath(inputFilePath);
