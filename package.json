@@ -106,7 +106,7 @@
                   "maxLength": 1
                 },
                 "regexs": {
-                  "markdownDescription": "RegEx pattern(s) that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the key path).\n\nThe key path capture group can either be:\n1. the first unnamed group\n2. a group named 'key' (for example `\\\\/(test|tests)\\\\/(?<key>.*)\\\\.test\\\\.ts$`).\n\n**NOTE** This should only match 1 related file type, if multiple can be matched then they should be defined as separate types",
+                  "markdownDescription": "RegEx pattern(s) that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the key path).\n\nThe key path capture group can either be:\n1. the first unnamed group\n2. a group named 'key' (for example `\\\\/(test|tests)\\\\/(?<key>.*)\\\\.test\\\\.ts$`).\n\n**NOTES**\n1. This should only match 1 related file type, if multiple can be matched then they should be defined as separate types.\n2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders",
                   "type": "array",
                   "items": {
                     "type": "string",
