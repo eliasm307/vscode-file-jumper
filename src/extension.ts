@@ -67,7 +67,7 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   const badgeDecorationProvider = new BadgeDecorationProvider({
-    getRelatedFileMarkers: (filePath) => coLocator.getRelatedFileMarkers(filePath),
+    getDecorationData: (filePath) => coLocator.getDecorationData(filePath),
   });
 
   const allFileUris = await vscode.workspace.findFiles("**/*");

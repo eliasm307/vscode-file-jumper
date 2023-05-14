@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 import FileType from "./FileType";
 import { isTruthy } from "../utils/predicates";
-import type { FileMetaData, RelatedFileData } from "../types";
+import type { DecorationData, FileMetaData, RelatedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
 
 export default class CoLocator {
@@ -91,20 +92,41 @@ export default class CoLocator {
     return this.getFileMetaData(filePath)?.relatedFiles || [];
   }
 
-  getRelatedFileMarkers(filePath: string) {
-    return this.getFileMetaData(filePath)
-      ?.relatedFiles.flat()
-      .map(({ marker }) => marker)
-      .join("")
-      .trim();
-  }
-
   getFilePathsWithRelatedFiles(): string[] {
     return this.registeredFilePaths.filter((filePath) => this.getRelatedFiles(filePath).length);
   }
 
+  getDecorationData(filePath: string): DecorationData | undefined {
+    const timerKey = `getDecorationData:${filePath}`;
+    console.time(timerKey);
+
+    try {
+      const relatedFiles = this.getRelatedFiles(filePath);
+      if (!relatedFiles?.length) {
+        return;
+      }
+
+      const relatedFileTypes = relatedFiles.map((file) => file.typeName).join(" + ");
+      const relatedFileMarkers = relatedFiles.map((file) => file.marker).join("");
+      return {
+        badgeText: relatedFileMarkers,
+        tooltip: `Links: ${relatedFileTypes}`,
+      };
+    } finally {
+      console.timeEnd(timerKey);
+    }
+  }
+
+  /** This resets the instance with the expectation that it will be re-used */
   reset() {
     this.fileTypes.forEach((fileType) => fileType.reset());
+    this.registeredFilePaths = [];
+  }
+
+  /** This disposes of the instance with the expectation that it will not be re-used */
+  dispose() {
+    this.fileTypes.forEach((fileType) => fileType.dispose());
+    this.filePathToFileTypeCache.clear();
     this.registeredFilePaths = [];
   }
 

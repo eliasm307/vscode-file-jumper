@@ -1,9 +1,11 @@
+/* eslint-disable no-console */
 import * as vscode from "vscode";
+import type { DecorationData } from "../types";
 
 export default class BadgeDecorationProvider implements vscode.FileDecorationProvider {
   constructor(
     private readonly config: {
-      getRelatedFileMarkers: (filePath: string) => string | undefined;
+      getDecorationData: (filePath: string) => DecorationData | undefined;
     },
   ) {}
 
@@ -19,31 +21,13 @@ export default class BadgeDecorationProvider implements vscode.FileDecorationPro
   }
 
   provideFileDecoration(uri: vscode.Uri): vscode.ProviderResult<vscode.FileDecoration> {
-    return this.createDecorationResult(uri);
-  }
-
-  async createDecorationResult(uri: vscode.Uri): Promise<vscode.FileDecoration | undefined> {
-    const badgeText = await this.getBadgeText(uri);
-    return new vscode.FileDecoration(badgeText);
-  }
-
-  async getBadgeText(uri: vscode.Uri): Promise<string | undefined> {
-    if (await this.isFileUri(uri)) {
-      return this.config.getRelatedFileMarkers(uri.path);
-    }
-  }
-
-  async isFileUri(uri: vscode.Uri): Promise<boolean> {
     if (uri.scheme !== "file") {
-      return false;
+      return;
     }
+    // NOTE: it could be a folder but doing fs.stat to confirm is expensive, so allow this to return no related files
+    const data = this.config.getDecorationData(uri.path);
 
-    try {
-      const stat = await vscode.workspace.fs.stat(uri);
-      return stat.type === vscode.FileType.File; // could be a folder
-    } catch (error) {
-      console.warn("BadgeDecorationProvider#isFile", error);
-      return false;
-    }
+    console.log("provideFileDecoration", uri.path, data);
+    return new vscode.FileDecoration(data?.badgeText, data?.tooltip);
   }
 }

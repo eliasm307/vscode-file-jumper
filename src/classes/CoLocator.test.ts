@@ -29,7 +29,7 @@ describe("CoLocator", () => {
   }
 
   afterEach(() => {
-    coLocator?.reset();
+    coLocator?.dispose();
   });
 
   describe("#getFileType", () => {
@@ -92,9 +92,12 @@ describe("CoLocator", () => {
           fullPath: "/root/docs/classes/Entity.md",
         },
       ]);
-      assert.strictEqual(
-        coLocator.getRelatedFileMarkers(filePath),
-        "🧪📖",
+      assert.deepStrictEqual(
+        coLocator.getDecorationData(filePath),
+        {
+          badgeText: "🧪📖",
+          tooltip: "Links: Test + Documentation",
+        },
         "correct related file markers found",
       );
     });
@@ -125,16 +128,15 @@ describe("CoLocator", () => {
       const fileMetaData = coLocator.getFileMetaData(filePath);
       assert.strictEqual(fileMetaData?.fileType.name, "Test", "Test file type should be found");
       assert.deepStrictEqual(fileMetaData?.relatedFiles, [], "No related files should be found");
-      assert.strictEqual(
-        coLocator.getRelatedFileMarkers(filePath),
-        "",
-        "no file markers when no related files found",
+      assert.isUndefined(
+        coLocator.getDecorationData(filePath),
+        "no decoration data when no related files found",
       );
     });
 
     it("returns correct file meta data when file is not related to all other possible types", () => {
       const filePath = "/root/docs/classes/Entity.md";
-      const fileMetaData = coLocator.getFileMetaData("/root/docs/classes/Entity.md");
+      const fileMetaData = coLocator.getFileMetaData(filePath);
       assert.strictEqual(fileMetaData?.fileType.name, "Documentation", "correct file type found");
       assert.deepStrictEqual(
         fileMetaData?.relatedFiles,
@@ -147,9 +149,12 @@ describe("CoLocator", () => {
         ],
         "correct related files found",
       );
-      assert.strictEqual(
-        coLocator.getRelatedFileMarkers(filePath),
-        "💻",
+      assert.deepStrictEqual(
+        coLocator.getDecorationData(filePath),
+        {
+          badgeText: "💻",
+          tooltip: "Links: Source",
+        },
         "correct related file markers found with partial relationship",
       );
     });

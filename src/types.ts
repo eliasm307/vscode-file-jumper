@@ -12,3 +12,5 @@ export type RelatedFileData = {
 };
 
 export type KeyPath = string & { __brand: "keyPath" };
+
+export type DecorationData = { badgeText: string; tooltip: string };
