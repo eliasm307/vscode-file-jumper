@@ -1,6 +1,5 @@
 import type * as vscode from "vscode";
 
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable no-console */
 export const EXTENSION_KEY = "[co-locate]";
 
