@@ -3,6 +3,7 @@ import FileType from "./FileType";
 import type { DecorationData, FileMetaData, RelatedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
 import { mainConfigsAreEqual } from "../utils/config";
+import Logger from "./Logger";
 
 function isTruthy<T>(x: T | undefined | null | "" | 0 | false): x is T {
   return !!x;
@@ -36,13 +37,12 @@ export default class LinkManager {
   }
 
   registerFiles(filePaths: string[]): void {
-    const timerKey = `LinkManager#registerFiles(${filePaths.length})`;
-    console.time(timerKey);
+    const endTimerAndLog = Logger.startTimer(`#registerFiles(${filePaths.length})`);
     this.registeredFilePaths = filePaths.filter((filePath) => !this.fileShouldBeIgnored(filePath));
     if (this.registeredFilePaths.length) {
       this.fileTypes.forEach((fileType) => fileType.registerPaths(this.registeredFilePaths));
     }
-    console.timeEnd(timerKey);
+    endTimerAndLog();
 
     this.notifyFileRelationshipsUpdated();
   }
@@ -69,8 +69,8 @@ export default class LinkManager {
   }
 
   getFileMetaData(inputFilePath: string): FileMetaData | undefined {
-    const timerKey = `getFileMetaData:${inputFilePath}`;
-    console.time(timerKey);
+    const timerKey = `#getFileMetaData:${inputFilePath}`;
+    const endTimerAndLog = Logger.startTimer(timerKey);
 
     const inputFileType = this.getFileType(inputFilePath);
     if (!inputFileType) {
@@ -87,12 +87,15 @@ export default class LinkManager {
         .filter(isTruthy);
     }
 
-    console.timeEnd(timerKey);
-
-    return {
+    const metaData: FileMetaData = {
       fileType: inputFileType,
       relatedFiles,
     };
+
+    endTimerAndLog();
+    Logger.log(timerKey, metaData);
+
+    return metaData;
   }
 
   getRelatedFiles(filePath: string): RelatedFileData[] {
@@ -105,7 +108,7 @@ export default class LinkManager {
 
   getDecorationData(filePath: string): DecorationData | undefined {
     const timerKey = `getDecorationData:${filePath}`;
-    console.time(timerKey);
+    const endTimerAndLog = Logger.startTimer(timerKey);
 
     try {
       const relatedFiles = this.getRelatedFiles(filePath);
@@ -119,8 +122,10 @@ export default class LinkManager {
         badgeText: relatedFileMarkers,
         tooltip: `Links: ${relatedFileTypes}`,
       };
+
+      // time
     } finally {
-      console.timeEnd(timerKey);
+      endTimerAndLog();
     }
   }
 
@@ -139,14 +144,14 @@ export default class LinkManager {
 
   addFiles(arg0: string[]) {
     // todo check if the changed files are a known type and might affect relationships before recalculating
-    console.warn("LinkManager#addFiles", arg0);
+    Logger.warn("LinkManager#addFiles", arg0);
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
 
   removeFiles(arg0: string[]) {
     // todo check if the changed files are a known type and might affect relationships before recalculating
-    console.warn("LinkManager#removeFiles", arg0);
+    Logger.warn("LinkManager#removeFiles", arg0);
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
@@ -156,7 +161,7 @@ export default class LinkManager {
   }
 
   updateConfig(newConfig: MainConfig) {
-    console.warn("LinkManager#updateConfig", newConfig);
+    Logger.warn("LinkManager#updateConfig", newConfig);
     const configHasChanged = !mainConfigsAreEqual(this.config, newConfig);
 
     if (!configHasChanged) {

@@ -1,5 +1,6 @@
 import type { KeyPath, RelatedFileData } from "../types";
 import type { FileTypeConfig } from "../utils/config";
+import Logger from "./Logger";
 
 export default class FileType {
   public readonly name: string;
@@ -57,6 +58,9 @@ export default class FileType {
     filePaths.forEach((fullPath) => {
       const keyPath = this.getKeyPath(fullPath);
       if (keyPath) {
+        Logger.log(
+          `Registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`,
+        );
         this.keyPathToFullPathMap.set(keyPath, fullPath);
       }
     });
@@ -79,11 +83,13 @@ export default class FileType {
       const regexMatch = filePath.match(regex);
       const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
       if (keyPath) {
+        Logger.log(`Found keypath "${keyPath}" for file type "${this.name}", from "${filePath}"`);
         this.fullPathToKeyPathCache.set(filePath, keyPath);
         return keyPath;
       }
     }
 
+    Logger.log(`No keypath found for file type "${this.name}", from "${filePath}"`);
     this.fullPathToKeyPathCache.set(filePath, null);
   }
 

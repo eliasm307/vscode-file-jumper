@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import type { DecorationData } from "../types";
+import Logger from "../classes/Logger";
 
 export default class BadgeDecorationProvider implements vscode.FileDecorationProvider {
   constructor(
@@ -15,7 +16,7 @@ export default class BadgeDecorationProvider implements vscode.FileDecorationPro
   onDidChangeFileDecorations = this.onDidChangeFileDecorationsEmitter.event;
 
   notifyFileDecorationsChanged(uri?: vscode.Uri | vscode.Uri[]): void {
-    console.warn("BadgeDecorationProvider#notifyFileDecorationsChanged", uri);
+    Logger.warn("BadgeDecorationProvider#notifyFileDecorationsChanged", uri);
     this.onDidChangeFileDecorationsEmitter.fire(uri);
   }
 

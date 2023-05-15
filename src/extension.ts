@@ -34,7 +34,7 @@ async function findAndShowIssuesWithConfig(config: MainConfig): Promise<boolean>
 }
 
 export async function activate(context: vscode.ExtensionContext) {
-  console.log("extension activating...");
+  Logger("extension activating...");
 
   let mainConfig: MainConfig;
   try {
@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  console.log("extension loaded with valid config:", mainConfig);
+  Logger("extension loaded with valid config:", mainConfig);
 
   const relationshipManager = new LinkManager(mainConfig, {
     onFileRelationshipsUpdated() {
@@ -57,7 +57,7 @@ export async function activate(context: vscode.ExtensionContext) {
         .getFilePathsWithRelatedFiles()
         .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-      console.log(
+      Logger(
         "onFileRelationshipsUpdated: fsFilePathsWithRelationships = ",
         fsFilePathsWithRelationships,
       );
@@ -75,7 +75,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const allFileUris = await vscode.workspace.findFiles("**/*");
   const allFilePaths = allFileUris.map((file) => file.path);
-  console.log("allFilePaths", allFilePaths);
+  Logger("allFilePaths", allFilePaths);
 
   relationshipManager.registerFiles(allFilePaths);
 
@@ -87,33 +87,33 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.window.registerFileDecorationProvider(badgeDecorationProvider),
     vscode.workspace.onDidRenameFiles((e) => {
       // todo handle file rename
-      console.warn("onDidRenameFiles", e);
+      Logger.warn("onDidRenameFiles", e);
       relationshipManager.removeFiles(e.files.map((file) => file.oldUri.path));
       relationshipManager.addFiles(e.files.map((file) => file.newUri.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidCreateFiles((e) => {
       // todo handle file create
-      console.warn("onDidCreateFiles", e);
+      Logger.warn("onDidCreateFiles", e);
       relationshipManager.addFiles(e.files.map((file) => file.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidDeleteFiles((e) => {
       // todo handle file delete
-      console.warn("onDidDeleteFiles", e);
+      Logger.warn("onDidDeleteFiles", e);
       relationshipManager.removeFiles(e.files.map((file) => file.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidChangeWorkspaceFolders((e) => {
       // todo handle workspace folder change
-      console.warn("onDidChangeWorkspaceFolders", e);
+      Logger.warn("onDidChangeWorkspaceFolders", e);
       // ? could use this to handle workspace folder change?
     }),
     vscode.workspace.onDidChangeConfiguration(async (e) => {
       const newMainConfig = getMainConfig();
 
       // todo handle configuration change
-      console.warn("onDidChangeConfiguration", "newMainConfig", e, {
+      Logger.warn("onDidChangeConfiguration", "newMainConfig", e, {
         currentConfig: relationshipManager.getConfig(),
         newMainConfig,
       });
@@ -127,7 +127,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  console.log("extension activated");
+  Logger("extension activated");
 }
 
 function registerNavigateCommand(linkManager: LinkManager) {
@@ -153,7 +153,7 @@ function registerNavigateCommand(linkManager: LinkManager) {
         matchOnDetail: true,
       });
 
-      console.log("Quick pick selection", selectedItem);
+      Logger("Quick pick selection", selectedItem);
 
       if (!selectedItem?.filePath) {
         return; // the user canceled the selection
