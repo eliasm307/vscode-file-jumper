@@ -83,13 +83,11 @@ export default class FileType {
       const regexMatch = filePath.match(regex);
       const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
       if (keyPath) {
-        Logger.log(`Found keypath "${keyPath}" for file type "${this.name}", from "${filePath}"`);
         this.fullPathToKeyPathCache.set(filePath, keyPath);
         return keyPath;
       }
     }
 
-    Logger.log(`No keypath found for file type "${this.name}", from "${filePath}"`);
     this.fullPathToKeyPathCache.set(filePath, null);
   }
 

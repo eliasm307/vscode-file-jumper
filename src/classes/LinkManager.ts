@@ -27,6 +27,7 @@ export default class LinkManager {
       onFileRelationshipsUpdated: () => void;
     },
   ) {
+    Logger.log("LinkManager#constructor", config);
     this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
     this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
   }
@@ -36,6 +37,7 @@ export default class LinkManager {
   }
 
   registerFiles(filePaths: string[]): void {
+    Logger.log("#registerFiles", filePaths);
     const endTimerAndLog = Logger.startTimer(`#registerFiles(${filePaths.length})`);
     this.registeredFilePaths = filePaths.filter((filePath) => !this.fileShouldBeIgnored(filePath));
     if (this.registeredFilePaths.length) {
@@ -68,9 +70,6 @@ export default class LinkManager {
   }
 
   getFileMetaData(inputFilePath: string): FileMetaData | undefined {
-    const timerKey = `#getFileMetaData:${inputFilePath}`;
-    const endTimerAndLog = Logger.startTimer(timerKey);
-
     const inputFileType = this.getFileType(inputFilePath);
     if (!inputFileType) {
       return; // file is not of a known type
@@ -91,9 +90,6 @@ export default class LinkManager {
       relatedFiles,
     };
 
-    endTimerAndLog();
-    Logger.log(timerKey, metaData);
-
     return metaData;
   }
 
@@ -106,21 +102,28 @@ export default class LinkManager {
   }
 
   getDecorationData(filePath: string): DecorationData | undefined {
-    const timerKey = `getDecorationData:${filePath}`;
-    const endTimerAndLog = Logger.startTimer(timerKey);
+    const runKey = `#getDecorationData: ${filePath}`;
+    const endTimerAndLog = Logger.startTimer(runKey);
 
     try {
-      const relatedFiles = this.getRelatedFiles(filePath);
+      const metaData = this.getFileMetaData(filePath);
+      Logger.log(runKey, "fileMetaData", metaData);
+
+      const relatedFiles = metaData?.relatedFiles;
       if (!relatedFiles?.length) {
         return;
       }
 
       const relatedFileTypes = relatedFiles.map((file) => file.typeName).join(" + ");
       const relatedFileMarkers = relatedFiles.map((file) => file.marker).join("");
-      return {
+      const output = {
         badgeText: relatedFileMarkers,
         tooltip: `Links: ${relatedFileTypes}`,
       };
+
+      Logger.log(runKey, "decorationData", output);
+
+      return output;
 
       // time
     } finally {
@@ -153,10 +156,6 @@ export default class LinkManager {
     Logger.warn("LinkManager#removeFiles", arg0);
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
-  }
-
-  getConfig(): Readonly<MainConfig> {
-    return structuredClone(this.config);
   }
 
   updateConfig(newConfig: MainConfig) {
