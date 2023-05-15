@@ -16,5 +16,8 @@ export default defineConfig({
     typecheck: {
       checker: "tsc",
     },
+    coverage: {
+      thresholdAutoUpdate: true,
+    },
   },
 });
