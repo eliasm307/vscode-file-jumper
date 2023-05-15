@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { KeyPath, RelatedFileData } from "../types";
 import type { FileTypeConfig } from "../utils/config";
 
