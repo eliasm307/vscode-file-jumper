@@ -7,7 +7,7 @@ function isTruthy<T>(x: T | undefined | null | "" | 0 | false): x is T {
   return !!x;
 }
 
-export default class CoLocator {
+export default class LinkManager {
   private fileTypes: FileType[] = [];
 
   private ignorePatterns: RegExp[] = [];
@@ -129,19 +129,19 @@ export default class CoLocator {
   }
 
   addFiles(arg0: string[]) {
-    console.warn("CoLocator#addFiles", arg0);
+    console.warn("LinkManager#addFiles", arg0);
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
 
   removeFiles(arg0: string[]) {
-    console.warn("CoLocator#removeFiles", arg0);
+    console.warn("LinkManager#removeFiles", arg0);
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
 
   updateConfig(arg0: MainConfig) {
-    console.warn("CoLocator#updateConfig", arg0);
+    console.warn("LinkManager#updateConfig", arg0);
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }

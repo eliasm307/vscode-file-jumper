@@ -1,11 +1,11 @@
 import { describe, it, assert, afterEach, beforeEach } from "vitest";
-import CoLocator from "./CoLocator";
+import LinkManager from "./LinkManager";
 
-describe("CoLocator", () => {
-  let coLocator: CoLocator;
+describe("LinkManager", () => {
+  let linkManager: LinkManager;
 
-  function createDefaultTestCoLocator() {
-    return new CoLocator({
+  function createDefaultTestInstance() {
+    return new LinkManager({
       fileTypes: [
         {
           name: "Source",
@@ -29,34 +29,34 @@ describe("CoLocator", () => {
   }
 
   afterEach(() => {
-    coLocator?.dispose();
+    linkManager?.dispose();
   });
 
   describe("#getFileType", () => {
     it("returns the correct file type", () => {
-      coLocator = createDefaultTestCoLocator();
-      const sourceFileType = coLocator.getFileType("/src/classes/CoLocator.ts");
+      linkManager = createDefaultTestInstance();
+      const sourceFileType = linkManager.getFileType("/src/classes/Entity.ts");
       assert.strictEqual(sourceFileType?.name, "Source", "Source file type should be found");
 
-      const testFileType = coLocator.getFileType("/test/classes/CoLocator.test.ts");
+      const testFileType = linkManager.getFileType("/test/classes/Entity.test.ts");
       assert.strictEqual(testFileType?.name, "Test", "Test file type should be found");
 
-      const docsFileType = coLocator.getFileType("/docs/classes/CoLocator.md");
+      const docsFileType = linkManager.getFileType("/docs/classes/Entity.md");
       assert.strictEqual(docsFileType?.name, "Documentation", "Docs file type should be found");
     });
 
     it("should return undefined if the file type is not found", () => {
-      coLocator = createDefaultTestCoLocator();
+      linkManager = createDefaultTestInstance();
 
-      const unknownFileType = coLocator.getFileType("/unknown/file/path.ts");
+      const unknownFileType = linkManager.getFileType("/unknown/file/path.ts");
       assert.isUndefined(unknownFileType, "Unknown file type should not be found");
     });
   });
 
   describe("meta data functionality", () => {
     beforeEach(() => {
-      coLocator = createDefaultTestCoLocator();
-      coLocator.registerFiles([
+      linkManager = createDefaultTestInstance();
+      linkManager.registerFiles([
         // ignored files
         "/root/node_modules/package/src/classes/Entity.ts",
         "/root/node_modules/package/test/classes/Entity.test.ts",
@@ -74,7 +74,7 @@ describe("CoLocator", () => {
 
     it("returns the correct file meta data with all related files", () => {
       const filePath = "/root/src/classes/Entity.ts";
-      const sourceFileMetaData = coLocator.getFileMetaData(filePath);
+      const sourceFileMetaData = linkManager.getFileMetaData(filePath);
       assert.strictEqual(
         sourceFileMetaData?.fileType.name,
         "Source",
@@ -93,7 +93,7 @@ describe("CoLocator", () => {
         },
       ]);
       assert.deepStrictEqual(
-        coLocator.getDecorationData(filePath),
+        linkManager.getDecorationData(filePath),
         {
           badgeText: "🧪📖",
           tooltip: "Links: Test + Documentation",
@@ -105,11 +105,11 @@ describe("CoLocator", () => {
     it("returns the correct file meta data with all related files, using helpers", () => {
       const filePath = "/root/src/classes/Entity.ts";
       assert.strictEqual(
-        coLocator.getFileType(filePath)?.name,
+        linkManager.getFileType(filePath)?.name,
         "Source",
         "Source file type should be found",
       );
-      assert.deepStrictEqual(coLocator.getRelatedFiles(filePath), [
+      assert.deepStrictEqual(linkManager.getRelatedFiles(filePath), [
         {
           typeName: "Test",
           marker: "🧪",
@@ -125,18 +125,18 @@ describe("CoLocator", () => {
 
     it("returns correct file meta data with no related files", () => {
       const filePath = "/root/test/classes/Entity2.test.ts";
-      const fileMetaData = coLocator.getFileMetaData(filePath);
+      const fileMetaData = linkManager.getFileMetaData(filePath);
       assert.strictEqual(fileMetaData?.fileType.name, "Test", "Test file type should be found");
       assert.deepStrictEqual(fileMetaData?.relatedFiles, [], "No related files should be found");
       assert.isUndefined(
-        coLocator.getDecorationData(filePath),
+        linkManager.getDecorationData(filePath),
         "no decoration data when no related files found",
       );
     });
 
     it("returns correct file meta data when file is not related to all other possible types", () => {
       const filePath = "/root/docs/classes/Entity.md";
-      const fileMetaData = coLocator.getFileMetaData(filePath);
+      const fileMetaData = linkManager.getFileMetaData(filePath);
       assert.strictEqual(fileMetaData?.fileType.name, "Documentation", "correct file type found");
       assert.deepStrictEqual(
         fileMetaData?.relatedFiles,
@@ -150,7 +150,7 @@ describe("CoLocator", () => {
         "correct related files found",
       );
       assert.deepStrictEqual(
-        coLocator.getDecorationData(filePath),
+        linkManager.getDecorationData(filePath),
         {
           badgeText: "💻",
           tooltip: "Links: Source",
@@ -160,7 +160,7 @@ describe("CoLocator", () => {
     });
 
     it("allows files to link to other files that dont link back to them", () => {
-      const testFileMetaData = coLocator.getFileMetaData("/root/test/classes/Entity.test.ts");
+      const testFileMetaData = linkManager.getFileMetaData("/root/test/classes/Entity.test.ts");
       assert.strictEqual(testFileMetaData?.fileType.name, "Test", "Test file type should be found");
       assert.deepStrictEqual(testFileMetaData?.relatedFiles, [
         {
@@ -177,22 +177,22 @@ describe("CoLocator", () => {
     });
 
     it("does not return meta data for ignored file", () => {
-      const ignoredFileMetaData = coLocator.getFileMetaData(
+      const ignoredFileMetaData = linkManager.getFileMetaData(
         "/root/node_modules/package/src/classes/Entity.ts",
       );
       assert.isUndefined(ignoredFileMetaData, "Ignored file should not be found");
     });
 
     it("should return undefined if the file doesn't exist/isn't registered", () => {
-      const unknownFileMetaData = coLocator.getFileMetaData("/root/unknown/file/path.ts");
+      const unknownFileMetaData = linkManager.getFileMetaData("/root/unknown/file/path.ts");
       assert.isUndefined(unknownFileMetaData, "Unknown file should not be found");
     });
   });
 
   describe("#reset", () => {
     it("should reset all file types", () => {
-      coLocator = createDefaultTestCoLocator();
-      coLocator.registerFiles([
+      linkManager = createDefaultTestInstance();
+      linkManager.registerFiles([
         "/root/src/classes/Entity.ts",
         "/root/test/classes/Entity.test.ts",
         "/root/test/classes/Entity2.test.ts",
@@ -204,14 +204,14 @@ describe("CoLocator", () => {
       const sourceFilePath = "/root/src/classes/Entity.ts";
 
       assert.isTrue(
-        coLocator.getRelatedFiles(sourceFilePath).length > 0,
+        linkManager.getRelatedFiles(sourceFilePath).length > 0,
         "Files related to Source file should be found",
       );
 
-      coLocator.reset();
+      linkManager.reset();
 
       assert.isTrue(
-        coLocator.getRelatedFiles(sourceFilePath).length === 0,
+        linkManager.getRelatedFiles(sourceFilePath).length === 0,
         "Files related to Source file should not be found after reset",
       );
     });
@@ -219,8 +219,8 @@ describe("CoLocator", () => {
 
   describe("#getFilePathsWithRelatedFiles", () => {
     it("should return all files that have related files", () => {
-      coLocator = createDefaultTestCoLocator();
-      coLocator.registerFiles([
+      linkManager = createDefaultTestInstance();
+      linkManager.registerFiles([
         // ignored files
         "/root/node_modules/package/src/classes/Entity.ts",
         "/root/node_modules/package/test/classes/Entity.test.ts",
@@ -238,7 +238,7 @@ describe("CoLocator", () => {
       ]);
 
       assert.deepStrictEqual(
-        coLocator.getFilePathsWithRelatedFiles(),
+        linkManager.getFilePathsWithRelatedFiles(),
         [
           "/root/src/classes/Entity.ts",
           "/root/test/classes/Entity.test.ts",

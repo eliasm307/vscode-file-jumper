@@ -20,7 +20,7 @@ import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
 import { mainConfigsAreEqual, getIssuesWithMainConfig } from "./utils/config";
 
-import CoLocator from "./classes/CoLocator";
+import LinkManager from "./classes/LinkManager";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { createUri, getMainConfig, getShortPath, openFileInNewTab } from "./utils/vscode";
 
@@ -51,9 +51,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   console.log("extension loaded with valid config:", mainConfig);
 
-  const coLocator = new CoLocator(mainConfig, {
+  const relationshipManager = new LinkManager(mainConfig, {
     onFileRelationshipsUpdated() {
-      const fsFilePathsWithRelationships = coLocator
+      const fsFilePathsWithRelationships = relationshipManager
         .getFilePathsWithRelatedFiles()
         .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
@@ -70,38 +70,38 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   const badgeDecorationProvider = new BadgeDecorationProvider({
-    getDecorationData: (filePath) => coLocator.getDecorationData(filePath),
+    getDecorationData: (filePath) => relationshipManager.getDecorationData(filePath),
   });
 
   const allFileUris = await vscode.workspace.findFiles("**/*");
   const allFilePaths = allFileUris.map((file) => file.path);
   console.log("allFilePaths", allFilePaths);
 
-  coLocator.registerFiles(allFilePaths);
+  relationshipManager.registerFiles(allFilePaths);
 
   // todo listen for config changes to update file decorations
   // todo listen for file deletions/creations/renames to update file decorations
   context.subscriptions.push(
-    { dispose: () => coLocator.reset() },
-    registerNavigateCommand(coLocator),
+    { dispose: () => relationshipManager.reset() },
+    registerNavigateCommand(relationshipManager),
     vscode.window.registerFileDecorationProvider(badgeDecorationProvider),
     vscode.workspace.onDidRenameFiles((e) => {
       // todo handle file rename
       console.warn("onDidRenameFiles", e);
-      coLocator.removeFiles(e.files.map((file) => file.oldUri.path));
-      coLocator.addFiles(e.files.map((file) => file.newUri.path));
+      relationshipManager.removeFiles(e.files.map((file) => file.oldUri.path));
+      relationshipManager.addFiles(e.files.map((file) => file.newUri.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidCreateFiles((e) => {
       // todo handle file create
       console.warn("onDidCreateFiles", e);
-      coLocator.addFiles(e.files.map((file) => file.path));
+      relationshipManager.addFiles(e.files.map((file) => file.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidDeleteFiles((e) => {
       // todo handle file delete
       console.warn("onDidDeleteFiles", e);
-      coLocator.removeFiles(e.files.map((file) => file.path));
+      relationshipManager.removeFiles(e.files.map((file) => file.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidChangeWorkspaceFolders((e) => {
@@ -124,7 +124,7 @@ export async function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      coLocator.updateConfig(newMainConfig);
+      relationshipManager.updateConfig(newMainConfig);
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
   );
@@ -132,13 +132,13 @@ export async function activate(context: vscode.ExtensionContext) {
   console.log("extension activated");
 }
 
-function registerNavigateCommand(coLocator: CoLocator) {
+function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
   const disposable = vscode.commands.registerCommand(
     "coLocate.navigateCommand",
     async (uri: vscode.Uri) => {
-      const quickPickItems = coLocator.getRelatedFiles(uri.path).map((relatedFile) => {
+      const quickPickItems = linkManager.getRelatedFiles(uri.path).map((relatedFile) => {
         return {
           label: `${relatedFile.marker} ${relatedFile.typeName}`,
           detail: getShortPath(relatedFile.fullPath),
