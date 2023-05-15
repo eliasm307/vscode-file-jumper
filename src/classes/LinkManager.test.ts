@@ -25,6 +25,7 @@ describe("LinkManager", () => {
         },
       ],
       ignorePatterns: ["\\/node_modules\\/"],
+      showDebugLogs: false,
     });
   }
 
