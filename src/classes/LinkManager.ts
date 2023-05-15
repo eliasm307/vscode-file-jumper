@@ -36,10 +36,13 @@ export default class LinkManager {
   }
 
   registerFiles(filePaths: string[]): void {
+    const timerKey = `LinkManager#registerFiles(${filePaths.length})`;
+    console.time(timerKey);
     this.registeredFilePaths = filePaths.filter((filePath) => !this.fileShouldBeIgnored(filePath));
     if (this.registeredFilePaths.length) {
       this.fileTypes.forEach((fileType) => fileType.registerPaths(this.registeredFilePaths));
     }
+    console.timeEnd(timerKey);
 
     this.notifyFileRelationshipsUpdated();
   }
@@ -66,6 +69,9 @@ export default class LinkManager {
   }
 
   getFileMetaData(inputFilePath: string): FileMetaData | undefined {
+    const timerKey = `getFileMetaData:${inputFilePath}`;
+    console.time(timerKey);
+
     const inputFileType = this.getFileType(inputFilePath);
     if (!inputFileType) {
       return; // file is not of a known type
@@ -80,6 +86,8 @@ export default class LinkManager {
         .map((fileType) => fileType.getRelatedFile(keyPath))
         .filter(isTruthy);
     }
+
+    console.timeEnd(timerKey);
 
     return {
       fileType: inputFileType,
