@@ -3,7 +3,7 @@ const EXTENSION_KEY = "[co-locate]";
 
 const Logger = {
   log: (...messages: unknown[]) => {
-    // eslint-disable-next-line no-console
+
     console.log(EXTENSION_KEY, ...messages);
   },
   warn: (...messages: unknown[]) => {

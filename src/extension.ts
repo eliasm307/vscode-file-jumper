@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // for adding configuration options: https://code.visualstudio.com/api/references/contribution-points#contributes.configuration
 // overall structure: https://code.visualstudio.com/api/get-started/extension-anatomy
 // full api reference: https://code.visualstudio.com/api/references/vscode-api

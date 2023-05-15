@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import FileType from "./FileType";
 import type { DecorationData, FileMetaData, RelatedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
