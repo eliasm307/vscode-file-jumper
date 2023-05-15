@@ -36,11 +36,6 @@ export default class FileType {
   matches(filePath: string): boolean {
     const cachedResult = this.regexTestCache.get(filePath);
     if (typeof cachedResult === "boolean") {
-      console.log("FileType#matches using cache", {
-        name: this.name,
-        filePath,
-        cachedResult,
-      });
       return cachedResult;
     }
     const isMatch = this.patterns.some((regex) => regex.test(filePath));

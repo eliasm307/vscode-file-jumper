@@ -18,13 +18,13 @@
 
 import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
-import { mainConfigsAreEqual, getIssuesWithMainConfig } from "./utils/config";
+import { getIssuesWithMainConfig } from "./utils/config";
 
 import LinkManager from "./classes/LinkManager";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { createUri, getMainConfig, getShortPath, openFileInNewTab } from "./utils/vscode";
 
-async function validateConfigAndShowAnyErrors(config: MainConfig): Promise<boolean> {
+async function findAndShowIssuesWithConfig(config: MainConfig): Promise<boolean> {
   const configIssues = getIssuesWithMainConfig(config);
   if (configIssues.length) {
     await vscode.window.showErrorMessage(`Configuration issue: ${configIssues[0]}`);
@@ -45,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
     return vscode.window.showErrorMessage(`Configuration issue: ${message}`);
   }
 
-  if (!(await validateConfigAndShowAnyErrors(mainConfig))) {
+  if (await findAndShowIssuesWithConfig(mainConfig)) {
     return;
   }
 
@@ -112,15 +112,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration(async (e) => {
       const newMainConfig = getMainConfig();
 
-      const configHasChanged = !mainConfigsAreEqual(mainConfig, newMainConfig);
       // todo handle configuration change
-      console.warn("onDidChangeConfiguration", e, "newMainConfig", {
-        configHasChanged,
-        mainConfig,
+      console.warn("onDidChangeConfiguration", "newMainConfig", e, {
+        currentConfig: relationshipManager.getConfig(),
         newMainConfig,
       });
 
-      if (!configHasChanged || !(await validateConfigAndShowAnyErrors(mainConfig))) {
+      if (await findAndShowIssuesWithConfig(newMainConfig)) {
         return;
       }
 

@@ -2,6 +2,7 @@
 import FileType from "./FileType";
 import type { DecorationData, FileMetaData, RelatedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
+import { mainConfigsAreEqual } from "../utils/config";
 
 function isTruthy<T>(x: T | undefined | null | "" | 0 | false): x is T {
   return !!x;
@@ -21,7 +22,7 @@ export default class LinkManager {
   private filePathToFileTypeCache: Map<string, FileType> = new Map();
 
   constructor(
-    config: MainConfig,
+    private config: MainConfig,
     private readonly options?: {
       onFileRelationshipsUpdated: () => void;
     },
@@ -129,19 +130,31 @@ export default class LinkManager {
   }
 
   addFiles(arg0: string[]) {
+    // todo check if the changed files are a known type and might affect relationships before recalculating
     console.warn("LinkManager#addFiles", arg0);
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
 
   removeFiles(arg0: string[]) {
+    // todo check if the changed files are a known type and might affect relationships before recalculating
     console.warn("LinkManager#removeFiles", arg0);
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
 
-  updateConfig(arg0: MainConfig) {
-    console.warn("LinkManager#updateConfig", arg0);
+  getConfig(): Readonly<MainConfig> {
+    return structuredClone(this.config);
+  }
+
+  updateConfig(newConfig: MainConfig) {
+    console.warn("LinkManager#updateConfig", newConfig);
+    const configHasChanged = !mainConfigsAreEqual(this.config, newConfig);
+
+    if (!configHasChanged) {
+      return;
+    }
+
     this.notifyFileRelationshipsUpdated();
     throw new Error("Method not implemented.");
   }
