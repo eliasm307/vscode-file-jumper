@@ -12,5 +12,6 @@ module.exports = {
     ...ecmConfig.rules,
     "no-console": "warn",
     "import/no-unresolved": ["error", { ignore: ["vscode"] }],
+    "@typescript-eslint/no-unsafe-return": "off",
   },
 };
