@@ -31,7 +31,21 @@ export function formatRawFileTypesConfig(
   rawConfig: RawFileTypesConfig | undefined,
 ): FileTypeConfig[] {
   if (!rawConfig) {
-    return [];
+    // apply default config
+    // ! dont define this in the "default" for the JSON schema, as this means it will be merged into the custom user config
+    // ! we only want to apply this default config if the user has not defined any config
+    return [
+      {
+        name: "Source",
+        marker: "💻",
+        patterns: ["\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"],
+      },
+      {
+        name: "Test",
+        marker: "🧪",
+        patterns: ["\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"],
+      },
+    ];
   }
   return Object.entries(rawConfig).map(([name, rawFileTypeConfig]) => {
     return {

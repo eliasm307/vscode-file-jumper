@@ -87,20 +87,6 @@
           "scope": "window",
           "type": "object",
           "minProperties": 2,
-          "default": {
-            "Source": {
-              "marker": "💻",
-              "patterns": [
-                "\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"
-              ]
-            },
-            "Test": {
-              "marker": "🧪",
-              "patterns": [
-                "\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"
-              ]
-            }
-          },
           "patternProperties": {
             ".+": {
               "type": "object",
