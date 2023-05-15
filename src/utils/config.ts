@@ -28,9 +28,7 @@ export type MainConfig = {
  */
 type RawFileTypesConfig = Record<string, Omit<FileTypeConfig, "name">>;
 
-export function formatRawFileTypesConfig(
-  rawConfig: RawFileTypesConfig | undefined,
-): FileTypeConfig[] {
+export function formatRawFileTypesConfig(rawConfig: RawFileTypesConfig | undefined): FileTypeConfig[] {
   if (!rawConfig) {
     // apply default config
     // ! dont define this in the "default" for the JSON schema, as this means it will be merged into the custom user config
@@ -67,27 +65,17 @@ export function mainConfigsAreEqual(a: MainConfig, b: MainConfig): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-/** This focuses on issues the JSON schema cant catch */
+/**
+ * This focuses on issues the JSON schema cant catch, important, or are easy to validate
+ *
+ * @remark This produces a clearer message in the editor about an issue which prevents the extension working
+ * compared to the JSON schema warnings shown only when the settings are open
+ */
 export function getIssuesWithMainConfig(mainConfig: MainConfig): string[] {
   const issues: string[] = [];
 
   if (mainConfig.fileTypes.length < 2) {
     issues.push("There must be at least 2 file types defined");
-  }
-
-  const usedFileTypeNamesSet = new Set<string>();
-  const duplicatedFileTypeNamesSet = new Set<string>();
-  mainConfig.fileTypes.forEach((fileTypeConfig) => {
-    const isUsed = usedFileTypeNamesSet.has(fileTypeConfig.name);
-    if (isUsed) {
-      duplicatedFileTypeNamesSet.add(fileTypeConfig.name);
-    }
-    usedFileTypeNamesSet.add(fileTypeConfig.name);
-  });
-
-  if (duplicatedFileTypeNamesSet.size) {
-    const duplicatedFileTypeNames = Array.from(duplicatedFileTypeNamesSet).join(", ");
-    issues.push(`The following file type names are not unique: ${duplicatedFileTypeNames}`);
   }
 
   return issues;

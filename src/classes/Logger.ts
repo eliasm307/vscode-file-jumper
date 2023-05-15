@@ -51,6 +51,10 @@ let outputChannel: vscode.LogOutputChannel | undefined;
 let enabled = false;
 
 const Logger = {
+  reset: () => {
+    enabled = false;
+    outputChannel = undefined;
+  },
   setEnabled: (value: boolean) => {
     enabled = value;
   },

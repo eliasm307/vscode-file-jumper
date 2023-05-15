@@ -14,6 +14,7 @@
 // - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
 // - add context menu for tab item
 // - use object for file types config instead of array, to prevent duplicates
+// - support onlyLinkFrom
 
 import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
@@ -67,15 +68,8 @@ export async function activate(context: vscode.ExtensionContext) {
         .getFilePathsWithRelatedFiles()
         .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-      Logger.log(
-        "#onFileRelationshipsUpdated: fsFilePathsWithRelationships = ",
-        fsFilePathsWithRelationships,
-      );
-      void vscode.commands.executeCommand(
-        "setContext",
-        "coLocate.filePathsWithLinks",
-        fsFilePathsWithRelationships,
-      );
+      Logger.log("#onFileRelationshipsUpdated: fsFilePathsWithRelationships = ", fsFilePathsWithRelationships);
+      void vscode.commands.executeCommand("setContext", "coLocate.filePathsWithLinks", fsFilePathsWithRelationships);
     },
   });
 
@@ -145,35 +139,32 @@ export async function activate(context: vscode.ExtensionContext) {
 function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
-  const disposable = vscode.commands.registerCommand(
-    "coLocate.navigateCommand",
-    async (uri: vscode.Uri) => {
-      const quickPickItems = linkManager.getRelatedFiles(uri.path).map((relatedFile) => {
-        return {
-          label: `${relatedFile.marker} ${relatedFile.typeName}`,
-          detail: getShortPath(relatedFile.fullPath),
-          filePath: relatedFile.fullPath,
-        } satisfies vscode.QuickPickItem & { filePath: string };
-      });
+  const disposable = vscode.commands.registerCommand("coLocate.navigateCommand", async (uri: vscode.Uri) => {
+    const quickPickItems = linkManager.getRelatedFiles(uri.path).map((relatedFile) => {
+      return {
+        label: `${relatedFile.marker} ${relatedFile.typeName}`,
+        detail: getShortPath(relatedFile.fullPath),
+        filePath: relatedFile.fullPath,
+      } satisfies vscode.QuickPickItem & { filePath: string };
+    });
 
-      // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
-      const selectedItem = await vscode.window.showQuickPick(quickPickItems, {
-        title: `Open file related to "${getShortPath(uri)}"`,
-        placeHolder: "Type here to filter results",
-        // match on any info
-        matchOnDescription: true,
-        matchOnDetail: true,
-      });
+    // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
+    const selectedItem = await vscode.window.showQuickPick(quickPickItems, {
+      title: `Open file related to "${getShortPath(uri)}"`,
+      placeHolder: "Type here to filter results",
+      // match on any info
+      matchOnDescription: true,
+      matchOnDetail: true,
+    });
 
-      Logger.log("Quick pick selection", selectedItem);
+    Logger.log("Quick pick selection", selectedItem);
 
-      if (!selectedItem?.filePath) {
-        return; // the user canceled the selection
-      }
+    if (!selectedItem?.filePath) {
+      return; // the user canceled the selection
+    }
 
-      await openFileInNewTab(selectedItem.filePath);
-    },
-  );
+    await openFileInNewTab(selectedItem.filePath);
+  });
 
   return disposable;
 }
