@@ -17,6 +17,7 @@ export type FileTypeConfig = {
 export type MainConfig = {
   fileTypes: FileTypeConfig[];
   ignorePatterns: string[];
+  showDebugLogs: boolean;
 };
 
 /**

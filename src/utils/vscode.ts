@@ -21,5 +21,6 @@ export function getMainConfig(): MainConfig {
   return {
     fileTypes: formatRawFileTypesConfig(extensionConfig.get("fileTypes")),
     ignorePatterns: formatRawIgnorePatternsConfig(extensionConfig.get("ignorePatterns")),
+    showDebugLogs: extensionConfig.get("showDebugLogs") || false,
   };
 }

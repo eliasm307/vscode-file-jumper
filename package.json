@@ -136,6 +136,12 @@
             "type": "string"
           },
           "additionalProperties": false
+        },
+        "coLocate.showDebugLogs": {
+          "description": "Whether to show logs in the output channel",
+          "scope": "window",
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false

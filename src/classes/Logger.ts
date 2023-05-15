@@ -48,26 +48,44 @@ function stringify(value: unknown): string {
 
 let outputChannel: vscode.LogOutputChannel | undefined;
 
+let enabled = false;
+
 const Logger = {
+  setEnabled: (value: boolean) => {
+    enabled = value;
+  },
+  isEnabled: () => enabled,
   setOutputChannel: (channel: vscode.LogOutputChannel) => {
     outputChannel = channel;
   },
   log: (...messages: unknown[]) => {
+    if (!Logger.isEnabled()) {
+      return;
+    }
     messages = messages.map(normaliseRecursively).map(stringify);
     console.log(EXTENSION_KEY, ...messages);
     outputChannel?.info(EXTENSION_KEY, ...messages, "\n");
   },
   warn: (...messages: unknown[]) => {
+    if (!Logger.isEnabled()) {
+      return;
+    }
     messages = messages.map(normaliseRecursively).map(stringify);
     console.warn(EXTENSION_KEY, ...messages);
     outputChannel?.warn(EXTENSION_KEY, ...messages, "\n");
   },
   error: (...messages: unknown[]) => {
+    if (!Logger.isEnabled()) {
+      return;
+    }
     messages = messages.map(normaliseRecursively).map(stringify);
     console.error(EXTENSION_KEY, ...messages);
     outputChannel?.error(EXTENSION_KEY, "❌", ...messages, "\n");
   },
-  startTimer: (key: string) => {
+  startTimer: (key: string): (() => void) => {
+    if (!Logger.isEnabled()) {
+      return () => null;
+    }
     const startTimeMs = Date.now();
     return () => {
       Logger.log(`⏱️ ${key} took ${Date.now() - startTimeMs}ms`);
