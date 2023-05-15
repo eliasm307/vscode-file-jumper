@@ -22,6 +22,7 @@ import { getIssuesWithMainConfig } from "./utils/config";
 import LinkManager from "./classes/LinkManager";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { createUri, getMainConfig, getShortPath, openFileInNewTab } from "./utils/vscode";
+import Logger from "./classes/Logger";
 
 async function findAndShowIssuesWithConfig(config: MainConfig): Promise<boolean> {
   const configIssues = getIssuesWithMainConfig(config);
@@ -33,7 +34,7 @@ async function findAndShowIssuesWithConfig(config: MainConfig): Promise<boolean>
 }
 
 export async function activate(context: vscode.ExtensionContext) {
-  Logger("extension activating...");
+  Logger.log("extension activating...");
 
   let mainConfig: MainConfig;
   try {
@@ -48,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  Logger("extension loaded with valid config:", mainConfig);
+  Logger.log("extension loaded with valid config:", mainConfig);
 
   const relationshipManager = new LinkManager(mainConfig, {
     onFileRelationshipsUpdated() {
@@ -56,7 +57,7 @@ export async function activate(context: vscode.ExtensionContext) {
         .getFilePathsWithRelatedFiles()
         .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-      Logger(
+      Logger.log(
         "onFileRelationshipsUpdated: fsFilePathsWithRelationships = ",
         fsFilePathsWithRelationships,
       );
@@ -74,7 +75,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const allFileUris = await vscode.workspace.findFiles("**/*");
   const allFilePaths = allFileUris.map((file) => file.path);
-  Logger("allFilePaths", allFilePaths);
+  Logger.log("allFilePaths", allFilePaths);
 
   relationshipManager.registerFiles(allFilePaths);
 
@@ -126,7 +127,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  Logger("extension activated");
+  Logger.log("extension activated");
 }
 
 function registerNavigateCommand(linkManager: LinkManager) {
@@ -152,7 +153,7 @@ function registerNavigateCommand(linkManager: LinkManager) {
         matchOnDetail: true,
       });
 
-      Logger("Quick pick selection", selectedItem);
+      Logger.log("Quick pick selection", selectedItem);
 
       if (!selectedItem?.filePath) {
         return; // the user canceled the selection
