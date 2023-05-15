@@ -26,8 +26,8 @@ export default class BadgeDecorationProvider implements vscode.FileDecorationPro
     }
     // NOTE: it could be a folder but doing fs.stat to confirm is expensive, so allow this to return no related files
     const data = this.config.getDecorationData(uri.path);
-
-    console.log("provideFileDecoration", uri.path, data);
-    return new vscode.FileDecoration(data?.badgeText, data?.tooltip);
+    if (data) {
+      return new vscode.FileDecoration(data.badgeText, data.tooltip);
+    }
   }
 }
