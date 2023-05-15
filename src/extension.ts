@@ -32,6 +32,13 @@ async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
+  const outputChannel = vscode.window.createOutputChannel("Co-Locate", {
+    log: true,
+  });
+
+  context.subscriptions.push(outputChannel); // add this early incase we return early
+  Logger.setOutputChannel(outputChannel);
+
   Logger.log("extension activating...");
 
   let mainConfig: MainConfig;

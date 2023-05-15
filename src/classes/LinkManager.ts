@@ -27,7 +27,7 @@ export default class LinkManager {
       onFileRelationshipsUpdated: () => void;
     },
   ) {
-    Logger.log("LinkManager#constructor", config);
+    Logger.log("LinkManager initial config", config);
     this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
     this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
   }
@@ -107,23 +107,33 @@ export default class LinkManager {
 
     try {
       const metaData = this.getFileMetaData(filePath);
-      Logger.log(runKey, "fileMetaData", metaData);
 
       const relatedFiles = metaData?.relatedFiles;
       if (!relatedFiles?.length) {
+        Logger.warn(runKey, "Could not get metaData");
+        const foundRawFileType = this.config.fileTypes.find((fileType) => {
+          return fileType.patterns.some((pattern) => {
+            return new RegExp(pattern).test(filePath);
+          });
+        });
+
+        const foundFileType = this.getFileType(filePath);
+        Logger.warn(runKey, "File type", {
+          foundFileType,
+          foundRawFileType,
+        });
+        if (!foundFileType) {
+          Logger.warn(runKey, "Available file types", this.fileTypes);
+        }
         return;
       }
 
       const relatedFileTypes = relatedFiles.map((file) => file.typeName).join(" + ");
       const relatedFileMarkers = relatedFiles.map((file) => file.marker).join("");
-      const output = {
+      return {
         badgeText: relatedFileMarkers,
         tooltip: `Links: ${relatedFileTypes}`,
       };
-
-      Logger.log(runKey, "decorationData", output);
-
-      return output;
 
       // time
     } finally {
