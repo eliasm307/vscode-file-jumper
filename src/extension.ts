@@ -22,15 +22,13 @@ import { getIssuesWithMainConfig } from "./utils/config";
 import LinkManager from "./classes/LinkManager";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
 import { createUri, getMainConfig, getShortPath, openFileInNewTab } from "./utils/vscode";
-import Logger from "./classes/Logger";
+import Logger, { EXTENSION_KEY } from "./classes/Logger";
 
-async function findAndShowIssuesWithConfig(config: MainConfig): Promise<boolean> {
-  const configIssues = getIssuesWithMainConfig(config);
-  if (configIssues.length) {
-    await vscode.window.showErrorMessage(`Configuration issue: ${configIssues[0]}`);
+async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
+  for (const issue of issues) {
+    Logger.log(`Configuration issue: ${issue}`);
+    await vscode.window.showErrorMessage(`${EXTENSION_KEY} Configuration issue: ${issue}`);
   }
-
-  return configIssues.length === 0;
 }
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -45,11 +43,14 @@ export async function activate(context: vscode.ExtensionContext) {
     return vscode.window.showErrorMessage(`Configuration issue: ${message}`);
   }
 
-  if (await findAndShowIssuesWithConfig(mainConfig)) {
+  const configIssues = getIssuesWithMainConfig(mainConfig);
+  if (configIssues.length) {
+    await logAndShowIssuesWithConfig(configIssues);
+    Logger.log("extension not activated due to config issues");
     return;
   }
 
-  Logger.log("extension loaded with valid config:", mainConfig);
+  Logger.log("extension activated with valid config:", mainConfig);
 
   const relationshipManager = new LinkManager(mainConfig, {
     onFileRelationshipsUpdated() {
@@ -58,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext) {
         .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
       Logger.log(
-        "onFileRelationshipsUpdated: fsFilePathsWithRelationships = ",
+        "#onFileRelationshipsUpdated: fsFilePathsWithRelationships = ",
         fsFilePathsWithRelationships,
       );
       void vscode.commands.executeCommand(
@@ -114,11 +115,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
       // todo handle configuration change
       Logger.warn("onDidChangeConfiguration", "newMainConfig", e, {
-        currentConfig: relationshipManager.getConfig(),
         newMainConfig,
       });
 
-      if (await findAndShowIssuesWithConfig(newMainConfig)) {
+      const newConfigIssues = getIssuesWithMainConfig(newMainConfig);
+      if (newConfigIssues.length) {
+        await logAndShowIssuesWithConfig(newConfigIssues);
+        Logger.log("config change not applied due to config issues");
         return;
       }
 
