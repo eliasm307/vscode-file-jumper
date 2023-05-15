@@ -18,10 +18,9 @@
 import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
 import { getIssuesWithMainConfig } from "./utils/config";
-
 import LinkManager from "./classes/LinkManager";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
-import { createUri, getMainConfig, getShortPath, openFileInNewTab } from "./utils/vscode";
+import { createUri, getMainConfig, getShortPath, openFileInNewTab } from "./vscode/utils";
 import Logger, { EXTENSION_KEY } from "./classes/Logger";
 
 async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
