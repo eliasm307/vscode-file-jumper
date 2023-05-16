@@ -7,7 +7,7 @@ export async function openFileInNewTab(path: string) {
   await vscode.window.showTextDocument(doc, { preview: false });
 }
 
-export function getShortPath(pathOrUri: string | vscode.Uri) {
+export function getWorkspaceRelativePath(pathOrUri: string | vscode.Uri) {
   return vscode.workspace.asRelativePath(pathOrUri, false);
 }
 

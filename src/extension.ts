@@ -21,8 +21,9 @@ import type { MainConfig } from "./utils/config";
 import { getIssuesWithMainConfig } from "./utils/config";
 import LinkManager from "./classes/LinkManager";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
-import { createUri, getMainConfig, getShortPath, openFileInNewTab } from "./vscode/utils";
+import { createUri, getMainConfig, getWorkspaceRelativePath, openFileInNewTab } from "./vscode/utils";
 import Logger, { EXTENSION_KEY } from "./classes/Logger";
+import { shortenPath } from "./utils";
 
 async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
   for (const issue of issues) {
@@ -147,14 +148,16 @@ function registerNavigateCommand(linkManager: LinkManager) {
     const quickPickItems = linkManager.getRelatedFiles(uri.path).map((relatedFile) => {
       return {
         label: `${relatedFile.marker} ${relatedFile.typeName}`,
-        detail: getShortPath(relatedFile.fullPath),
+        // if this overflows the end of the path is hidden and we want to prioritise the end of the path so we shorten it
+        detail: shortenPath(getWorkspaceRelativePath(relatedFile.fullPath)),
         path: relatedFile.fullPath,
       } satisfies vscode.QuickPickItem & { path: string };
     });
 
     // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
     const selectedItem = await vscode.window.showQuickPick(quickPickItems, {
-      title: `Open file related to "${getShortPath(uri)}"`,
+      // the title wraps so no need to shorten the path
+      title: `Open file related to "${getWorkspaceRelativePath(uri)}"`,
       placeHolder: "Type here to filter results",
       // match on any info
       matchOnDescription: true,
