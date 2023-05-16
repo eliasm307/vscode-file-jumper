@@ -3,50 +3,57 @@ import type * as vscode from "vscode";
 /* eslint-disable no-console */
 export const EXTENSION_KEY = "[co-locate]";
 
-/**
- * Recursively normalise an object to a plain object so this can be logged in any console
- */
-function normaliseRecursively(obj: unknown): unknown {
-  if (typeof obj !== "object" || obj === null) {
-    return obj;
+function normaliseReplacer(inputKey: string, inputValue: unknown): unknown {
+  if (inputValue === undefined) {
+    return "undefined";
   }
 
-  if (obj instanceof Error) {
-    return {
-      message: obj.message,
-      stack: obj.stack,
-    };
+  if (inputValue instanceof Error) {
+    return `Error("${inputValue.message}")`;
   }
 
-  if (obj instanceof Map) {
+  if (typeof inputValue === "function") {
+    return "[Function]";
+  }
+
+  if (typeof inputValue === "symbol") {
+    return `Symbol("${inputValue.description}")`;
+  }
+
+  if (inputValue instanceof Promise) {
+    return "[Promise]";
+  }
+
+  if (inputValue instanceof Map) {
     const normalisedMap: Record<string, unknown> = {};
-    for (const [key, value] of obj.entries()) {
-      normalisedMap[key] = normaliseRecursively(value);
+    for (const [key, value] of inputValue.entries()) {
+      normalisedMap[key] = value;
     }
     return normalisedMap;
   }
 
-  if (obj instanceof Set) {
-    return Array.from(obj).map(normaliseRecursively);
+  if (inputValue instanceof RegExp) {
+    return inputValue.toString();
   }
 
-  if (Array.isArray(obj)) {
-    return obj.map(normaliseRecursively);
+  if (inputValue instanceof Set) {
+    return Array.from<unknown>(inputValue);
   }
 
-  const normalisedObj: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    normalisedObj[key] = normaliseRecursively(value);
-  }
-  return normalisedObj;
+  return inputValue;
 }
 
 function stringify(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
   // todo use locally scoped replacer
-  return JSON.stringify(value, null, 2);
+  return JSON.stringify(value, normaliseReplacer, 2);
 }
 
-let outputChannel: vscode.LogOutputChannel | undefined;
+export type LogOutputChannel = Pick<vscode.LogOutputChannel, "info" | "warn" | "error">;
+
+let outputChannel: LogOutputChannel | undefined;
 
 let enabled = false;
 
@@ -55,46 +62,29 @@ const Logger = {
     enabled = false;
     outputChannel = undefined;
   },
-  setEnabled: (value: boolean) => {
-    enabled = value;
-  },
+  setEnabled: (value: boolean) => (enabled = value),
   isEnabled: () => enabled,
-  setOutputChannel: (channel: vscode.LogOutputChannel) => {
-    outputChannel = channel;
-  },
-  log: (...messages: unknown[]) => {
-    if (!Logger.isEnabled()) {
-      return;
-    }
-    messages = messages.map(normaliseRecursively).map(stringify);
-    console.log(EXTENSION_KEY, ...messages);
-    outputChannel?.info(EXTENSION_KEY, ...messages, "\n");
-  },
-  warn: (...messages: unknown[]) => {
-    if (!Logger.isEnabled()) {
-      return;
-    }
-    messages = messages.map(normaliseRecursively).map(stringify);
-    console.warn(EXTENSION_KEY, ...messages);
-    outputChannel?.warn(EXTENSION_KEY, ...messages, "\n");
-  },
-  error: (...messages: unknown[]) => {
-    if (!Logger.isEnabled()) {
-      return;
-    }
-    messages = messages.map(normaliseRecursively).map(stringify);
-    console.error(EXTENSION_KEY, ...messages);
-    outputChannel?.error(EXTENSION_KEY, "❌", ...messages, "\n");
-  },
+  hasOutputChannel: () => !!outputChannel,
+  setOutputChannel: (channel: LogOutputChannel) => (outputChannel = channel),
+  log: (...messages: unknown[]) => output({ level: "info", messages }),
+  warn: (...messages: unknown[]) => output({ level: "warn", messages }),
+  error: (...messages: unknown[]) => output({ level: "error", messages }),
   startTimer: (key: string): (() => void) => {
     if (!Logger.isEnabled()) {
       return () => null;
     }
     const startTimeMs = Date.now();
-    return () => {
-      Logger.log(`⏱️ ${key} took ${Date.now() - startTimeMs}ms`);
-    };
+    return () => Logger.log(`⏱️ ${key} took ${Date.now() - startTimeMs}ms`);
   },
 };
+
+function output({ level, messages }: { messages: unknown[]; level: "info" | "warn" | "error" }): void {
+  if (!Logger.isEnabled() || !messages.length) {
+    return;
+  }
+  messages = messages.map(stringify);
+  console[level](EXTENSION_KEY, ...messages);
+  outputChannel?.[level](EXTENSION_KEY, ...messages, "\n");
+}
 
 export default Logger;

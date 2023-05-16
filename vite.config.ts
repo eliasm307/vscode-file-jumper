@@ -3,7 +3,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     exclude: ["node_modules/**/*", "**/exampleStructure/**/*", "out/**/*", "**/test/**/*"],
-    clearMocks: true,
+    /** @see https://vitest.dev/api/mock.html#mockrestore */
+    restoreMocks: true,
     chaiConfig: {
       showDiff: true,
       includeStack: true,

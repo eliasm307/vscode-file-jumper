@@ -45,8 +45,8 @@ export async function activate(context: vscode.ExtensionContext) {
     const outputChannel = vscode.window.createOutputChannel("Co-Locate", {
       log: true,
     });
-
     context.subscriptions.push(outputChannel); // add this early incase we return early
+
     Logger.setOutputChannel(outputChannel);
     Logger.setEnabled(true); // default disabled
   }
@@ -62,50 +62,48 @@ export async function activate(context: vscode.ExtensionContext) {
 
   Logger.log("extension activated with valid config:", mainConfig);
 
-  const relationshipManager = new LinkManager(mainConfig, {
-    onFileRelationshipsUpdated() {
-      const fsFilePathsWithRelationships = relationshipManager
-        .getFilePathsWithRelatedFiles()
-        .map((normalisedPath) => createUri(normalisedPath).fsPath);
+  const linkManager = new LinkManager(mainConfig, {
+    onFileLinksUpdated() {
+      const fsFilePathsWithLinks = linkManager.getFilePathsWithRelatedFiles().map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-      Logger.log("#onFileRelationshipsUpdated: fsFilePathsWithRelationships = ", fsFilePathsWithRelationships);
-      void vscode.commands.executeCommand("setContext", "coLocate.filePathsWithLinks", fsFilePathsWithRelationships);
+      Logger.log("#onFileLinksUpdated: fsFilePathsWithLinks = ", fsFilePathsWithLinks);
+      void vscode.commands.executeCommand("setContext", "coLocate.filePathsWithLinks", fsFilePathsWithLinks);
     },
   });
 
   const badgeDecorationProvider = new BadgeDecorationProvider({
-    getDecorationData: (filePath) => relationshipManager.getDecorationData(filePath),
+    getDecorationData: (filePath) => linkManager.getDecorationData(filePath),
   });
 
   const allFileUris = await vscode.workspace.findFiles("**/*");
   const allFilePaths = allFileUris.map((file) => file.path);
   Logger.log("allFilePaths", allFilePaths);
 
-  relationshipManager.registerFiles(allFilePaths);
+  linkManager.registerFiles(allFilePaths);
 
   // todo listen for config changes to update file decorations
   // todo listen for file deletions/creations/renames to update file decorations
   context.subscriptions.push(
-    { dispose: () => relationshipManager.reset() },
-    registerNavigateCommand(relationshipManager),
+    { dispose: () => linkManager.reset() },
+    registerNavigateCommand(linkManager),
     vscode.window.registerFileDecorationProvider(badgeDecorationProvider),
     vscode.workspace.onDidRenameFiles((e) => {
       // todo handle file rename
       Logger.warn("onDidRenameFiles", e);
-      relationshipManager.removeFiles(e.files.map((file) => file.oldUri.path));
-      relationshipManager.addFiles(e.files.map((file) => file.newUri.path));
+      linkManager.removeFiles(e.files.map((file) => file.oldUri.path));
+      linkManager.addFiles(e.files.map((file) => file.newUri.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidCreateFiles((e) => {
       // todo handle file create
       Logger.warn("onDidCreateFiles", e);
-      relationshipManager.addFiles(e.files.map((file) => file.path));
+      linkManager.addFiles(e.files.map((file) => file.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidDeleteFiles((e) => {
       // todo handle file delete
       Logger.warn("onDidDeleteFiles", e);
-      relationshipManager.removeFiles(e.files.map((file) => file.path));
+      linkManager.removeFiles(e.files.map((file) => file.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidChangeWorkspaceFolders((e) => {
@@ -128,7 +126,7 @@ export async function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      relationshipManager.updateConfig(newMainConfig);
+      linkManager.updateConfig(newMainConfig);
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
   );

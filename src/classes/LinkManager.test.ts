@@ -76,11 +76,7 @@ describe("LinkManager", () => {
     it("returns the correct file meta data with all related files", () => {
       const filePath = "/root/src/classes/Entity.ts";
       const sourceFileMetaData = linkManager.getFileMetaData(filePath);
-      assert.strictEqual(
-        sourceFileMetaData?.fileType.name,
-        "Source",
-        "Source file type should be found",
-      );
+      assert.strictEqual(sourceFileMetaData?.fileType.name, "Source", "Source file type should be found");
       assert.deepStrictEqual(sourceFileMetaData?.relatedFiles, [
         {
           typeName: "Test",
@@ -105,11 +101,7 @@ describe("LinkManager", () => {
 
     it("returns the correct file meta data with all related files, using helpers", () => {
       const filePath = "/root/src/classes/Entity.ts";
-      assert.strictEqual(
-        linkManager.getFileType(filePath)?.name,
-        "Source",
-        "Source file type should be found",
-      );
+      assert.strictEqual(linkManager.getFileType(filePath)?.name, "Source", "Source file type should be found");
       assert.deepStrictEqual(linkManager.getRelatedFiles(filePath), [
         {
           typeName: "Test",
@@ -129,10 +121,7 @@ describe("LinkManager", () => {
       const fileMetaData = linkManager.getFileMetaData(filePath);
       assert.strictEqual(fileMetaData?.fileType.name, "Test", "Test file type should be found");
       assert.deepStrictEqual(fileMetaData?.relatedFiles, [], "No related files should be found");
-      assert.isUndefined(
-        linkManager.getDecorationData(filePath),
-        "no decoration data when no related files found",
-      );
+      assert.isUndefined(linkManager.getDecorationData(filePath), "no decoration data when no related files found");
     });
 
     it("returns correct file meta data when file is not related to all other possible types", () => {
@@ -156,7 +145,7 @@ describe("LinkManager", () => {
           badgeText: "💻",
           tooltip: "Links: Source",
         },
-        "correct related file markers found with partial relationship",
+        "correct related file markers found with partial links",
       );
     });
 
@@ -178,9 +167,7 @@ describe("LinkManager", () => {
     });
 
     it("does not return meta data for ignored file", () => {
-      const ignoredFileMetaData = linkManager.getFileMetaData(
-        "/root/node_modules/package/src/classes/Entity.ts",
-      );
+      const ignoredFileMetaData = linkManager.getFileMetaData("/root/node_modules/package/src/classes/Entity.ts");
       assert.isUndefined(ignoredFileMetaData, "Ignored file should not be found");
     });
 
@@ -204,10 +191,7 @@ describe("LinkManager", () => {
 
       const sourceFilePath = "/root/src/classes/Entity.ts";
 
-      assert.isTrue(
-        linkManager.getRelatedFiles(sourceFilePath).length > 0,
-        "Files related to Source file should be found",
-      );
+      assert.isTrue(linkManager.getRelatedFiles(sourceFilePath).length > 0, "Files related to Source file should be found");
 
       linkManager.reset();
 
@@ -240,11 +224,7 @@ describe("LinkManager", () => {
 
       assert.deepStrictEqual(
         linkManager.getFilePathsWithRelatedFiles(),
-        [
-          "/root/src/classes/Entity.ts",
-          "/root/test/classes/Entity.test.ts",
-          "/root/docs/classes/Entity.md",
-        ],
+        ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md"],
         "correct files found",
       );
     });

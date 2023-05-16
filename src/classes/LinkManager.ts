@@ -24,7 +24,7 @@ export default class LinkManager {
   constructor(
     private config: MainConfig,
     private readonly options?: {
-      onFileRelationshipsUpdated: () => void;
+      onFileLinksUpdated: () => void;
     },
   ) {
     Logger.log("LinkManager initial config", config);
@@ -45,11 +45,11 @@ export default class LinkManager {
     }
     endTimerAndLog();
 
-    this.notifyFileRelationshipsUpdated();
+    this.notifyFileLinksUpdated();
   }
 
-  private notifyFileRelationshipsUpdated() {
-    this.options?.onFileRelationshipsUpdated();
+  private notifyFileLinksUpdated() {
+    this.options?.onFileLinksUpdated();
   }
 
   getFileType(filePath: string): FileType | undefined {
@@ -155,16 +155,16 @@ export default class LinkManager {
   }
 
   addFiles(arg0: string[]) {
-    // todo check if the changed files are a known type and might affect relationships before recalculating
+    // todo check if the changed files are a known type and might affect links before recalculating
     Logger.warn("LinkManager#addFiles", arg0);
-    this.notifyFileRelationshipsUpdated();
+    this.notifyFileLinksUpdated();
     throw new Error("Method not implemented.");
   }
 
   removeFiles(arg0: string[]) {
-    // todo check if the changed files are a known type and might affect relationships before recalculating
+    // todo check if the changed files are a known type and might affect links before recalculating
     Logger.warn("LinkManager#removeFiles", arg0);
-    this.notifyFileRelationshipsUpdated();
+    this.notifyFileLinksUpdated();
     throw new Error("Method not implemented.");
   }
 
@@ -176,7 +176,7 @@ export default class LinkManager {
       return;
     }
 
-    this.notifyFileRelationshipsUpdated();
+    this.notifyFileLinksUpdated();
     throw new Error("Method not implemented.");
   }
 }
