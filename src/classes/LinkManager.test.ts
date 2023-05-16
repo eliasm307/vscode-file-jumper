@@ -35,6 +35,24 @@ describe("LinkManager", () => {
     });
   }
 
+  function registerDefaultFiles() {
+    linkManager.registerFiles([
+      // ignored files
+      "/root/node_modules/package/src/classes/Entity.ts",
+      "/root/node_modules/package/test/classes/Entity.test.ts",
+      "/root/node_modules/package/docs/classes/Entity.md",
+
+      // non-ignored files
+      "/root/dist/classes/Entity.js",
+      "/root/src/classes/Entity.ts",
+      "/root/test/classes/Entity.test.ts",
+      "/root/test/classes/Entity2.test.ts",
+      "/root/docs/classes/Entity.md",
+      "/root/unknown/file/path.ts",
+      "/root/src/unknown/file/path.ts",
+    ]);
+  }
+
   afterEach(() => {
     linkManager?.dispose();
   });
@@ -61,26 +79,11 @@ describe("LinkManager", () => {
   });
 
   describe("meta data functionality", () => {
-    beforeEach(() => {
-      linkManager = createDefaultTestInstance();
-      linkManager.registerFiles([
-        // ignored files
-        "/root/node_modules/package/src/classes/Entity.ts",
-        "/root/node_modules/package/test/classes/Entity.test.ts",
-        "/root/node_modules/package/docs/classes/Entity.md",
-
-        // non-ignored files
-        "/root/dist/classes/Entity.js",
-        "/root/src/classes/Entity.ts",
-        "/root/test/classes/Entity.test.ts",
-        "/root/test/classes/Entity2.test.ts",
-        "/root/docs/classes/Entity.md",
-        "/root/unknown/file/path.ts",
-        "/root/src/unknown/file/path.ts",
-      ]);
-    });
+    beforeEach(() => {});
 
     it("returns the correct file meta data with all related files", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
       const filePath = "/root/src/classes/Entity.ts";
       const sourceFileMetaData = linkManager.getFileMetaData(filePath);
       assert.strictEqual(sourceFileMetaData?.fileType.name, "Source", "Source file type should be found");
@@ -112,6 +115,8 @@ describe("LinkManager", () => {
     });
 
     it("returns the correct file meta data with all related files, using helpers", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
       const filePath = "/root/src/classes/Entity.ts";
       assert.strictEqual(linkManager.getFileType(filePath)?.name, "Source", "Source file type should be found");
       assert.deepStrictEqual(linkManager.getRelatedFiles(filePath), [
@@ -134,6 +139,8 @@ describe("LinkManager", () => {
     });
 
     it("returns correct file meta data with no related files", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
       const filePath = "/root/test/classes/Entity2.test.ts";
       const fileMetaData = linkManager.getFileMetaData(filePath);
       assert.strictEqual(fileMetaData?.fileType.name, "Test", "Test file type should be found");
@@ -142,6 +149,8 @@ describe("LinkManager", () => {
     });
 
     it("returns correct file meta data when file is not related to all other possible types via onlyLinkTo", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
       const filePath = "/root/docs/classes/Entity.md";
       const fileMetaData = linkManager.getFileMetaData(filePath);
       assert.strictEqual(fileMetaData?.fileType.name, "Documentation", "correct file type found");
@@ -167,6 +176,8 @@ describe("LinkManager", () => {
     });
 
     it("allows files to link to other files that dont link back to them, except if they use onlyLinkFrom", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
       const testFileMetaData = linkManager.getFileMetaData("/root/test/classes/Entity.test.ts");
       assert.strictEqual(testFileMetaData?.fileType.name, "Test", "Test file type should be found");
       assert.deepStrictEqual(testFileMetaData?.relatedFiles, [
@@ -184,13 +195,91 @@ describe("LinkManager", () => {
     });
 
     it("does not return meta data for ignored file", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
       const ignoredFileMetaData = linkManager.getFileMetaData("/root/node_modules/package/src/classes/Entity.ts");
       assert.isUndefined(ignoredFileMetaData, "Ignored file should not be found");
     });
 
     it("should return undefined if the file doesn't exist/isn't registered", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
       const unknownFileMetaData = linkManager.getFileMetaData("/root/unknown/file/path.ts");
       assert.isUndefined(unknownFileMetaData, "Unknown file should not be found");
+    });
+
+    it("allows linking to multiple related files of the same type", () => {
+      linkManager = new LinkManager({
+        fileTypes: [
+          {
+            name: "Source",
+            marker: "💻",
+            patterns: ["\\/src\\/(.*)\\.ts$"],
+          },
+          {
+            name: "Test",
+            marker: "🧪",
+            patterns: ["\\/test\\/(.*)\\.test\\.ts$", "\\/test\\/(.*)\\.spec\\.ts$"],
+          },
+          {
+            name: "Build Output",
+            marker: "📦",
+            patterns: ["\\/dist\\/(.*)\\.map\\.js$", "\\/dist\\/(.*)\\.json$", "\\/dist\\/(.*)\\.js$"],
+            onlyLinkFrom: ["Source"],
+          },
+        ],
+        ignorePatterns: ["\\/node_modules\\/"],
+        showDebugLogs: false,
+      });
+      linkManager.registerFiles([
+        "/root/src/classes/Entity.ts",
+        "/root/src/classes/Entity2.ts",
+        "/root/test/classes/Entity.test.ts",
+        "/root/test/classes/Entity.spec.ts",
+        "/root/test/classes/Entity2.test.ts",
+        "/root/dist/classes/Entity.js",
+        "/root/dist/classes/Entity.map.js",
+        "/root/dist/classes/Entity.json",
+      ]);
+
+      const filePath = "/root/src/classes/Entity.ts";
+      const fileMetaData = linkManager.getFileMetaData(filePath);
+      assert.strictEqual(fileMetaData?.fileType.name, "Source", "Correct file type should be found");
+      assert.deepStrictEqual(fileMetaData?.relatedFiles, [
+        {
+          typeName: "Test",
+          marker: "🧪",
+          fullPath: "/root/test/classes/Entity.test.ts",
+        },
+        {
+          typeName: "Test",
+          marker: "🧪",
+          fullPath: "/root/test/classes/Entity.spec.ts",
+        },
+        {
+          typeName: "Build Output",
+          marker: "📦",
+          fullPath: "/root/dist/classes/Entity.js",
+        },
+        {
+          typeName: "Build Output",
+          marker: "📦",
+          fullPath: "/root/dist/classes/Entity.map.js",
+        },
+        {
+          typeName: "Build Output",
+          marker: "📦",
+          fullPath: "/root/dist/classes/Entity.json",
+        },
+      ]);
+      assert.deepStrictEqual(
+        linkManager.getDecorationData(filePath),
+        {
+          badgeText: "🧪📦",
+          tooltip: "Links: Test + Build Output",
+        },
+        "correct related file markers found with single entry for multiple linked files",
+      );
     });
   });
 

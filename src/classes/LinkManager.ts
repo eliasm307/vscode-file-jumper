@@ -4,10 +4,6 @@ import type { MainConfig } from "../utils/config";
 import { mainConfigsAreEqual } from "../utils/config";
 import Logger from "./Logger";
 
-function isTruthy<T>(x: T | undefined | null | "" | 0 | false): x is T {
-  return !!x;
-}
-
 export default class LinkManager {
   private fileTypes: FileType[] = [];
 
@@ -82,8 +78,7 @@ export default class LinkManager {
         .filter((fileType) => fileType !== inputFileType) // prevent a file from being related to itself
         .filter((fileType) => inputFileType.allowsLinksTo(fileType))
         .filter((fileType) => fileType.allowsLinksFrom(inputFileType))
-        .map((fileType) => fileType.getRelatedFile(keyPath))
-        .filter(isTruthy);
+        .flatMap((fileType) => fileType.getRelatedFiles(keyPath));
     }
 
     const metaData: FileMetaData = {
@@ -129,11 +124,14 @@ export default class LinkManager {
         return;
       }
 
-      const relatedFileTypes = relatedFiles.map((file) => file.typeName).join(" + ");
-      const relatedFileMarkers = relatedFiles.map((file) => file.marker).join("");
+      const uniqueRelatedFileTypeNames = new Set<string>();
+      relatedFiles.forEach((file) => uniqueRelatedFileTypeNames.add(file.typeName));
+      const uniqueRelatedFileMarkers = new Set<string>();
+      relatedFiles.forEach((file) => uniqueRelatedFileMarkers.add(file.marker));
+
       return {
-        badgeText: relatedFileMarkers,
-        tooltip: `Links: ${relatedFileTypes}`,
+        badgeText: [...uniqueRelatedFileMarkers].join(""),
+        tooltip: `Links: ${[...uniqueRelatedFileTypeNames].join(" + ")}`,
       };
 
       // time

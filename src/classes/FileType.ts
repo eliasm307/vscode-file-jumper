@@ -8,9 +8,10 @@ export default class FileType {
   private readonly patterns: RegExp[];
 
   private readonly onlyLinkToTypeNamesSet?: Set<string>;
+
   private readonly onlyLinkFromTypeNamesSet?: Set<string>;
 
-  private readonly keyPathToFullPathMap: Map<string, string> = new Map();
+  private readonly keyPathToFullPathsMap: Map<string, Set<string>> = new Map();
 
   /**
    * Regex can be expensive to run repeatedly depending on how complex the pattern is, so cache the result
@@ -46,15 +47,14 @@ export default class FileType {
     return isMatch;
   }
 
-  getRelatedFile(keyPath: KeyPath): RelatedFileData | undefined {
-    const fullPath = this.keyPathToFullPathMap.get(keyPath);
-    if (fullPath) {
-      return {
-        typeName: this.name,
-        marker: this.config.marker,
-        fullPath,
-      };
-    }
+  getRelatedFiles(keyPath: KeyPath): RelatedFileData[] {
+    const fullPathsSet = this.keyPathToFullPathsMap.get(keyPath);
+    const fullPathsArray = fullPathsSet ? [...fullPathsSet] : [];
+    return fullPathsArray.map((fullPath) => ({
+      typeName: this.name,
+      marker: this.config.marker,
+      fullPath,
+    }));
   }
 
   registerPaths(filePaths: string[]) {
@@ -62,23 +62,21 @@ export default class FileType {
       const keyPath = this.getKeyPath(fullPath);
       if (keyPath) {
         Logger.info(`Registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`);
-        this.keyPathToFullPathMap.set(keyPath, fullPath);
+        const existingFullPathsSet = this.keyPathToFullPathsMap.get(keyPath) || new Set();
+        existingFullPathsSet.add(fullPath);
+        this.keyPathToFullPathsMap.set(keyPath, existingFullPathsSet);
       }
     });
   }
 
   allowsLinksTo(otherFileType: FileType): unknown {
-    if (!this.onlyLinkToTypeNamesSet) {
-      return true; // defaults to all file types can link to all other file types
-    }
-    return this.onlyLinkToTypeNamesSet.has(otherFileType.name);
+    // defaults to all file types can link to all other file types
+    return !this.onlyLinkToTypeNamesSet || this.onlyLinkToTypeNamesSet.has(otherFileType.name);
   }
 
   allowsLinksFrom(inputFileType: FileType): unknown {
-    if (!this.onlyLinkFromTypeNamesSet) {
-      return true; // defaults to all file types can be linked from all other file types
-    }
-    return this.onlyLinkFromTypeNamesSet.has(inputFileType.name);
+    // defaults to all file types can be linked from all other file types
+    return !this.onlyLinkFromTypeNamesSet || this.onlyLinkFromTypeNamesSet.has(inputFileType.name);
   }
 
   public getKeyPath(filePath: string): KeyPath | null | undefined {
@@ -100,7 +98,7 @@ export default class FileType {
   }
 
   reset() {
-    this.keyPathToFullPathMap.clear();
+    this.keyPathToFullPathsMap.clear();
   }
 
   dispose(): void {
