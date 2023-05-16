@@ -174,51 +174,93 @@ describe("FileType", () => {
   });
 
   describe("#deRegisterFiles", () => {
+    const validKeyPath0 = "relatedFile0" as KeyPath;
+    const fullPath0 = "/test/relatedFile0.test.ts";
+    const validKeyPath1 = "dir1/relatedFile1" as KeyPath;
+    const fullPath1 = "/test/dir1/relatedFile1.test.ts";
+    const validKeyPath2 = "dir1/dir2/relatedFile2" as KeyPath;
+    const fullPath2 = "/test/dir1/dir2/relatedFile2.test.ts";
+
+    function assertFile0IsRegistered(expectRegistered: boolean): void {
+      if (expectRegistered) {
+        assert.deepStrictEqual(
+          fileType.getRelatedFiles(validKeyPath0),
+          [{ typeName: "test", marker: "🧪", fullPath: fullPath0 }],
+          "related file0 should be found",
+        );
+      } else {
+        assert.deepStrictEqual(fileType.getRelatedFiles(validKeyPath0), [], "related file0 should not be found");
+      }
+    }
+
+    function assertFile1IsRegistered(expectRegistered: boolean): void {
+      if (expectRegistered) {
+        assert.deepStrictEqual(
+          fileType.getRelatedFiles(validKeyPath1),
+          [{ typeName: "test", marker: "🧪", fullPath: fullPath1 }],
+          "related file1 should be found",
+        );
+      } else {
+        assert.deepStrictEqual(fileType.getRelatedFiles(validKeyPath1), [], "related file1 should not be found");
+      }
+    }
+
+    function assertFile2IsRegistered(expectRegistered: boolean): void {
+      if (expectRegistered) {
+        assert.deepStrictEqual(
+          fileType.getRelatedFiles(validKeyPath2),
+          [{ typeName: "test", marker: "🧪", fullPath: fullPath2 }],
+          "related file2 should be found",
+        );
+      } else {
+        assert.deepStrictEqual(fileType.getRelatedFiles(validKeyPath2), [], "related file2 should not be found");
+      }
+    }
+
     it("can de-register registered files", () => {
       fileType = createFileTypeWithRegisteredFiles();
 
-      const validKeyPath1 = "dir1/relatedFile1" as KeyPath;
-      const fullPath1 = "/test/dir1/relatedFile1.test.ts";
-      const validKeyPath2 = "dir1/dir2/relatedFile2" as KeyPath;
-      const fullPath2 = "/test/dir1/dir2/relatedFile2.test.ts";
-
       // file 1 should be found
-      assert.deepStrictEqual(
-        fileType.getRelatedFiles(validKeyPath1),
-        [{ typeName: "test", marker: "🧪", fullPath: fullPath1 }],
-        "related file1 should be found",
-      );
+      assertFile0IsRegistered(true);
       assert.isTrue(fileType.matches(fullPath1), "file1 should match");
 
       // file 2 should be found
-      assert.deepStrictEqual(
-        fileType.getRelatedFiles(validKeyPath2),
-        [{ typeName: "test", marker: "🧪", fullPath: fullPath2 }],
-        "related file2 should be found",
-      );
+      assertFile2IsRegistered(true);
       assert.isTrue(fileType.matches(fullPath2), "file2 should match");
 
       // de-register file 1
       fileType.deRegisterPaths([fullPath1]);
 
       // file 1 should not be found anymore
-      assert.deepStrictEqual(fileType.getRelatedFiles(validKeyPath1), [], "related file1 should not be found");
-      assert.isTrue(fileType.matches(fullPath1), "file1 should still match after reset");
+      assertFile1IsRegistered(false);
 
       // file 2 should still be found
-      assert.deepStrictEqual(
-        fileType.getRelatedFiles(validKeyPath2),
-        [{ typeName: "test", marker: "🧪", fullPath: fullPath2 }],
-        "related file2 should still be found",
-      );
+      assertFile2IsRegistered(true);
       assert.isTrue(fileType.matches(fullPath2), "file2 should still match");
 
       // de-register file 2
       fileType.deRegisterPaths([fullPath2]);
 
       // file 2 should not be found anymore
-      assert.deepStrictEqual(fileType.getRelatedFiles(validKeyPath2), [], "related file2 should not be found");
+      assertFile2IsRegistered(false);
       assert.isTrue(fileType.matches(fullPath2), "file2 should still match after reset");
+    });
+
+    it("is a no-op if the file is not registered", () => {
+      fileType = createFileTypeWithRegisteredFiles();
+
+      // all files should be found
+      assertFile0IsRegistered(true);
+      assertFile1IsRegistered(true);
+      assertFile2IsRegistered(true);
+
+      // de-register unknown file
+      fileType.deRegisterPaths(["/test/dir1/dir2/unknown.test.ts"]);
+
+      // all files should still be found
+      assertFile0IsRegistered(true);
+      assertFile1IsRegistered(true);
+      assertFile2IsRegistered(true);
     });
   });
 
