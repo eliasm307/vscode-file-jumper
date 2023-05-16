@@ -12,7 +12,8 @@ export default class LinkManager {
   private registeredFilePaths: string[] = [];
 
   /**
-   * @remark cache not cleared on reset as it doesn't affect behaviour
+   * @remark cache not cleared on reset as its not context specific (as long as the FileType instances are the same)
+   * and it doesn't affect behaviour
    */
   // todo investigate if this is actually worth it
   private filePathToFileTypeCache: Map<string, FileType> = new Map();

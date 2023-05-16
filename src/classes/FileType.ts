@@ -11,12 +11,15 @@ export default class FileType {
 
   private readonly onlyLinkFromTypeNamesSet?: Set<string>;
 
+  /**
+   * @remark this does affect behaviour, so it is cleared on reset
+   */
   private readonly keyPathToFullPathsMap: Map<string, Set<string>> = new Map();
 
   /**
    * Regex can be expensive to run repeatedly depending on how complex the pattern is, so cache the result
    *
-   * @remark cache not cleared on reset as it doesn't affect behaviour
+   * @remark cache not cleared on reset as it is not context specific and doesn't affect behaviour
    */
   // todo investigate if this is actually worth it
   private readonly regexTestCache: Map<string, boolean> = new Map();
@@ -24,7 +27,7 @@ export default class FileType {
   /**
    * @key full file path
    *
-   * @remark cache not cleared on reset as it doesn't affect behaviour
+   * @remark cache not cleared on reset as its not context specific and doesn't affect behaviour
    * @remark `null` means this was executed and no keypath found
    */
   private readonly fullPathToKeyPathCache: Map<string, KeyPath | null> = new Map();
@@ -60,11 +63,30 @@ export default class FileType {
   registerPaths(filePaths: string[]) {
     filePaths.forEach((fullPath) => {
       const keyPath = this.getKeyPath(fullPath);
-      if (keyPath) {
-        Logger.info(`Registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`);
-        const existingFullPathsSet = this.keyPathToFullPathsMap.get(keyPath) || new Set();
-        existingFullPathsSet.add(fullPath);
-        this.keyPathToFullPathsMap.set(keyPath, existingFullPathsSet);
+      if (!keyPath) {
+        return;
+      }
+      Logger.info(`Registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`);
+      const existingFullPathsSet = this.keyPathToFullPathsMap.get(keyPath) || new Set();
+      existingFullPathsSet.add(fullPath);
+      this.keyPathToFullPathsMap.set(keyPath, existingFullPathsSet);
+    });
+  }
+
+  deRegisterPaths(filePaths: string[]) {
+    filePaths.forEach((fullPath) => {
+      const keyPath = this.getKeyPath(fullPath);
+      if (!keyPath) {
+        return;
+      }
+      Logger.info(`De-registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`);
+      const existingFullPathsSet = this.keyPathToFullPathsMap.get(keyPath);
+      if (!existingFullPathsSet) {
+        return;
+      }
+      existingFullPathsSet.delete(fullPath);
+      if (!existingFullPathsSet.size) {
+        this.keyPathToFullPathsMap.delete(keyPath);
       }
     });
   }

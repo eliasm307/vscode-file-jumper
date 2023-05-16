@@ -161,13 +161,7 @@ describe("FileType", () => {
 
       assert.deepStrictEqual(
         fileType.getRelatedFiles(validKeyPath),
-        [
-          {
-            typeName: "test",
-            marker: "🧪",
-            fullPath: "/test/dir1/relatedFile1.test.ts",
-          },
-        ],
+        [{ typeName: "test", marker: "🧪", fullPath: "/test/dir1/relatedFile1.test.ts" }],
         "related file should be found",
       );
       assert.isTrue(fileType.matches(matchingFullPath), "file should match");
@@ -176,6 +170,55 @@ describe("FileType", () => {
 
       assert.deepStrictEqual(fileType.getRelatedFiles(validKeyPath), [], "related file should not be found");
       assert.isTrue(fileType.matches(matchingFullPath), "file should still match after reset");
+    });
+  });
+
+  describe("#deRegisterFiles", () => {
+    it("can de-register registered files", () => {
+      fileType = createFileTypeWithRegisteredFiles();
+
+      const validKeyPath1 = "dir1/relatedFile1" as KeyPath;
+      const fullPath1 = "/test/dir1/relatedFile1.test.ts";
+      const validKeyPath2 = "dir1/dir2/relatedFile2" as KeyPath;
+      const fullPath2 = "/test/dir1/dir2/relatedFile2.test.ts";
+
+      // file 1 should be found
+      assert.deepStrictEqual(
+        fileType.getRelatedFiles(validKeyPath1),
+        [{ typeName: "test", marker: "🧪", fullPath: fullPath1 }],
+        "related file1 should be found",
+      );
+      assert.isTrue(fileType.matches(fullPath1), "file1 should match");
+
+      // file 2 should be found
+      assert.deepStrictEqual(
+        fileType.getRelatedFiles(validKeyPath2),
+        [{ typeName: "test", marker: "🧪", fullPath: fullPath2 }],
+        "related file2 should be found",
+      );
+      assert.isTrue(fileType.matches(fullPath2), "file2 should match");
+
+      // de-register file 1
+      fileType.deRegisterPaths([fullPath1]);
+
+      // file 1 should not be found anymore
+      assert.deepStrictEqual(fileType.getRelatedFiles(validKeyPath1), [], "related file1 should not be found");
+      assert.isTrue(fileType.matches(fullPath1), "file1 should still match after reset");
+
+      // file 2 should still be found
+      assert.deepStrictEqual(
+        fileType.getRelatedFiles(validKeyPath2),
+        [{ typeName: "test", marker: "🧪", fullPath: fullPath2 }],
+        "related file2 should still be found",
+      );
+      assert.isTrue(fileType.matches(fullPath2), "file2 should still match");
+
+      // de-register file 2
+      fileType.deRegisterPaths([fullPath2]);
+
+      // file 2 should not be found anymore
+      assert.deepStrictEqual(fileType.getRelatedFiles(validKeyPath2), [], "related file2 should not be found");
+      assert.isTrue(fileType.matches(fullPath2), "file2 should still match after reset");
     });
   });
 
