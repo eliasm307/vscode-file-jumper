@@ -77,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
   linkManager.onFileLinksUpdated((affectedPaths) => {
     // need to use FS paths for context key so they work with menu items conditions (they dont have an option to use the normalised path)
     const fsPathsWithLinks = linkManager
-      .getPathsWithRelatedFiles()
+      .getAllPathsWithLinks()
       .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
     Logger.info("#onFileLinksUpdated: fsPathsWithLinks = ", fsPathsWithLinks);

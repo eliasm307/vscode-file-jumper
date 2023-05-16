@@ -141,7 +141,7 @@ export default class LinkManager {
     return this.getFileMetaData(path)?.linkedFiles || [];
   }
 
-  getPathsWithRelatedFiles(): string[] {
+  getAllPathsWithLinks(): string[] {
     return [...this.allRelevantPaths].filter((path) => this.getFilesLinkedFrom(path).length);
   }
 

@@ -315,7 +315,7 @@ describe("LinkManager", () => {
       ]);
 
       assert.deepStrictEqual(
-        linkManager.getPathsWithRelatedFiles(),
+        linkManager.getAllPathsWithLinks(),
         ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md"],
         "correct files found",
       );
