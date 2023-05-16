@@ -26,7 +26,7 @@ import Logger, { EXTENSION_KEY } from "./classes/Logger";
 
 async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
   for (const issue of issues) {
-    Logger.log(`Configuration issue: ${issue}`);
+    Logger.info(`Configuration issue: ${issue}`);
     await vscode.window.showErrorMessage(`${EXTENSION_KEY} Configuration issue: ${issue}`);
   }
 }
@@ -51,22 +51,22 @@ export async function activate(context: vscode.ExtensionContext) {
     Logger.setEnabled(true); // default disabled
   }
 
-  Logger.log("extension activating...");
+  Logger.info("extension activating...");
 
   const configIssues = getIssuesWithMainConfig(mainConfig);
   if (configIssues.length) {
     await logAndShowIssuesWithConfig(configIssues);
-    Logger.log("extension not activated due to config issues");
+    Logger.info("extension not activated due to config issues");
     return;
   }
 
-  Logger.log("extension activated with valid config:", mainConfig);
+  Logger.info("extension activated with valid config:", mainConfig);
 
   const linkManager = new LinkManager(mainConfig, {
     onFileLinksUpdated() {
       const fsFilePathsWithLinks = linkManager.getFilePathsWithRelatedFiles().map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-      Logger.log("#onFileLinksUpdated: fsFilePathsWithLinks = ", fsFilePathsWithLinks);
+      Logger.info("#onFileLinksUpdated: fsFilePathsWithLinks = ", fsFilePathsWithLinks);
       void vscode.commands.executeCommand("setContext", "coLocate.filePathsWithLinks", fsFilePathsWithLinks);
     },
   });
@@ -77,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const allFileUris = await vscode.workspace.findFiles("**/*");
   const allFilePaths = allFileUris.map((file) => file.path);
-  Logger.log("allFilePaths", allFilePaths);
+  Logger.info("allFilePaths", allFilePaths);
 
   linkManager.registerFiles(allFilePaths);
 
@@ -122,7 +122,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const newConfigIssues = getIssuesWithMainConfig(newMainConfig);
       if (newConfigIssues.length) {
         await logAndShowIssuesWithConfig(newConfigIssues);
-        Logger.log("config change not applied due to config issues");
+        Logger.info("config change not applied due to config issues");
         return;
       }
 
@@ -131,7 +131,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  Logger.log("extension activated");
+  Logger.info("extension activated");
 }
 
 function registerNavigateCommand(linkManager: LinkManager) {
@@ -155,7 +155,7 @@ function registerNavigateCommand(linkManager: LinkManager) {
       matchOnDetail: true,
     });
 
-    Logger.log("Quick pick selection", selectedItem);
+    Logger.info("Quick pick selection", selectedItem);
 
     if (!selectedItem?.filePath) {
       return; // the user canceled the selection

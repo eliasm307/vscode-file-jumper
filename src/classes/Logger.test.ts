@@ -116,34 +116,58 @@ describe("Logger", () => {
     Logger.reset();
   });
 
-  describe("#log", () => {
+  describe("#reset", () => {
+    it("resets enabled state", () => {
+      assert.isFalse(Logger.isEnabled(), "Logger should be disabled by default");
+
+      Logger.setEnabled(true);
+      assert.isTrue(Logger.isEnabled(), "Logger should be enabled");
+
+      Logger.reset();
+      assert.isFalse(Logger.isEnabled(), "Logger should be disabled");
+    });
+
+    it("resets output channel", () => {
+      Logger.setOutputChannel(createStubbedLogOutputChannel());
+      assert.isTrue(Logger.hasOutputChannel(), "Logger should have output channel");
+
+      Logger.reset();
+      assert.isFalse(Logger.hasOutputChannel(), "Logger should not have output channel");
+    });
+  });
+
+  describe.each(["info", "warn", "error"] as const)("#%s", (level) => {
     it("does not log if logger is disabled", () => {
-      Logger.log("test", "test2", 1, true);
-      assert.deepStrictEqual(consoleStubs.info.mock.calls, [], "console.log should not be called");
+      Logger[level]("test", "test2", 1, true);
+      assert.deepStrictEqual(consoleStubs[level].mock.calls, [], `console.${level} should not be called`);
     });
 
     it("does not log if no arguments are provided", () => {
       Logger.setEnabled(true);
-      Logger.log();
-      assert.deepStrictEqual(consoleStubs.info.mock.calls, [], "console.log should not be called");
+      Logger[level]();
+      assert.deepStrictEqual(consoleStubs[level].mock.calls, [], `console.${level} should not be called`);
     });
 
     it("logs if logger is enabled", () => {
       Logger.setEnabled(true);
-      Logger.log("test", "test2", 1, true);
-      assert.deepStrictEqual(consoleStubs.info.mock.calls, [["[co-locate]", "test", "test2", "1", "true"]], "console.log should be called");
+      Logger[level]("test", "test2", 1, true);
+      assert.deepStrictEqual(
+        consoleStubs[level].mock.calls,
+        [["[co-locate]", "test", "test2", "1", "true"]],
+        `console.${level} should not be called`,
+      );
     });
 
     it("logs to outputChannel if provided", () => {
       Logger.setEnabled(true);
       const outputChannel = createStubbedLogOutputChannel();
       Logger.setOutputChannel(outputChannel);
-      Logger.log("test", "test2", "1", "true");
+      Logger[level]("test", "test2", "1", "true");
 
       assert.deepStrictEqual(
-        outputChannel.info.mock.calls,
+        outputChannel[level].mock.calls,
         [["[co-locate]", "test", "test2", "1", "true", "\n"]],
-        "outputChannel.info should be called",
+        `outputChannel.${level} should be called`,
       );
     });
 
@@ -151,17 +175,37 @@ describe("Logger", () => {
       Logger.setEnabled(true);
       const outputChannelStubs = createStubbedLogOutputChannel();
       Logger.setOutputChannel(outputChannelStubs);
-      Logger.log(createExoticObject());
+      Logger[level](createExoticObject());
       assert.deepStrictEqual(
-        consoleStubs.info.mock.calls,
+        consoleStubs[level].mock.calls,
         [["[co-locate]", EXPECTED_SERIALIZED_EXOTIC_OBJECT]],
-        "console.log should be called",
+        `console.${level} should not be called`,
       );
       assert.deepStrictEqual(
-        outputChannelStubs.info.mock.calls,
+        outputChannelStubs[level].mock.calls,
         [["[co-locate]", EXPECTED_SERIALIZED_EXOTIC_OBJECT, "\n"]],
-        "outputChannel.info should be called",
+        `outputChannel.${level} should be called`,
       );
+    });
+  });
+
+  describe("#startTimer", () => {
+    it("does not log if logger is disabled", () => {
+      const output = Logger.startTimer("test");
+      assert.isFunction(output, "output should be a function");
+      output();
+      assert.deepStrictEqual(consoleStubs.info.mock.calls, [], `console.info should not be called`);
+    });
+
+    it("logs the timing of a given key", () => {
+      Logger.setEnabled(true);
+      const clock = vitest.useFakeTimers();
+
+      const output = Logger.startTimer("test");
+      assert.isFunction(output, "output should be a function");
+      clock.advanceTimersByTime(3);
+      output();
+      assert.deepStrictEqual(consoleStubs.info.mock.calls, [["[co-locate]", "⏱️ test took 3ms"]], "console.log should be called");
     });
   });
 });

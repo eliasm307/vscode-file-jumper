@@ -58,9 +58,7 @@ export default class FileType {
     filePaths.forEach((fullPath) => {
       const keyPath = this.getKeyPath(fullPath);
       if (keyPath) {
-        Logger.log(
-          `Registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`,
-        );
+        Logger.info(`Registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`);
         this.keyPathToFullPathMap.set(keyPath, fullPath);
       }
     });

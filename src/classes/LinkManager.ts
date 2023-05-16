@@ -27,7 +27,7 @@ export default class LinkManager {
       onFileLinksUpdated: () => void;
     },
   ) {
-    Logger.log("LinkManager initial config", config);
+    Logger.info("LinkManager initial config", config);
     this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
     this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
   }
@@ -37,7 +37,7 @@ export default class LinkManager {
   }
 
   registerFiles(filePaths: string[]): void {
-    Logger.log("#registerFiles", filePaths);
+    Logger.info("#registerFiles", filePaths);
     const endTimerAndLog = Logger.startTimer(`#registerFiles(${filePaths.length})`);
     this.registeredFilePaths = filePaths.filter((filePath) => !this.fileShouldBeIgnored(filePath));
     if (this.registeredFilePaths.length) {

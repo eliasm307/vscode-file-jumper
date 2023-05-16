@@ -66,7 +66,7 @@ const Logger = {
   isEnabled: () => enabled,
   hasOutputChannel: () => !!outputChannel,
   setOutputChannel: (channel: LogOutputChannel) => (outputChannel = channel),
-  log: (...messages: unknown[]) => output({ level: "info", messages }),
+  info: (...messages: unknown[]) => output({ level: "info", messages }),
   warn: (...messages: unknown[]) => output({ level: "warn", messages }),
   error: (...messages: unknown[]) => output({ level: "error", messages }),
   startTimer: (key: string): (() => void) => {
@@ -74,7 +74,7 @@ const Logger = {
       return () => null;
     }
     const startTimeMs = Date.now();
-    return () => Logger.log(`⏱️ ${key} took ${Date.now() - startTimeMs}ms`);
+    return () => Logger.info(`⏱️ ${key} took ${Date.now() - startTimeMs}ms`);
   },
 };
 
