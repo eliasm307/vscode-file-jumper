@@ -11,9 +11,6 @@ export default class LinkManager {
 
   private registeredPaths: Set<string> = new Set();
 
-  // todo investigate if this is actually worth it
-  private fullPathToFileTypeCache: Map<string, FileType> = new Map();
-
   constructor(
     private config: MainConfig,
     private readonly options?: {
@@ -26,7 +23,6 @@ export default class LinkManager {
   private applyConfig(config: MainConfig): void {
     Logger.info("#applyConfig", config);
     this.config = config;
-    this.fullPathToFileTypeCache.clear();
     this.fileTypes.forEach((fileType) => fileType.dispose());
     this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
     this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
@@ -92,18 +88,16 @@ export default class LinkManager {
     this.options?.onFileLinksUpdated();
   }
 
+  /**
+   * @remark This used to be cached however there weren't any significant performance gains
+   * so decided to simplify until there is a need for it
+   */
   getFileType(path: string): FileType | undefined {
     if (this.pathShouldBeIgnored(path)) {
       return;
     }
-
-    const cachedFileType = this.fullPathToFileTypeCache.get(path);
-    if (cachedFileType) {
-      return cachedFileType;
-    }
     for (const fileType of this.fileTypes) {
       if (fileType.matches(path)) {
-        this.fullPathToFileTypeCache.set(path, fileType);
         return fileType;
       }
     }
@@ -125,12 +119,10 @@ export default class LinkManager {
         .flatMap((fileType) => fileType.getLinkedFiles(keyPath));
     }
 
-    const metaData: FileMetaData = {
+    return {
       fileType: inputFileType,
       linkedFiles,
     };
-
-    return metaData;
   }
 
   getRelatedFiles(path: string): LinkedFileData[] {
@@ -219,19 +211,17 @@ export default class LinkManager {
   /** This disposes of the instance with the expectation that it will not be re-used */
   dispose() {
     this.fileTypes.forEach((fileType) => fileType.dispose());
-    this.fullPathToFileTypeCache.clear();
     // @ts-expect-error [allowed on dispose]
     this.registeredPaths = null;
   }
 
   updateConfig(newConfig: MainConfig) {
-    Logger.warn("LinkManager#updateConfig", newConfig);
     const configHasChanged = !mainConfigsAreEqual(this.config, newConfig);
     if (!configHasChanged) {
       return;
     }
-
-    const initiallyRegisteredPaths = new Set(this.registeredPaths);
+    Logger.warn("LinkManager#updateConfig", newConfig);
+    const initiallyRegisteredPaths = new Set(this.registeredPaths); // copy them so we can restore them later
     this.reset();
     this.applyConfig(newConfig);
     this.applyPathAdditions(initiallyRegisteredPaths); // restore the previously registered paths

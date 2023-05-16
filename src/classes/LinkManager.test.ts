@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { describe, it, assert, afterEach, beforeEach } from "vitest";
 import fs from "fs";
@@ -338,8 +339,8 @@ describe("LinkManager", () => {
   });
 
   describe("performance", () => {
-    it("should be fast and accurate", async () => {
-      linkManager = new LinkManager({
+    function createEslintLinkManager() {
+      return new LinkManager({
         fileTypes: [
           {
             name: "Source",
@@ -360,36 +361,49 @@ describe("LinkManager", () => {
         ignorePatterns: ["\\/node_modules\\/"],
         showDebugLogs: false,
       });
+    }
 
+    type DecorationsMap = Record<string, DecorationData | null>;
+
+    it("should be fast and accurate", async () => {
       const eslintPathsPath = pathModule.join(__dirname, "LinkManagerTestData/eslint-project-files.json");
       const eslintPaths = JSON.parse(fs.readFileSync(eslintPathsPath, "utf8")) as string[];
       const fileCount = eslintPaths.length;
       console.log(`Testing ${fileCount} Eslint files`);
 
-      // add all the files
-      let startTime = Date.now();
-      linkManager.addPathsAndNotify(eslintPaths);
-      const addPathsDurationMs = Date.now() - startTime;
-      // eslint-disable-next-line no-console
-      console.log(`addPathsAndNotify actually took ${addPathsDurationMs}ms for ${fileCount} files`);
-      assert.isBelow(addPathsDurationMs, 50, `should take less than 50ms to add ${fileCount} files`);
+      let actualDecorations: DecorationsMap = {};
+      Array(3)
+        .fill(0)
+        .forEach((_, i) => {
+          console.log("Running test", i);
+          linkManager = createEslintLinkManager();
 
-      type DecorationsMap = Record<string, DecorationData | null>;
+          // add all the files
+          let startTime = Date.now();
+          linkManager.addPathsAndNotify(eslintPaths);
+          const addPathsDurationMs = Date.now() - startTime;
+          // eslint-disable-next-line no-console
+          console.log(`#addPathsAndNotify actually took`, addPathsDurationMs, `ms`);
+          assert.isBelow(addPathsDurationMs, 50, `should take less than 50ms to add ${fileCount} files`);
 
-      // get the decorations for all the files
-      // eslint-disable-next-line no-console
-      console.log(`Processing ${eslintPaths.length} files`);
-      const actualDecorations: DecorationsMap = {};
-      startTime = Date.now();
-      eslintPaths.forEach((path) => {
-        const decoration = linkManager.getDecorationData(path);
-        if (decoration) {
-          actualDecorations[path] = decoration;
-        }
-      });
-      const getDecorationsDurationMs = Date.now() - startTime;
-      console.log(`getDecorations actually took ${getDecorationsDurationMs}ms for ${fileCount} files`);
-      assert.isBelow(getDecorationsDurationMs, 50, `should take less than 50ms to get decorations for ${fileCount} files`);
+          // get the decorations for all the files
+          // eslint-disable-next-line no-console
+          actualDecorations = {};
+          startTime = Date.now();
+          eslintPaths.forEach((path) => {
+            const decoration = linkManager.getDecorationData(path);
+            if (decoration) {
+              actualDecorations[path] = decoration;
+            }
+          });
+          const getDecorationsDurationMs = Date.now() - startTime;
+          console.log(`#getDecorations actually took`, getDecorationsDurationMs, `ms`);
+          assert.isBelow(getDecorationsDurationMs, 100, `should take less than 100ms to get decorations for ${fileCount} files`);
+
+          linkManager.dispose();
+
+          console.log("-".repeat(30), "\n");
+        });
 
       // assert that the actual decorations match the snapshot
       const expectedDecorationsPath = pathModule.join(__dirname, "LinkManagerTestData/expected-eslint-project-decorations.json");

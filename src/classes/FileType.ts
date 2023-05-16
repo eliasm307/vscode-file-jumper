@@ -16,22 +16,6 @@ export default class FileType {
    */
   private readonly keyPathToFullPathsMap: Map<string, Set<string>> = new Map();
 
-  /**
-   * Regex can be expensive to run repeatedly depending on how complex the pattern is, so cache the result
-   *
-   * @remark cache not cleared on reset as it is not context specific and doesn't affect behaviour
-   */
-  // todo investigate if this is actually worth it
-  private readonly regexTestCache: Map<string, boolean> = new Map();
-
-  /**
-   * @key full file path
-   *
-   * @remark cache not cleared on reset as its not context specific and doesn't affect behaviour
-   * @remark `null` means this was executed and no keypath found
-   */
-  private readonly fullPathToKeyPathCache: Map<string, KeyPath | null> = new Map();
-
   constructor(private readonly config: FileTypeConfig) {
     this.patterns = config.patterns.map((pattern) => new RegExp(pattern));
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
@@ -40,14 +24,12 @@ export default class FileType {
     this.name = config.name;
   }
 
+  /**
+   * @remark this was cached initially, assuming regex could have performance cost depending on how complex it was
+   * but there weren't significant observed performance gains so decided to simplify until it actually becomes a problem
+   */
   matches(path: string): boolean {
-    const cachedResult = this.regexTestCache.get(path);
-    if (typeof cachedResult === "boolean") {
-      return cachedResult;
-    }
-    const isMatch = this.patterns.some((regex) => regex.test(path));
-    this.regexTestCache.set(path, isMatch);
-    return isMatch;
+    return this.patterns.some((regex) => regex.test(path));
   }
 
   getLinkedFiles(keyPath: KeyPath): LinkedFileData[] {
@@ -101,22 +83,17 @@ export default class FileType {
     return !this.onlyLinkFromTypeNamesSet || this.onlyLinkFromTypeNamesSet.has(otherFileType.name);
   }
 
+  /**
+   * @remark This was cached initially however there wasn't a significant performance improvement so decided to simplify
+   */
   public getKeyPath(path: string): KeyPath | null | undefined {
-    const cachedKeyPath = this.fullPathToKeyPathCache.get(path);
-    if (typeof cachedKeyPath !== "undefined") {
-      return cachedKeyPath;
-    }
-
     for (const regex of this.patterns) {
       const regexMatch = path.match(regex);
       const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
       if (keyPath) {
-        this.fullPathToKeyPathCache.set(path, keyPath);
         return keyPath;
       }
     }
-
-    this.fullPathToKeyPathCache.set(path, null);
   }
 
   reset() {
@@ -125,7 +102,5 @@ export default class FileType {
 
   dispose(): void {
     this.reset();
-    this.regexTestCache.clear();
-    this.fullPathToKeyPathCache.clear();
   }
 }
