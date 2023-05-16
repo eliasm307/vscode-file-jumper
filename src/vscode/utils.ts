@@ -24,3 +24,8 @@ export function getMainConfig(): MainConfig {
     showDebugLogs: extensionConfig.get("showDebugLogs") || false,
   };
 }
+
+export async function getAllWorkspacePaths(): Promise<string[]> {
+  const allUris = (await vscode.workspace.findFiles("**/*")) || [];
+  return allUris.map((uri) => uri.path);
+}

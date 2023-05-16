@@ -96,11 +96,7 @@ export default class FileType {
     }
   }
 
-  reset() {
+  dispose() {
     this.keyPathToFullPathsMap.clear();
-  }
-
-  dispose(): void {
-    this.reset();
   }
 }

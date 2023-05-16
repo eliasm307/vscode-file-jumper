@@ -21,7 +21,13 @@ import type { MainConfig } from "./utils/config";
 import { getIssuesWithMainConfig } from "./utils/config";
 import LinkManager from "./classes/LinkManager";
 import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
-import { createUri, getMainConfig, getWorkspaceRelativePath, openFileInNewTab } from "./vscode/utils";
+import {
+  createUri,
+  getAllWorkspacePaths,
+  getMainConfig,
+  getWorkspaceRelativePath,
+  openFileInNewTab,
+} from "./vscode/utils";
 import Logger, { EXTENSION_KEY } from "./classes/Logger";
 import { shortenPath } from "./utils";
 
@@ -63,56 +69,81 @@ export async function activate(context: vscode.ExtensionContext) {
 
   Logger.info("extension activated with valid config:", mainConfig);
 
-  const linkManager = new LinkManager(mainConfig, {
-    onFileLinksUpdated() {
-      const fsPathsWithLinks = linkManager.getPathsWithRelatedFiles().map((normalisedPath) => createUri(normalisedPath).fsPath);
-
-      Logger.info("#onFileLinksUpdated: fsPathsWithLinks = ", fsPathsWithLinks);
-      const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "coLocate.filePathsWithLinks";
-      void vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
-    },
-  });
-
+  const linkManager = new LinkManager(mainConfig);
   const badgeDecorationProvider = new BadgeDecorationProvider({
     getDecorationData: (path) => linkManager.getDecorationData(path),
   });
 
-  const allUris = await vscode.workspace.findFiles("**/*");
-  const allPaths = allUris.map((file) => file.path);
-  Logger.info("allPaths", allPaths);
+  linkManager.onFileLinksUpdated((affectedPaths) => {
+    // need to use FS paths for context key so they work with menu items conditions (they dont have an option to use the normalised path)
+    const fsPathsWithLinks = linkManager
+      .getPathsWithRelatedFiles()
+      .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
+    Logger.info("#onFileLinksUpdated: fsPathsWithLinks = ", fsPathsWithLinks);
+    const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "coLocate.filePathsWithLinks";
+    void vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
+
+    const affectedPathUris = affectedPaths?.map((path) => vscode.Uri.file(path));
+    badgeDecorationProvider.notifyFileDecorationsChanged(affectedPathUris);
+  });
+
+  const allPaths = await getAllWorkspacePaths();
+  Logger.info("allPaths", allPaths);
   linkManager.addPathsAndNotify(allPaths);
 
   context.subscriptions.push(
-    { dispose: () => linkManager.reset() },
+    { dispose: () => linkManager.revertToInitial() },
     registerNavigateCommand(linkManager),
     vscode.window.registerFileDecorationProvider(badgeDecorationProvider),
     /**
      * @remark When renaming a folder with children only one event is fired.
      */
-    vscode.workspace.onDidRenameFiles((e) => {
-      const oldPaths = e.files.map((file) => file.oldUri.path);
-      const newPaths = e.files.map((file) => file.newUri.path);
-      linkManager.renameFilesAndNotify({ oldPaths, newPaths });
-      badgeDecorationProvider.notifyFileDecorationsChanged();
+    vscode.workspace.onDidRenameFiles(async (e) => {
+      try {
+        const oldPaths = e.files.map((file) => file.oldUri.path);
+        const newPaths = e.files.map((file) => file.newUri.path);
+        linkManager.renameFilesAndNotify({ oldPaths, newPaths });
+
+        // show user error before throwing it internally
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling renamed files: ${message}`);
+        throw error;
+      }
     }),
     /**
      * @remark This event is not fired when files change on disk, e.g triggered by another application, or when using the workspace.fs-api
      */
-    vscode.workspace.onDidCreateFiles((e) => {
-      linkManager.addPathsAndNotify(e.files.map((file) => file.path));
-      badgeDecorationProvider.notifyFileDecorationsChanged();
+    vscode.workspace.onDidCreateFiles(async (e) => {
+      try {
+        linkManager.addPathsAndNotify(e.files.map((file) => file.path));
+        badgeDecorationProvider.notifyFileDecorationsChanged();
+
+        // show user error before throwing it internally
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling created files: ${message}`);
+        throw error;
+      }
     }),
     /**
      * @remark This event is not fired when files change on disk, e.g triggered by another application, or when using the workspace.fs-api
      *
      * @remark When deleting a folder with children only one event is fired.
      */
-    vscode.workspace.onDidDeleteFiles((e) => {
-      // todo create a FileStructureManager class to handle finding out which files are actually affected by a possible folder delete/rename
-      Logger.warn("onDidDeleteFiles", e);
-      linkManager.removePathsAndNotify(e.files.map((file) => file.path));
-      badgeDecorationProvider.notifyFileDecorationsChanged();
+    vscode.workspace.onDidDeleteFiles(async (e) => {
+      try {
+        Logger.warn("onDidDeleteFiles", e);
+        linkManager.removePathsAndNotify(e.files.map((file) => file.path));
+        badgeDecorationProvider.notifyFileDecorationsChanged();
+
+        // show user error before throwing it internally
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling deleted files: ${message}`);
+        throw error;
+      }
     }),
     vscode.workspace.onDidChangeWorkspaceFolders((e) => {
       // todo handle workspace folder change
@@ -120,21 +151,33 @@ export async function activate(context: vscode.ExtensionContext) {
       // ? could use this to handle workspace folder change?
     }),
     vscode.workspace.onDidChangeConfiguration(async (e) => {
-      const newMainConfig = getMainConfig();
+      try {
+        const newMainConfig = getMainConfig();
 
-      Logger.info("onDidChangeConfiguration", "newMainConfig", e, {
-        newMainConfig,
-      });
+        Logger.info("onDidChangeConfiguration", "newMainConfig", e, {
+          newMainConfig,
+        });
 
-      const newConfigIssues = getIssuesWithMainConfig(newMainConfig);
-      if (newConfigIssues.length) {
-        await logAndShowIssuesWithConfig(newConfigIssues);
-        Logger.info("config change not applied due to config issues");
-        return;
+        const newConfigIssues = getIssuesWithMainConfig(newMainConfig);
+        if (newConfigIssues.length) {
+          await logAndShowIssuesWithConfig(newConfigIssues);
+          Logger.info("config change not applied due to config issues");
+          return;
+        }
+
+        linkManager.updateConfig({
+          config: newMainConfig,
+          paths: await getAllWorkspacePaths(),
+        });
+        badgeDecorationProvider.notifyFileDecorationsChanged();
+
+        // show the user error before throwing it internally
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        Logger.error("onDidChangeConfiguration", message, error);
+        await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling configuration change: ${message}`);
+        throw error;
       }
-
-      linkManager.updateConfig(newMainConfig);
-      badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
   );
 
@@ -145,7 +188,7 @@ function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
   const disposable = vscode.commands.registerCommand("coLocate.navigateCommand", async (uri: vscode.Uri) => {
-    const quickPickItems = linkManager.getRelatedFiles(uri.path).map((relatedFile) => {
+    const quickPickItems = linkManager.getFilesLinkedFrom(uri.path).map((relatedFile) => {
       return {
         label: `${relatedFile.marker} ${relatedFile.typeName}`,
         // if this overflows the end of the path is hidden and we want to prioritise the end of the path so we shorten it

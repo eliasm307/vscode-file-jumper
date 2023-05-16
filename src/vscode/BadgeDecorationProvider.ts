@@ -13,9 +13,9 @@ export default class BadgeDecorationProvider implements vscode.FileDecorationPro
 
   onDidChangeFileDecorations = this.onDidChangeFileDecorationsEmitter.event;
 
-  notifyFileDecorationsChanged(uri?: vscode.Uri | vscode.Uri[]): void {
-    Logger.warn("BadgeDecorationProvider#notifyFileDecorationsChanged", uri);
-    this.onDidChangeFileDecorationsEmitter.fire(uri);
+  notifyFileDecorationsChanged(affectedPaths?: vscode.Uri[]): void {
+    Logger.warn("BadgeDecorationProvider#notifyFileDecorationsChanged", affectedPaths);
+    this.onDidChangeFileDecorationsEmitter.fire(affectedPaths);
   }
 
   provideFileDecoration(uri: vscode.Uri): vscode.ProviderResult<vscode.FileDecoration> {

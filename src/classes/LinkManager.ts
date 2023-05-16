@@ -4,20 +4,26 @@ import type { MainConfig } from "../utils/config";
 import { mainConfigsAreEqual } from "../utils/config";
 import Logger from "./Logger";
 
+type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => void;
+
 export default class LinkManager {
   private fileTypes: FileType[] = [];
 
   private ignorePatterns: RegExp[] = [];
 
-  private registeredPaths: Set<string> = new Set();
+  /**
+   * This represents all the relevant paths the link manager is aware of that are of a known type
+   */
+  private allRelevantPaths: Set<string> = new Set();
 
-  constructor(
-    private config: MainConfig,
-    private readonly options?: {
-      onFileLinksUpdated: () => void;
-    },
-  ) {
+  private onFileLinksUpdatedHandlers: OnFileLinksUpdatedHandler[] = [];
+
+  constructor(private config: MainConfig) {
     this.applyConfig(config);
+  }
+
+  onFileLinksUpdated(handler: OnFileLinksUpdatedHandler): void {
+    this.onFileLinksUpdatedHandlers.push(handler);
   }
 
   private applyConfig(config: MainConfig): void {
@@ -32,75 +38,85 @@ export default class LinkManager {
     return this.ignorePatterns.some((regex) => regex.test(path));
   }
 
+  private getIndirectlyAffectedPaths(pathsModified: string[]): string[] {
+    return pathsModified.flatMap((path) => this.getFilesLinkedFrom(path)).map((file) => file.fullPath);
+  }
+
   addPathsAndNotify(paths: string[]): void {
     Logger.info("#addFiles", paths);
     const endTimerAndLog = Logger.startTimer(`#addFiles(${paths.length})`);
-    const relevantFiles = paths.filter((path) => !this.pathShouldBeIgnored(path));
-    const includesKnownType = relevantFiles.some((path) => this.getFileType(path));
-    if (includesKnownType) {
-      this.applyPathAdditions(relevantFiles);
-      this.notifyFileLinksUpdated();
+    const relevantPathsAdded = paths
+      .filter((path) => !this.pathShouldBeIgnored(path))
+      .filter((path) => this.isKnownFileTypePath(path));
+
+    if (relevantPathsAdded.length) {
+      this.applyPathAdditions(relevantPathsAdded);
+      this.notifyFileLinksUpdated([...relevantPathsAdded, ...this.getIndirectlyAffectedPaths(relevantPathsAdded)]);
     }
     endTimerAndLog();
   }
 
   private applyPathAdditions(paths: Set<string> | string[]) {
-    paths.forEach((path) => this.registeredPaths.add(path));
+    paths.forEach((path) => this.allRelevantPaths.add(path));
     this.fileTypes.forEach((fileType) => fileType.addPaths(paths));
   }
 
   removePathsAndNotify(paths: string[]) {
-    const relevantFiles = paths.filter((path) => !this.pathShouldBeIgnored(path));
-    const includesKnownType = relevantFiles.some((path) => this.getFileType(path));
-    if (includesKnownType) {
-      this.applyPathRemovals(relevantFiles);
-      this.notifyFileLinksUpdated();
+    const relevantPathsRemoved = paths
+      .filter((path) => !this.pathShouldBeIgnored(path))
+      .filter((path) => this.isKnownFileTypePath(path));
+
+    if (relevantPathsRemoved.length) {
+      this.applyPathRemovals(relevantPathsRemoved);
+      const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths(relevantPathsRemoved);
+      this.notifyFileLinksUpdated(indirectlyAffectedPaths);
     }
   }
 
   private applyPathRemovals(paths: string[]) {
-    paths.forEach((path) => this.registeredPaths.delete(path));
+    paths.forEach((path) => this.allRelevantPaths.delete(path));
     this.fileTypes.forEach((fileType) => fileType.removePaths(paths));
   }
 
   renameFilesAndNotify({ oldPaths, newPaths }: { oldPaths: string[]; newPaths: string[] }) {
-    const oldRelevantPaths = oldPaths.filter((path) => !this.pathShouldBeIgnored(path));
-    const oldPathsIncludeKnownType = oldRelevantPaths.some((path) => this.getFileType(path));
-    const newRelevantPaths = newPaths.filter((path) => !this.pathShouldBeIgnored(path));
-    const newPathsIncludeKnownType = newRelevantPaths.some((path) => this.getFileType(path));
-    if (!oldPathsIncludeKnownType && !newPathsIncludeKnownType) {
-      return;
+    const relevantPathsRemoved = oldPaths
+      .filter((path) => !this.pathShouldBeIgnored(path))
+      .filter((path) => this.isKnownFileTypePath(path));
+
+    const relevantPathsAdded = newPaths
+      .filter((path) => !this.pathShouldBeIgnored(path))
+      .filter((path) => this.isKnownFileTypePath(path));
+
+    const relevantFilesAffected = relevantPathsRemoved.length || relevantPathsAdded.length;
+    if (!relevantFilesAffected) {
+      return; // no known file types were affected so no need to update
     }
 
-    this.applyFileRenames({ oldPaths: oldRelevantPaths, newPaths: newRelevantPaths });
-    this.notifyFileLinksUpdated();
+    this.applyPathRemovals(relevantPathsRemoved);
+    this.applyPathAdditions(relevantPathsAdded);
+
+    this.notifyFileLinksUpdated([
+      ...relevantPathsAdded,
+      ...this.getIndirectlyAffectedPaths([...relevantPathsAdded, ...relevantPathsRemoved]),
+    ]);
   }
 
-  private applyFileRenames({ oldPaths, newPaths }: { oldPaths: string[]; newPaths: string[] }) {
-    this.applyPathRemovals(oldPaths);
-    this.applyPathAdditions(newPaths);
-  }
-
-  /**
-   * We dont bother trying to figure out the exact paths that changed to know what to update since the editor only re-renders the visible items so a full re-render is fine
-   */
-  private notifyFileLinksUpdated() {
-    this.options?.onFileLinksUpdated();
+  private notifyFileLinksUpdated(affectedPaths: string[] | null) {
+    this.onFileLinksUpdatedHandlers.forEach((handler) => handler(affectedPaths));
   }
 
   /**
    * @remark This used to be cached however there weren't any significant performance gains
    * so decided to simplify until there is a need for it
    */
-  getFileType(path: string): FileType | undefined {
-    if (this.pathShouldBeIgnored(path)) {
-      return;
+  private getFileType(path: string): FileType | undefined {
+    if (!this.pathShouldBeIgnored(path)) {
+      return this.fileTypes.find((fileType) => fileType.matches(path));
     }
-    for (const fileType of this.fileTypes) {
-      if (fileType.matches(path)) {
-        return fileType;
-      }
-    }
+  }
+
+  private isKnownFileTypePath(path: string): boolean {
+    return !!this.getFileType(path);
   }
 
   getFileMetaData(inputPath: string): FileMetaData | undefined {
@@ -108,29 +124,25 @@ export default class LinkManager {
     if (!inputFileType) {
       return; // file is not of a known type
     }
-    const keyPath = inputFileType.getKeyPath(inputPath);
 
-    let linkedFiles: LinkedFileData[] = [];
-    if (keyPath) {
-      linkedFiles = this.fileTypes
-        .filter((fileType) => fileType !== inputFileType) // prevent a file from being related to itself
-        .filter((fileType) => inputFileType.allowsLinksTo(fileType))
-        .filter((fileType) => fileType.allowsLinksFrom(inputFileType))
-        .flatMap((fileType) => fileType.getLinkedFiles(keyPath));
-    }
+    const keyPath = inputFileType.getKeyPath(inputPath)!;
 
     return {
       fileType: inputFileType,
-      linkedFiles,
+      linkedFiles: this.fileTypes
+        .filter((fileType) => fileType !== inputFileType) // prevent a file from being related to itself
+        .filter((fileType) => inputFileType.allowsLinksTo(fileType))
+        .filter((fileType) => fileType.allowsLinksFrom(inputFileType))
+        .flatMap((fileType) => fileType.getLinkedFiles(keyPath)),
     };
   }
 
-  getRelatedFiles(path: string): LinkedFileData[] {
+  getFilesLinkedFrom(path: string): LinkedFileData[] {
     return this.getFileMetaData(path)?.linkedFiles || [];
   }
 
   getPathsWithRelatedFiles(): string[] {
-    return [...this.registeredPaths].filter((path) => this.getRelatedFiles(path).length);
+    return [...this.allRelevantPaths].filter((path) => this.getFilesLinkedFrom(path).length);
   }
 
   getDecorationData(path: string): DecorationData | undefined {
@@ -143,14 +155,8 @@ export default class LinkManager {
       if (!relatedFiles?.length) {
         if (!fileMetaData) {
           Logger.warn(runKey, "Could not get metaData");
-        } else if (!fileMetaData?.linkedFiles?.length) {
-          Logger.warn(runKey, "No related files", {
-            typeName: fileMetaData.fileType.name,
-            keyPath: fileMetaData.fileType.getKeyPath(path),
-            linkedFilesCount: fileMetaData.linkedFiles?.length,
-          });
         } else {
-          Logger.warn(runKey, "Unknown error", {
+          Logger.warn(runKey, "No related files", {
             typeName: fileMetaData.fileType.name,
             keyPath: fileMetaData.fileType.getKeyPath(path),
             linkedFilesCount: fileMetaData.linkedFiles?.length,
@@ -201,31 +207,27 @@ export default class LinkManager {
     }
   }
 
-  /** This resets the instance with the expectation that it will be re-used */
-  reset() {
-    // we are keeping the same fileTypes instances, so dont need to clear cache
-    this.fileTypes.forEach((fileType) => fileType.reset());
-    this.registeredPaths = new Set();
-  }
-
-  /** This disposes of the instance with the expectation that it will not be re-used */
-  dispose() {
+  /** This reverts the instance to its initial state */
+  revertToInitial() {
     this.fileTypes.forEach((fileType) => fileType.dispose());
-    // @ts-expect-error [allowed on dispose]
-    this.registeredPaths = null;
+    this.allRelevantPaths.clear();
   }
 
-  updateConfig(newConfig: MainConfig) {
-    const configHasChanged = !mainConfigsAreEqual(this.config, newConfig);
+  /**
+   * We need to do a full refresh here as the config change could also change what files we consider "relevant"
+   * so we need to re-evaluate the entire workspace
+   */
+  updateConfig(newWorkspace: { config: MainConfig; paths: string[] }) {
+    const configHasChanged = !mainConfigsAreEqual(this.config, newWorkspace.config);
     if (!configHasChanged) {
       return;
     }
-    Logger.warn("LinkManager#updateConfig", newConfig);
-    const initiallyRegisteredPaths = new Set(this.registeredPaths); // copy them so we can restore them later
-    this.reset();
-    this.applyConfig(newConfig);
-    this.applyPathAdditions(initiallyRegisteredPaths); // restore the previously registered paths
+    Logger.warn("LinkManager#updateConfig", newWorkspace.config);
+    this.revertToInitial();
+    this.applyConfig(newWorkspace.config);
+    this.applyPathAdditions(newWorkspace.paths); // need to consider all workspace paths
 
-    this.notifyFileLinksUpdated();
+    // need to do a full refresh even for paths we disregarded before
+    this.notifyFileLinksUpdated(null);
   }
 }

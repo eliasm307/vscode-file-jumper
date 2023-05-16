@@ -166,7 +166,7 @@ describe("FileType", () => {
       );
       assert.isTrue(fileType.matches(matchingFullPath), "file should match");
 
-      fileType.reset();
+      fileType.dispose();
 
       assert.deepStrictEqual(fileType.getLinkedFiles(validKeyPath), [], "linked file should not be found");
       assert.isTrue(fileType.matches(matchingFullPath), "file should still match after reset");
@@ -216,6 +216,12 @@ describe("FileType", () => {
         assert.deepStrictEqual(fileType.getLinkedFiles(validKeyPath2), [], "linked file2 should not be found");
       }
     }
+
+    it("can handle being called with unregistered files", () => {
+      fileType = createFileTypeWithRegisteredFiles();
+
+      fileType.removePaths(["/test/dir1/unknown.ts"]); // ie should not throw
+    });
 
     it("can de-register registered files", () => {
       fileType = createFileTypeWithRegisteredFiles();

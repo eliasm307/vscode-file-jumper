@@ -59,28 +59,7 @@ describe("LinkManager", () => {
   }
 
   afterEach(() => {
-    linkManager?.dispose();
-  });
-
-  describe("#getFileType", () => {
-    it("returns the correct file type", () => {
-      linkManager = createDefaultTestInstance();
-      const sourceFileType = linkManager.getFileType("/src/classes/Entity.ts");
-      assert.strictEqual(sourceFileType?.name, "Source", "Source file type should be found");
-
-      const testFileType = linkManager.getFileType("/test/classes/Entity.test.ts");
-      assert.strictEqual(testFileType?.name, "Test", "Test file type should be found");
-
-      const docsFileType = linkManager.getFileType("/docs/classes/Entity.md");
-      assert.strictEqual(docsFileType?.name, "Documentation", "Docs file type should be found");
-    });
-
-    it("should return undefined if the file type is not found", () => {
-      linkManager = createDefaultTestInstance();
-
-      const unknownFileType = linkManager.getFileType("/unknown/file/path.ts");
-      assert.isUndefined(unknownFileType, "Unknown file type should not be found");
-    });
+    linkManager?.revertToInitial();
   });
 
   describe("meta data functionality", () => {
@@ -123,8 +102,7 @@ describe("LinkManager", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
       const path = "/root/src/classes/Entity.ts";
-      assert.strictEqual(linkManager.getFileType(path)?.name, "Source", "Source file type should be found");
-      assert.deepStrictEqual(linkManager.getRelatedFiles(path), [
+      assert.deepStrictEqual(linkManager.getFilesLinkedFrom(path), [
         {
           typeName: "Test",
           marker: "🧪",
@@ -300,17 +278,23 @@ describe("LinkManager", () => {
         "/root/src/unknown/file/path.ts",
       ]);
 
-      const sourcepath = "/root/src/classes/Entity.ts";
+      const sourcePath = "/root/src/classes/Entity.ts";
 
-      assert.isTrue(linkManager.getRelatedFiles(sourcepath).length > 0, "Files related to Source file should be found");
+      assert.isTrue(
+        linkManager.getFilesLinkedFrom(sourcePath).length > 0,
+        "Files related to Source file should be found",
+      );
 
-      linkManager.reset();
+      linkManager.revertToInitial();
 
-      assert.isTrue(linkManager.getRelatedFiles(sourcepath).length === 0, "Files related to Source file should not be found after reset");
+      assert.isTrue(
+        linkManager.getFilesLinkedFrom(sourcePath).length === 0,
+        "Files related to Source file should not be found after reset",
+      );
     });
   });
 
-  describe("#getpathsWithRelatedFiles", () => {
+  describe("#getPathsWithRelatedFiles", () => {
     it("should return all files that have related files", () => {
       linkManager = createDefaultTestInstance();
       linkManager.addPathsAndNotify([
@@ -398,18 +382,28 @@ describe("LinkManager", () => {
           });
           const getDecorationsDurationMs = Date.now() - startTime;
           console.log(`#getDecorations actually took`, getDecorationsDurationMs, `ms`);
-          assert.isBelow(getDecorationsDurationMs, 100, `should take less than 100ms to get decorations for ${fileCount} files`);
+          assert.isBelow(
+            getDecorationsDurationMs,
+            100,
+            `should take less than 100ms to get decorations for ${fileCount} files`,
+          );
 
-          linkManager.dispose();
+          linkManager.revertToInitial();
 
           console.log("-".repeat(30), "\n");
         });
 
       // assert that the actual decorations match the snapshot
-      const expectedDecorationsPath = pathModule.join(__dirname, "LinkManagerTestData/expected-eslint-project-decorations.json");
+      const expectedDecorationsPath = pathModule.join(
+        __dirname,
+        "LinkManagerTestData/expected-eslint-project-decorations.json",
+      );
       const expectedDecorationsSnapshotExists = fs.existsSync(expectedDecorationsPath);
       if (expectedDecorationsSnapshotExists) {
-        const actualDecorationsPath = pathModule.join(__dirname, "LinkManagerTestData/actual-eslint-project-decorations.json");
+        const actualDecorationsPath = pathModule.join(
+          __dirname,
+          "LinkManagerTestData/actual-eslint-project-decorations.json",
+        );
         fs.writeFileSync(actualDecorationsPath, JSON.stringify(actualDecorations, null, 2));
         const expectedDecorations: DecorationsMap = JSON.parse(fs.readFileSync(expectedDecorationsPath, "utf8"));
         assert.deepStrictEqual(actualDecorations, expectedDecorations, "eslint decorations should match expected");
