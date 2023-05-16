@@ -80,7 +80,8 @@ export default class LinkManager {
     if (keyPath) {
       relatedFiles = this.fileTypes
         .filter((fileType) => fileType !== inputFileType) // prevent a file from being related to itself
-        .filter((fileType) => inputFileType.canRelateTo(fileType))
+        .filter((fileType) => inputFileType.allowsLinksTo(fileType))
+        .filter((fileType) => fileType.allowsLinksFrom(inputFileType))
         .map((fileType) => fileType.getRelatedFile(keyPath))
         .filter(isTruthy);
     }

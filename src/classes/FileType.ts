@@ -8,6 +8,7 @@ export default class FileType {
   private readonly patterns: RegExp[];
 
   private readonly onlyLinkToTypeNamesSet?: Set<string>;
+  private readonly onlyLinkFromTypeNamesSet?: Set<string>;
 
   private readonly keyPathToFullPathMap: Map<string, string> = new Map();
 
@@ -30,6 +31,8 @@ export default class FileType {
   constructor(private readonly config: FileTypeConfig) {
     this.patterns = config.patterns.map((pattern) => new RegExp(pattern));
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
+    this.onlyLinkFromTypeNamesSet = config.onlyLinkFrom && new Set(config.onlyLinkFrom);
+
     this.name = config.name;
   }
 
@@ -64,11 +67,18 @@ export default class FileType {
     });
   }
 
-  canRelateTo(otherFileType: FileType): unknown {
+  allowsLinksTo(otherFileType: FileType): unknown {
     if (!this.onlyLinkToTypeNamesSet) {
       return true; // defaults to all file types can link to all other file types
     }
     return this.onlyLinkToTypeNamesSet.has(otherFileType.name);
+  }
+
+  allowsLinksFrom(inputFileType: FileType): unknown {
+    if (!this.onlyLinkFromTypeNamesSet) {
+      return true; // defaults to all file types can be linked from all other file types
+    }
+    return this.onlyLinkFromTypeNamesSet.has(inputFileType.name);
   }
 
   public getKeyPath(filePath: string): KeyPath | null | undefined {

@@ -23,6 +23,12 @@ describe("LinkManager", () => {
           patterns: ["\\/(docs|docs)\\/(?<key>.*)\\.md$"],
           onlyLinkTo: ["Source"],
         },
+        {
+          name: "Build Output",
+          marker: "📦",
+          patterns: ["\\/dist\\/(.*)\\.js$"],
+          onlyLinkFrom: ["Source"],
+        },
       ],
       ignorePatterns: ["\\/node_modules\\/"],
       showDebugLogs: false,
@@ -64,6 +70,7 @@ describe("LinkManager", () => {
         "/root/node_modules/package/docs/classes/Entity.md",
 
         // non-ignored files
+        "/root/dist/classes/Entity.js",
         "/root/src/classes/Entity.ts",
         "/root/test/classes/Entity.test.ts",
         "/root/test/classes/Entity2.test.ts",
@@ -88,12 +95,17 @@ describe("LinkManager", () => {
           marker: "📖",
           fullPath: "/root/docs/classes/Entity.md",
         },
+        {
+          typeName: "Build Output",
+          marker: "📦",
+          fullPath: "/root/dist/classes/Entity.js",
+        },
       ]);
       assert.deepStrictEqual(
         linkManager.getDecorationData(filePath),
         {
-          badgeText: "🧪📖",
-          tooltip: "Links: Test + Documentation",
+          badgeText: "🧪📖📦",
+          tooltip: "Links: Test + Documentation + Build Output",
         },
         "correct related file markers found",
       );
@@ -113,6 +125,11 @@ describe("LinkManager", () => {
           marker: "📖",
           fullPath: "/root/docs/classes/Entity.md",
         },
+        {
+          typeName: "Build Output",
+          marker: "📦",
+          fullPath: "/root/dist/classes/Entity.js",
+        },
       ]);
     });
 
@@ -124,7 +141,7 @@ describe("LinkManager", () => {
       assert.isUndefined(linkManager.getDecorationData(filePath), "no decoration data when no related files found");
     });
 
-    it("returns correct file meta data when file is not related to all other possible types", () => {
+    it("returns correct file meta data when file is not related to all other possible types via onlyLinkTo", () => {
       const filePath = "/root/docs/classes/Entity.md";
       const fileMetaData = linkManager.getFileMetaData(filePath);
       assert.strictEqual(fileMetaData?.fileType.name, "Documentation", "correct file type found");
@@ -149,7 +166,7 @@ describe("LinkManager", () => {
       );
     });
 
-    it("allows files to link to other files that dont link back to them", () => {
+    it("allows files to link to other files that dont link back to them, except if they use onlyLinkFrom", () => {
       const testFileMetaData = linkManager.getFileMetaData("/root/test/classes/Entity.test.ts");
       assert.strictEqual(testFileMetaData?.fileType.name, "Test", "Test file type should be found");
       assert.deepStrictEqual(testFileMetaData?.relatedFiles, [

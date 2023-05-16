@@ -5,13 +5,21 @@ export type FileTypeConfig = {
   marker: string;
   patterns: string[];
   /**
-   * The names of other file types that this file type produces links to
+   * The names of other file types that this file type can produces links to
    *
    * @remark By default (when not defined), all file types can be linked to all other file types
    *
    * @remark Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it
    */
   onlyLinkTo?: string[];
+  /**
+   * The names of other file types that can link to this file type
+   *
+   * @remark By default (when not defined), all file types can be linked to all other file types
+   *
+   * @remark Setting this to an empty array will prevent other files from linking to this file type, ie it will not have shortcuts to it but it can have shortcuts to other file types
+   */
+  onlyLinkFrom?: string[];
 };
 
 export type MainConfig = {

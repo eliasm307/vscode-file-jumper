@@ -115,6 +115,14 @@
                     "type": "string"
                   },
                   "uniqueItems": true
+                },
+                "onlyLinkFrom": {
+                  "markdownDescription": "(**OPTIONAL**) The names of other file types that can link to this file type.\n\nBy default (when not defined), all file types can be linked to all other file types.\n\n**NOTE** Setting this to an empty array will prevent other files from linking to this file type, ie it will not have shortcuts to it but it can have shortcuts to other file types",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "uniqueItems": true
                 }
               },
               "required": [
