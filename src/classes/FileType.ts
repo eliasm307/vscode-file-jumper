@@ -1,4 +1,4 @@
-import type { KeyPath, RelatedFileData } from "../types";
+import type { KeyPath, LinkedFileData } from "../types";
 import type { FileTypeConfig } from "../utils/config";
 import Logger from "./Logger";
 
@@ -50,7 +50,7 @@ export default class FileType {
     return isMatch;
   }
 
-  getRelatedFiles(keyPath: KeyPath): RelatedFileData[] {
+  getLinkedFiles(keyPath: KeyPath): LinkedFileData[] {
     const fullPathsSet = this.keyPathToFullPathsMap.get(keyPath);
     const fullPathsArray = fullPathsSet ? [...fullPathsSet] : [];
     return fullPathsArray.map((fullPath) => ({

@@ -1,5 +1,5 @@
 import FileType from "./FileType";
-import type { DecorationData, FileMetaData, RelatedFileData } from "../types";
+import type { DecorationData, FileMetaData, LinkedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
 import { mainConfigsAreEqual } from "../utils/config";
 import Logger from "./Logger";
@@ -41,12 +41,10 @@ export default class LinkManager {
     const endTimerAndLog = Logger.startTimer(`#addFiles(${paths.length})`);
     const relevantFiles = paths.filter((path) => !this.pathShouldBeIgnored(path));
     const includesKnownType = relevantFiles.some((path) => this.getFileType(path));
-    if (!includesKnownType) {
-      return;
+    if (includesKnownType) {
+      this.applyPathAdditions(relevantFiles);
+      this.notifyFileLinksUpdated();
     }
-
-    this.applyPathAdditions(relevantFiles);
-    this.notifyFileLinksUpdated();
     endTimerAndLog();
   }
 
@@ -58,12 +56,10 @@ export default class LinkManager {
   removePathsAndNotify(paths: string[]) {
     const relevantFiles = paths.filter((path) => !this.pathShouldBeIgnored(path));
     const includesKnownType = relevantFiles.some((path) => this.getFileType(path));
-    if (!includesKnownType) {
-      return;
+    if (includesKnownType) {
+      this.applyPathRemovals(relevantFiles);
+      this.notifyFileLinksUpdated();
     }
-
-    this.applyPathRemovals(relevantFiles);
-    this.notifyFileLinksUpdated();
   }
 
   private applyPathRemovals(paths: string[]) {
@@ -120,25 +116,25 @@ export default class LinkManager {
     }
     const keyPath = inputFileType.getKeyPath(inputPath);
 
-    let relatedFiles: RelatedFileData[] = [];
+    let linkedFiles: LinkedFileData[] = [];
     if (keyPath) {
-      relatedFiles = this.fileTypes
+      linkedFiles = this.fileTypes
         .filter((fileType) => fileType !== inputFileType) // prevent a file from being related to itself
         .filter((fileType) => inputFileType.allowsLinksTo(fileType))
         .filter((fileType) => fileType.allowsLinksFrom(inputFileType))
-        .flatMap((fileType) => fileType.getRelatedFiles(keyPath));
+        .flatMap((fileType) => fileType.getLinkedFiles(keyPath));
     }
 
     const metaData: FileMetaData = {
       fileType: inputFileType,
-      relatedFiles,
+      linkedFiles,
     };
 
     return metaData;
   }
 
-  getRelatedFiles(path: string): RelatedFileData[] {
-    return this.getFileMetaData(path)?.relatedFiles || [];
+  getRelatedFiles(path: string): LinkedFileData[] {
+    return this.getFileMetaData(path)?.linkedFiles || [];
   }
 
   getPathsWithRelatedFiles(): string[] {
@@ -150,11 +146,24 @@ export default class LinkManager {
     const endTimerAndLog = Logger.startTimer(runKey);
 
     try {
-      const metaData = this.getFileMetaData(path);
-
-      const relatedFiles = metaData?.relatedFiles;
+      const fileMetaData = this.getFileMetaData(path);
+      const relatedFiles = fileMetaData?.linkedFiles;
       if (!relatedFiles?.length) {
-        Logger.warn(runKey, "Could not get metaData");
+        if (!fileMetaData) {
+          Logger.warn(runKey, "Could not get metaData");
+        } else if (!fileMetaData?.linkedFiles?.length) {
+          Logger.warn(runKey, "No related files", {
+            typeName: fileMetaData.fileType.name,
+            keyPath: fileMetaData.fileType.getKeyPath(path),
+            linkedFilesCount: fileMetaData.linkedFiles?.length,
+          });
+        } else {
+          Logger.warn(runKey, "Unknown error", {
+            typeName: fileMetaData.fileType.name,
+            keyPath: fileMetaData.fileType.getKeyPath(path),
+            linkedFilesCount: fileMetaData.linkedFiles?.length,
+          });
+        }
         // const foundRawFileType = this.config.fileTypes.find((fileType) => {
         //   return fileType.patterns.some((pattern) => {
         //     return new RegExp(pattern).test(path);
@@ -172,15 +181,27 @@ export default class LinkManager {
         return;
       }
 
+      Logger.info(runKey, "Found related files");
+
       const uniqueRelatedFileTypeNames = new Set<string>();
       relatedFiles.forEach((file) => uniqueRelatedFileTypeNames.add(file.typeName));
       const uniqueRelatedFileMarkers = new Set<string>();
       relatedFiles.forEach((file) => uniqueRelatedFileMarkers.add(file.marker));
 
-      return {
+      const decorationData: DecorationData = {
         badgeText: [...uniqueRelatedFileMarkers].join(""),
         tooltip: `Links: ${[...uniqueRelatedFileTypeNames].join(" + ")}`,
       };
+
+      Logger.info(runKey, "Found related files details", {
+        keyPath: fileMetaData?.fileType.getKeyPath(path),
+        relatedFiles,
+        uniqueRelatedFileTypeNames,
+        uniqueRelatedFileMarkers,
+        decorationData,
+      });
+
+      return decorationData;
 
       // time
     } finally {
@@ -213,7 +234,7 @@ export default class LinkManager {
     const initiallyRegisteredPaths = new Set(this.registeredPaths);
     this.reset();
     this.applyConfig(newConfig);
-    this.applyPathAdditions(initiallyRegisteredPaths);
+    this.applyPathAdditions(initiallyRegisteredPaths); // restore the previously registered paths
 
     this.notifyFileLinksUpdated();
   }

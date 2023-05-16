@@ -87,7 +87,7 @@ describe("LinkManager", () => {
       const path = "/root/src/classes/Entity.ts";
       const sourceFileMetaData = linkManager.getFileMetaData(path);
       assert.strictEqual(sourceFileMetaData?.fileType.name, "Source", "Source file type should be found");
-      assert.deepStrictEqual(sourceFileMetaData?.relatedFiles, [
+      assert.deepStrictEqual(sourceFileMetaData?.linkedFiles, [
         {
           typeName: "Test",
           marker: "🧪",
@@ -144,7 +144,7 @@ describe("LinkManager", () => {
       const path = "/root/test/classes/Entity2.test.ts";
       const fileMetaData = linkManager.getFileMetaData(path);
       assert.strictEqual(fileMetaData?.fileType.name, "Test", "Test file type should be found");
-      assert.deepStrictEqual(fileMetaData?.relatedFiles, [], "No related files should be found");
+      assert.deepStrictEqual(fileMetaData?.linkedFiles, [], "No related files should be found");
       assert.isUndefined(linkManager.getDecorationData(path), "no decoration data when no related files found");
     });
 
@@ -155,7 +155,7 @@ describe("LinkManager", () => {
       const fileMetaData = linkManager.getFileMetaData(path);
       assert.strictEqual(fileMetaData?.fileType.name, "Documentation", "correct file type found");
       assert.deepStrictEqual(
-        fileMetaData?.relatedFiles,
+        fileMetaData?.linkedFiles,
         [
           {
             typeName: "Source",
@@ -180,7 +180,7 @@ describe("LinkManager", () => {
       registerDefaultFiles();
       const testFileMetaData = linkManager.getFileMetaData("/root/test/classes/Entity.test.ts");
       assert.strictEqual(testFileMetaData?.fileType.name, "Test", "Test file type should be found");
-      assert.deepStrictEqual(testFileMetaData?.relatedFiles, [
+      assert.deepStrictEqual(testFileMetaData?.linkedFiles, [
         {
           typeName: "Source",
           marker: "💻",
@@ -245,7 +245,7 @@ describe("LinkManager", () => {
       const path = "/root/src/classes/Entity.ts";
       const fileMetaData = linkManager.getFileMetaData(path);
       assert.strictEqual(fileMetaData?.fileType.name, "Source", "Correct file type should be found");
-      assert.deepStrictEqual(fileMetaData?.relatedFiles, [
+      assert.deepStrictEqual(fileMetaData?.linkedFiles, [
         {
           typeName: "Test",
           marker: "🧪",

@@ -2,10 +2,10 @@ import type FileType from "./classes/FileType";
 
 export type FileMetaData = {
   fileType: FileType;
-  relatedFiles: RelatedFileData[];
+  linkedFiles: LinkedFileData[];
 };
 
-export type RelatedFileData = {
+export type LinkedFileData = {
   typeName: string;
   marker: string;
   fullPath: string;
