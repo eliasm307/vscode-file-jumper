@@ -1,0 +1,3842 @@
+{
+  "C:/Github-Repos/eslint/docs/src/rules/accessor-pairs.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/array-bracket-newline.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/array-bracket-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/array-callback-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/array-element-newline.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/arrow-body-style.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/arrow-parens.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/arrow-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/block-scoped-var.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/block-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/brace-style.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/callback-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/camelcase.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/capitalized-comments.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/class-methods-use-this.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/comma-dangle.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/comma-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/comma-style.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/complexity.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/computed-property-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/consistent-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/consistent-this.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/constructor-super.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/curly.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/default-case-last.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/default-case.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/default-param-last.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/dot-location.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/dot-notation.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/eol-last.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/eqeqeq.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/for-direction.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/func-call-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/func-name-matching.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/func-names.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/func-style.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/function-call-argument-newline.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/function-paren-newline.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/generator-star-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/getter-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/global-require.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/grouped-accessor-pairs.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/guard-for-in.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/handle-callback-err.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/id-blacklist.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/id-denylist.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/id-length.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/id-match.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/implicit-arrow-linebreak.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/indent-legacy.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/indent.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/init-declarations.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/jsx-quotes.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/key-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/keyword-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/line-comment-position.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/linebreak-style.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/lines-around-comment.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/lines-around-directive.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/lines-between-class-members.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/logical-assignment-operators.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-classes-per-file.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-depth.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-len.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-lines-per-function.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-lines.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-nested-callbacks.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-params.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-statements-per-line.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/max-statements.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/multiline-comment-style.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/multiline-ternary.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/new-cap.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/new-parens.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/newline-after-var.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/newline-before-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/newline-per-chained-call.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-alert.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-array-constructor.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-async-promise-executor.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-await-in-loop.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-bitwise.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-buffer-constructor.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-caller.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-case-declarations.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-catch-shadow.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-class-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-compare-neg-zero.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-cond-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-confusing-arrow.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-console.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-const-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-constant-binary-expression.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-constant-condition.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-constructor-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-continue.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-control-regex.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-debugger.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-delete-var.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-div-regex.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-dupe-args.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-dupe-class-members.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-dupe-else-if.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-dupe-keys.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-duplicate-case.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-duplicate-imports.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-else-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-empty-character-class.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-empty-function.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-empty-pattern.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-empty-static-block.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-empty.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-eq-null.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-eval.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-ex-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-extend-native.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-extra-bind.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-extra-boolean-cast.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-extra-label.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-extra-parens.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-extra-semi.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-fallthrough.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-floating-decimal.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-func-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-global-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-implicit-coercion.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-implicit-globals.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-implied-eval.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-import-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-inline-comments.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-inner-declarations.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-invalid-regexp.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-invalid-this.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-irregular-whitespace.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-iterator.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-label-var.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-labels.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-lone-blocks.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-lonely-if.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-loop-func.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-loss-of-precision.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-magic-numbers.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-misleading-character-class.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-mixed-operators.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-mixed-requires.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-mixed-spaces-and-tabs.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-multi-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-multi-spaces.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-multi-str.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-multiple-empty-lines.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-native-reassign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-negated-condition.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-negated-in-lhs.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-nested-ternary.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-new-func.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-new-native-nonconstructor.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-new-object.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-new-require.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-new-symbol.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-new-wrappers.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-new.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-nonoctal-decimal-escape.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-obj-calls.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-octal-escape.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-octal.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-param-reassign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-path-concat.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-plusplus.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-process-env.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-process-exit.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-promise-executor-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-proto.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-prototype-builtins.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-redeclare.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-regex-spaces.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-restricted-exports.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-restricted-globals.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-restricted-imports.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-restricted-modules.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-restricted-properties.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-restricted-syntax.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-return-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-return-await.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-script-url.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-self-assign.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-self-compare.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-sequences.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-setter-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-shadow-restricted-names.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-shadow.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-spaced-func.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-sparse-arrays.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-sync.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-tabs.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-template-curly-in-string.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-ternary.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-this-before-super.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-throw-literal.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-trailing-spaces.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-undef-init.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-undef.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-undefined.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-underscore-dangle.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unexpected-multiline.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unmodified-loop-condition.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unneeded-ternary.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unreachable-loop.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unreachable.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unsafe-finally.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unsafe-negation.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unsafe-optional-chaining.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unused-expressions.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unused-labels.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unused-private-class-members.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-unused-vars.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-use-before-define.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-backreference.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-call.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-catch.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-computed-key.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-concat.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-constructor.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-escape.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-rename.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-useless-return.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-var.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-void.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-warning-comments.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-with.md": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/no-wrap-func.md": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/nonblock-statement-body-position.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/object-curly-newline.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/object-curly-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/object-property-newline.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/object-shorthand.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/one-var-declaration-per-line.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/one-var.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/operator-assignment.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/operator-linebreak.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/padded-blocks.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/padding-line-between-statements.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-arrow-callback.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-const.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-destructuring.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-exponentiation-operator.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-named-capture-group.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-numeric-literals.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-object-has-own.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-object-spread.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-promise-reject-errors.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-reflect.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-regex-literals.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-rest-params.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-spread.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/prefer-template.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/quote-props.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/quotes.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/radix.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/require-atomic-updates.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/require-await.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/require-jsdoc.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/require-unicode-regexp.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/require-yield.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/rest-spread-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/semi-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/semi-style.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/semi.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/sort-imports.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/sort-keys.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/sort-vars.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/space-before-blocks.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/space-before-function-paren.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/space-in-parens.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/space-infix-ops.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/space-unary-ops.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/spaced-comment.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/spaced-line-comment.md": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/strict.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/switch-colon-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/symbol-description.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/template-curly-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/template-tag-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/unicode-bom.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/use-isnan.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/valid-jsdoc.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/valid-typeof.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/vars-on-top.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/wrap-iife.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/wrap-regex.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/yield-star-spacing.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/docs/src/rules/yoda.md": {
+    "badgeText": "💻🧪",
+    "tooltip": "Links: Source + Test"
+  },
+  "C:/Github-Repos/eslint/lib/api.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/cli-engine.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/file-enumerator.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/checkstyle.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/compact.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/html.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/jslint-xml.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/json-with-metadata.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/json.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/junit.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/stylish.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/tap.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/unix.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/formatters/visualstudio.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/lint-result-cache.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli-engine/load-rules.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/cli.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/config/flat-config-array.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/config/flat-config-helpers.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/eslint/eslint.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/eslint/flat-eslint.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/apply-disable-directives.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/code-path-analysis/code-path-analyzer.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/code-path-analysis/code-path.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/config-comment-parser.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/interpolate.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/linter.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/node-event-generator.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/report-translator.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/rule-fixer.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/rules.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/safe-emitter.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/source-code-fixer.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/linter/timing.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/options.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/rule-tester/flat-rule-tester.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/rule-tester/rule-tester.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/rules/accessor-pairs.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/array-bracket-newline.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/array-bracket-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/array-callback-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/array-element-newline.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/arrow-body-style.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/arrow-parens.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/arrow-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/block-scoped-var.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/block-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/brace-style.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/callback-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/camelcase.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/capitalized-comments.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/class-methods-use-this.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/comma-dangle.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/comma-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/comma-style.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/complexity.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/computed-property-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/consistent-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/consistent-this.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/constructor-super.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/curly.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/default-case-last.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/default-case.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/default-param-last.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/dot-location.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/dot-notation.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/eol-last.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/eqeqeq.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/for-direction.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/func-call-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/func-name-matching.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/func-names.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/func-style.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/function-call-argument-newline.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/function-paren-newline.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/generator-star-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/getter-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/global-require.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/grouped-accessor-pairs.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/guard-for-in.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/handle-callback-err.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/id-blacklist.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/id-denylist.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/id-length.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/id-match.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/implicit-arrow-linebreak.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/indent-legacy.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/indent.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/init-declarations.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/jsx-quotes.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/key-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/keyword-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/line-comment-position.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/linebreak-style.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/lines-around-comment.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/lines-around-directive.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/lines-between-class-members.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/logical-assignment-operators.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-classes-per-file.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-depth.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-len.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-lines-per-function.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-lines.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-nested-callbacks.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-params.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-statements-per-line.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/max-statements.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/multiline-comment-style.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/multiline-ternary.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/new-cap.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/new-parens.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/newline-after-var.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/newline-before-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/newline-per-chained-call.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-alert.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-array-constructor.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-async-promise-executor.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-await-in-loop.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-bitwise.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-buffer-constructor.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-caller.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-case-declarations.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-catch-shadow.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-class-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-compare-neg-zero.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-cond-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-confusing-arrow.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-console.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-const-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-constant-binary-expression.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-constant-condition.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-constructor-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-continue.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-control-regex.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-debugger.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-delete-var.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-div-regex.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-dupe-args.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-dupe-class-members.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-dupe-else-if.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-dupe-keys.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-duplicate-case.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-duplicate-imports.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-else-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-empty-character-class.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-empty-function.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-empty-pattern.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-empty-static-block.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-empty.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-eq-null.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-eval.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-ex-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-extend-native.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-extra-bind.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-extra-boolean-cast.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-extra-label.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-extra-parens.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-extra-semi.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-fallthrough.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-floating-decimal.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-func-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-global-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-implicit-coercion.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-implicit-globals.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-implied-eval.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-import-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-inline-comments.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-inner-declarations.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-invalid-regexp.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-invalid-this.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-irregular-whitespace.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-iterator.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-label-var.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-labels.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-lone-blocks.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-lonely-if.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-loop-func.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-loss-of-precision.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-magic-numbers.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-misleading-character-class.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-mixed-operators.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-mixed-requires.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-mixed-spaces-and-tabs.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-multi-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-multi-spaces.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-multi-str.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-multiple-empty-lines.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-native-reassign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-negated-condition.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-negated-in-lhs.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-nested-ternary.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-new-func.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-new-native-nonconstructor.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-new-object.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-new-require.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-new-symbol.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-new-wrappers.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-new.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-nonoctal-decimal-escape.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-obj-calls.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-octal-escape.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-octal.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-param-reassign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-path-concat.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-plusplus.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-process-env.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-process-exit.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-promise-executor-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-proto.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-prototype-builtins.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-redeclare.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-regex-spaces.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-restricted-exports.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-restricted-globals.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-restricted-imports.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-restricted-modules.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-restricted-properties.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-restricted-syntax.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-return-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-return-await.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-script-url.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-self-assign.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-self-compare.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-sequences.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-setter-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-shadow-restricted-names.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-shadow.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-spaced-func.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-sparse-arrays.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-sync.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-tabs.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-template-curly-in-string.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-ternary.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-this-before-super.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-throw-literal.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-trailing-spaces.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-undef-init.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-undef.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-undefined.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-underscore-dangle.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unexpected-multiline.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unmodified-loop-condition.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unneeded-ternary.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unreachable-loop.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unreachable.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unsafe-finally.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unsafe-negation.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unsafe-optional-chaining.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unused-expressions.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unused-labels.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unused-private-class-members.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-unused-vars.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-use-before-define.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-backreference.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-call.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-catch.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-computed-key.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-concat.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-constructor.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-escape.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-rename.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-useless-return.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-var.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-void.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-warning-comments.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/no-with.js": {
+    "badgeText": "📙",
+    "tooltip": "Links: Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/nonblock-statement-body-position.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/object-curly-newline.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/object-curly-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/object-property-newline.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/object-shorthand.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/one-var-declaration-per-line.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/one-var.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/operator-assignment.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/operator-linebreak.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/padded-blocks.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/padding-line-between-statements.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-arrow-callback.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-const.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-destructuring.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-exponentiation-operator.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-named-capture-group.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-numeric-literals.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-object-has-own.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-object-spread.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-promise-reject-errors.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-reflect.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-regex-literals.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-rest-params.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-spread.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/prefer-template.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/quote-props.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/quotes.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/radix.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/require-atomic-updates.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/require-await.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/require-jsdoc.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/require-unicode-regexp.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/require-yield.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/rest-spread-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/semi-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/semi-style.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/semi.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/sort-imports.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/sort-keys.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/sort-vars.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/space-before-blocks.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/space-before-function-paren.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/space-in-parens.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/space-infix-ops.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/space-unary-ops.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/spaced-comment.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/spaced-line-comment.js": {
+    "badgeText": "📙",
+    "tooltip": "Links: Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/strict.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/switch-colon-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/symbol-description.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/template-curly-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/template-tag-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/unicode-bom.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/use-isnan.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/utils/ast-utils.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/rules/utils/fix-tracker.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/rules/valid-jsdoc.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/valid-typeof.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/vars-on-top.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/wrap-iife.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/wrap-regex.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/yield-star-spacing.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/rules/yoda.js": {
+    "badgeText": "🧪📙",
+    "tooltip": "Links: Test + Documentation"
+  },
+  "C:/Github-Repos/eslint/lib/shared/config-validator.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/shared/runtime-info.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/shared/string-utils.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/shared/traverser.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/source-code/source-code.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/lib/unsupported-api.js": {
+    "badgeText": "🧪",
+    "tooltip": "Links: Test"
+  },
+  "C:/Github-Repos/eslint/tests/lib/api.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/cli-engine.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/file-enumerator.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/checkstyle.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/compact.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/html.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/jslint-xml.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/json-with-metadata.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/json.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/junit.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/stylish.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/tap.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/unix.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/formatters/visualstudio.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/lint-result-cache.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli-engine/load-rules.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/cli.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/config/flat-config-array.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/config/flat-config-helpers.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/eslint/eslint.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/eslint/flat-eslint.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/apply-disable-directives.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/code-path-analysis/code-path-analyzer.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/code-path-analysis/code-path.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/config-comment-parser.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/interpolate.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/linter.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/node-event-generator.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/report-translator.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/rule-fixer.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/rules.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/safe-emitter.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/source-code-fixer.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/linter/timing.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/options.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rule-tester/flat-rule-tester.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rule-tester/rule-tester.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/accessor-pairs.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/array-bracket-newline.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/array-bracket-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/array-callback-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/array-element-newline.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/arrow-body-style.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/arrow-parens.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/arrow-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/block-scoped-var.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/block-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/brace-style.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/callback-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/camelcase.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/capitalized-comments.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/class-methods-use-this.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/comma-dangle.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/comma-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/comma-style.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/complexity.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/computed-property-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/consistent-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/consistent-this.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/constructor-super.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/curly.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/default-case-last.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/default-case.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/default-param-last.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/dot-location.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/dot-notation.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/eol-last.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/eqeqeq.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/for-direction.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/func-call-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/func-name-matching.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/func-names.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/func-style.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/function-call-argument-newline.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/function-paren-newline.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/generator-star-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/getter-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/global-require.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/grouped-accessor-pairs.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/guard-for-in.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/handle-callback-err.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/id-blacklist.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/id-denylist.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/id-length.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/id-match.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/implicit-arrow-linebreak.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/indent-legacy.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/indent.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/init-declarations.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/jsx-quotes.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/key-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/keyword-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/line-comment-position.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/linebreak-style.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/lines-around-comment.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/lines-around-directive.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/lines-between-class-members.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/logical-assignment-operators.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-classes-per-file.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-depth.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-len.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-lines-per-function.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-lines.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-nested-callbacks.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-params.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-statements-per-line.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/max-statements.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/multiline-comment-style.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/multiline-ternary.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/new-cap.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/new-parens.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/newline-after-var.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/newline-before-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/newline-per-chained-call.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-alert.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-array-constructor.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-async-promise-executor.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-await-in-loop.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-bitwise.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-buffer-constructor.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-caller.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-case-declarations.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-catch-shadow.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-class-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-compare-neg-zero.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-cond-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-confusing-arrow.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-console.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-const-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-constant-binary-expression.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-constant-condition.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-constructor-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-continue.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-control-regex.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-debugger.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-delete-var.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-div-regex.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-dupe-args.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-dupe-class-members.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-dupe-else-if.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-dupe-keys.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-duplicate-case.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-duplicate-imports.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-else-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-empty-character-class.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-empty-function.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-empty-pattern.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-empty-static-block.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-empty.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-eq-null.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-eval.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-ex-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-extend-native.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-extra-bind.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-extra-boolean-cast.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-extra-label.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-extra-parens.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-extra-semi.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-fallthrough.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-floating-decimal.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-func-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-global-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-implicit-coercion.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-implicit-globals.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-implied-eval.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-import-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-inline-comments.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-inner-declarations.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-invalid-regexp.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-invalid-this.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-irregular-whitespace.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-iterator.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-label-var.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-labels.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-lone-blocks.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-lonely-if.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-loop-func.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-loss-of-precision.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-magic-numbers.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-misleading-character-class.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-mixed-operators.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-mixed-requires.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-mixed-spaces-and-tabs.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-multi-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-multi-spaces.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-multi-str.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-multiple-empty-lines.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-native-reassign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-negated-condition.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-negated-in-lhs.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-nested-ternary.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-new-func.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-new-native-nonconstructor.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-new-object.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-new-require.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-new-symbol.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-new-wrappers.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-new.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-nonoctal-decimal-escape.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-obj-calls.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-octal-escape.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-octal.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-param-reassign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-path-concat.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-plusplus.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-process-env.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-process-exit.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-promise-executor-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-proto.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-prototype-builtins.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-redeclare.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-regex-spaces.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-restricted-exports.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-restricted-globals.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-restricted-imports.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-restricted-modules.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-restricted-properties.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-restricted-syntax.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-return-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-return-await.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-script-url.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-self-assign.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-self-compare.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-sequences.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-setter-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-shadow-restricted-names.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-shadow.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-spaced-func.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-sparse-arrays.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-sync.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-tabs.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-template-curly-in-string.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-ternary.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-this-before-super.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-throw-literal.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-trailing-spaces.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-undef-init.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-undef.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-undefined.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-underscore-dangle.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unexpected-multiline.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unmodified-loop-condition.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unneeded-ternary.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unreachable-loop.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unreachable.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unsafe-finally.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unsafe-negation.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unsafe-optional-chaining.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unused-expressions.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unused-labels.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unused-private-class-members.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-unused-vars.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-use-before-define.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-backreference.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-call.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-catch.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-computed-key.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-concat.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-constructor.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-escape.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-rename.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-useless-return.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-var.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-void.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-warning-comments.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/no-wrap-func.js": {
+    "badgeText": "📙",
+    "tooltip": "Links: Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/nonblock-statement-body-position.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/object-curly-newline.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/object-curly-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/object-property-newline.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/object-shorthand.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/one-var-declaration-per-line.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/one-var.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/operator-assignment.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/operator-linebreak.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/padded-blocks.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/padding-line-between-statements.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-arrow-callback.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-const.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-destructuring.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-exponentiation-operator.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-named-capture-group.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-numeric-literals.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-object-has-own.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-object-spread.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-promise-reject-errors.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-reflect.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-regex-literals.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-rest-params.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-spread.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/prefer-template.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/quote-props.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/quotes.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/radix.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/require-atomic-updates.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/require-await.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/require-jsdoc.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/require-unicode-regexp.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/require-yield.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/rest-spread-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/semi-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/semi-style.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/semi.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/sort-imports.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/sort-keys.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/sort-vars.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/space-before-blocks.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/space-before-function-paren.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/space-in-parens.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/space-infix-ops.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/space-unary-ops.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/spaced-comment.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/strict.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/switch-colon-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/symbol-description.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/template-curly-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/template-tag-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/unicode-bom.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/use-isnan.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/utils/ast-utils.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/utils/fix-tracker.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/valid-jsdoc.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/valid-typeof.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/vars-on-top.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/wrap-iife.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/wrap-regex.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/yield-star-spacing.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/rules/yoda.js": {
+    "badgeText": "💻📙",
+    "tooltip": "Links: Source + Documentation"
+  },
+  "C:/Github-Repos/eslint/tests/lib/shared/config-validator.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/shared/runtime-info.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/shared/string-utils.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/shared/traverser.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/source-code/source-code.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  },
+  "C:/Github-Repos/eslint/tests/lib/unsupported-api.js": {
+    "badgeText": "💻",
+    "tooltip": "Links: Source"
+  }
+}

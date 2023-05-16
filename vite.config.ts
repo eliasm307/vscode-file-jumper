@@ -6,9 +6,7 @@ export default defineConfig({
     /** @see https://vitest.dev/api/mock.html#mockrestore */
     restoreMocks: true,
     chaiConfig: {
-      showDiff: true,
       includeStack: true,
-      truncateThreshold: 0,
     },
     cache: {
       dir: "node_modules/.cache/.vitest",

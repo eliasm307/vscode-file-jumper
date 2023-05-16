@@ -1,5 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { describe, it, assert, afterEach, beforeEach } from "vitest";
+import fs from "fs";
+import pathModule from "path";
 import LinkManager from "./LinkManager";
+import type { DecorationData } from "../types";
 
 describe("LinkManager", () => {
   let linkManager: LinkManager;
@@ -330,6 +334,77 @@ describe("LinkManager", () => {
         ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md"],
         "correct files found",
       );
+    });
+  });
+
+  describe("performance", () => {
+    it("should be fast and accurate", async () => {
+      linkManager = new LinkManager({
+        fileTypes: [
+          {
+            name: "Source",
+            marker: "💻",
+            patterns: ["(?<!\\/tests\\/)lib\\/(.*)\\.(js|jsx|ts|tsx)$"],
+          },
+          {
+            name: "Test",
+            marker: "🧪",
+            patterns: ["(?<=\\/tests\\/)lib\\/(.*)\\.(js|jsx|ts|tsx)$"],
+          },
+          {
+            name: "Documentation",
+            marker: "📙",
+            patterns: ["\\/docs\\/src\\/(.+)\\.md$"],
+          },
+        ],
+        ignorePatterns: ["\\/node_modules\\/"],
+        showDebugLogs: false,
+      });
+
+      const eslintPathsPath = pathModule.join(__dirname, "LinkManagerTestData/eslint-project-files.json");
+      const eslintPaths = JSON.parse(fs.readFileSync(eslintPathsPath, "utf8")) as string[];
+      const fileCount = eslintPaths.length;
+      console.log(`Testing ${fileCount} Eslint files`);
+
+      // add all the files
+      let startTime = Date.now();
+      linkManager.addPathsAndNotify(eslintPaths);
+      const addPathsDurationMs = Date.now() - startTime;
+      // eslint-disable-next-line no-console
+      console.log(`addPathsAndNotify actually took ${addPathsDurationMs}ms for ${fileCount} files`);
+      assert.isBelow(addPathsDurationMs, 50, `should take less than 50ms to add ${fileCount} files`);
+
+      type DecorationsMap = Record<string, DecorationData | null>;
+
+      // get the decorations for all the files
+      // eslint-disable-next-line no-console
+      console.log(`Processing ${eslintPaths.length} files`);
+      const actualDecorations: DecorationsMap = {};
+      startTime = Date.now();
+      eslintPaths.forEach((path) => {
+        const decoration = linkManager.getDecorationData(path);
+        if (decoration) {
+          actualDecorations[path] = decoration;
+        }
+      });
+      const getDecorationsDurationMs = Date.now() - startTime;
+      console.log(`getDecorations actually took ${getDecorationsDurationMs}ms for ${fileCount} files`);
+      assert.isBelow(getDecorationsDurationMs, 50, `should take less than 50ms to get decorations for ${fileCount} files`);
+
+      // assert that the actual decorations match the snapshot
+      const expectedDecorationsPath = pathModule.join(__dirname, "LinkManagerTestData/expected-eslint-project-decorations.json");
+      const expectedDecorationsSnapshotExists = fs.existsSync(expectedDecorationsPath);
+      if (expectedDecorationsSnapshotExists) {
+        const actualDecorationsPath = pathModule.join(__dirname, "LinkManagerTestData/actual-eslint-project-decorations.json");
+        fs.writeFileSync(actualDecorationsPath, JSON.stringify(actualDecorations, null, 2));
+        const expectedDecorations: DecorationsMap = JSON.parse(fs.readFileSync(expectedDecorationsPath, "utf8"));
+        assert.deepStrictEqual(actualDecorations, expectedDecorations, "eslint decorations should match expected");
+
+        // create the snapshot file
+      } else {
+        fs.writeFileSync(expectedDecorationsPath, JSON.stringify(actualDecorations, null, 2), "utf8");
+        assert.fail("eslint decorations snapshot file created");
+      }
     });
   });
 });
