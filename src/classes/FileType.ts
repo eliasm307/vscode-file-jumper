@@ -40,13 +40,13 @@ export default class FileType {
     this.name = config.name;
   }
 
-  matches(filePath: string): boolean {
-    const cachedResult = this.regexTestCache.get(filePath);
+  matches(path: string): boolean {
+    const cachedResult = this.regexTestCache.get(path);
     if (typeof cachedResult === "boolean") {
       return cachedResult;
     }
-    const isMatch = this.patterns.some((regex) => regex.test(filePath));
-    this.regexTestCache.set(filePath, isMatch);
+    const isMatch = this.patterns.some((regex) => regex.test(path));
+    this.regexTestCache.set(path, isMatch);
     return isMatch;
   }
 
@@ -60,8 +60,8 @@ export default class FileType {
     }));
   }
 
-  registerPaths(filePaths: string[]) {
-    filePaths.forEach((fullPath) => {
+  addPaths(paths: Set<string> | string[]): void {
+    paths.forEach((fullPath) => {
       const keyPath = this.getKeyPath(fullPath);
       if (!keyPath) {
         return;
@@ -73,8 +73,8 @@ export default class FileType {
     });
   }
 
-  deRegisterPaths(filePaths: string[]) {
-    filePaths.forEach((fullPath) => {
+  removePaths(paths: string[]) {
+    paths.forEach((fullPath) => {
       const keyPath = this.getKeyPath(fullPath);
       if (!keyPath) {
         return;
@@ -96,27 +96,27 @@ export default class FileType {
     return !this.onlyLinkToTypeNamesSet || this.onlyLinkToTypeNamesSet.has(otherFileType.name);
   }
 
-  allowsLinksFrom(inputFileType: FileType): unknown {
+  allowsLinksFrom(otherFileType: FileType): unknown {
     // defaults to all file types can be linked from all other file types
-    return !this.onlyLinkFromTypeNamesSet || this.onlyLinkFromTypeNamesSet.has(inputFileType.name);
+    return !this.onlyLinkFromTypeNamesSet || this.onlyLinkFromTypeNamesSet.has(otherFileType.name);
   }
 
-  public getKeyPath(filePath: string): KeyPath | null | undefined {
-    const cachedKeyPath = this.fullPathToKeyPathCache.get(filePath);
+  public getKeyPath(path: string): KeyPath | null | undefined {
+    const cachedKeyPath = this.fullPathToKeyPathCache.get(path);
     if (typeof cachedKeyPath !== "undefined") {
       return cachedKeyPath;
     }
 
     for (const regex of this.patterns) {
-      const regexMatch = filePath.match(regex);
+      const regexMatch = path.match(regex);
       const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
       if (keyPath) {
-        this.fullPathToKeyPathCache.set(filePath, keyPath);
+        this.fullPathToKeyPathCache.set(path, keyPath);
         return keyPath;
       }
     }
 
-    this.fullPathToKeyPathCache.set(filePath, null);
+    this.fullPathToKeyPathCache.set(path, null);
   }
 
   reset() {

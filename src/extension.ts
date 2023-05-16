@@ -64,46 +64,53 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const linkManager = new LinkManager(mainConfig, {
     onFileLinksUpdated() {
-      const fsFilePathsWithLinks = linkManager.getFilePathsWithRelatedFiles().map((normalisedPath) => createUri(normalisedPath).fsPath);
+      const fsPathsWithLinks = linkManager.getPathsWithRelatedFiles().map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-      Logger.info("#onFileLinksUpdated: fsFilePathsWithLinks = ", fsFilePathsWithLinks);
-      void vscode.commands.executeCommand("setContext", "coLocate.filePathsWithLinks", fsFilePathsWithLinks);
+      Logger.info("#onFileLinksUpdated: fsPathsWithLinks = ", fsPathsWithLinks);
+      const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "coLocate.filePathsWithLinks";
+      void vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
     },
   });
 
   const badgeDecorationProvider = new BadgeDecorationProvider({
-    getDecorationData: (filePath) => linkManager.getDecorationData(filePath),
+    getDecorationData: (path) => linkManager.getDecorationData(path),
   });
 
-  const allFileUris = await vscode.workspace.findFiles("**/*");
-  const allFilePaths = allFileUris.map((file) => file.path);
-  Logger.info("allFilePaths", allFilePaths);
+  const allUris = await vscode.workspace.findFiles("**/*");
+  const allPaths = allUris.map((file) => file.path);
+  Logger.info("allPaths", allPaths);
 
-  linkManager.registerFiles(allFilePaths);
+  linkManager.addPathsAndNotify(allPaths);
 
-  // todo listen for config changes to update file decorations
-  // todo listen for file deletions/creations/renames to update file decorations
   context.subscriptions.push(
     { dispose: () => linkManager.reset() },
     registerNavigateCommand(linkManager),
     vscode.window.registerFileDecorationProvider(badgeDecorationProvider),
+    /**
+     * @remark When renaming a folder with children only one event is fired.
+     */
     vscode.workspace.onDidRenameFiles((e) => {
-      // todo handle file rename
-      Logger.warn("onDidRenameFiles", e);
-      linkManager.removeFiles(e.files.map((file) => file.oldUri.path));
-      linkManager.addFiles(e.files.map((file) => file.newUri.path));
+      const oldPaths = e.files.map((file) => file.oldUri.path);
+      const newPaths = e.files.map((file) => file.newUri.path);
+      linkManager.renameFilesAndNotify({ oldPaths, newPaths });
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
+    /**
+     * @remark This event is not fired when files change on disk, e.g triggered by another application, or when using the workspace.fs-api
+     */
     vscode.workspace.onDidCreateFiles((e) => {
-      // todo handle file create
-      Logger.warn("onDidCreateFiles", e);
-      linkManager.addFiles(e.files.map((file) => file.path));
+      linkManager.addPathsAndNotify(e.files.map((file) => file.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
+    /**
+     * @remark This event is not fired when files change on disk, e.g triggered by another application, or when using the workspace.fs-api
+     *
+     * @remark When deleting a folder with children only one event is fired.
+     */
     vscode.workspace.onDidDeleteFiles((e) => {
-      // todo handle file delete
+      // todo create a FileStructureManager class to handle finding out which files are actually affected by a possible folder delete/rename
       Logger.warn("onDidDeleteFiles", e);
-      linkManager.removeFiles(e.files.map((file) => file.path));
+      linkManager.removePathsAndNotify(e.files.map((file) => file.path));
       badgeDecorationProvider.notifyFileDecorationsChanged();
     }),
     vscode.workspace.onDidChangeWorkspaceFolders((e) => {
@@ -114,8 +121,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration(async (e) => {
       const newMainConfig = getMainConfig();
 
-      // todo handle configuration change
-      Logger.warn("onDidChangeConfiguration", "newMainConfig", e, {
+      Logger.info("onDidChangeConfiguration", "newMainConfig", e, {
         newMainConfig,
       });
 
@@ -131,7 +137,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  Logger.info("extension activated");
+  Logger.info("🚀 Extension activated");
 }
 
 function registerNavigateCommand(linkManager: LinkManager) {
@@ -142,8 +148,8 @@ function registerNavigateCommand(linkManager: LinkManager) {
       return {
         label: `${relatedFile.marker} ${relatedFile.typeName}`,
         detail: getShortPath(relatedFile.fullPath),
-        filePath: relatedFile.fullPath,
-      } satisfies vscode.QuickPickItem & { filePath: string };
+        path: relatedFile.fullPath,
+      } satisfies vscode.QuickPickItem & { path: string };
     });
 
     // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
@@ -157,11 +163,11 @@ function registerNavigateCommand(linkManager: LinkManager) {
 
     Logger.info("Quick pick selection", selectedItem);
 
-    if (!selectedItem?.filePath) {
+    if (!selectedItem?.path) {
       return; // the user canceled the selection
     }
 
-    await openFileInNewTab(selectedItem.filePath);
+    await openFileInNewTab(selectedItem.path);
   });
 
   return disposable;

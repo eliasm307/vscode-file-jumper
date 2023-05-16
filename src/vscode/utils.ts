@@ -2,8 +2,8 @@ import * as vscode from "vscode";
 import type { MainConfig } from "../utils/config";
 import { formatRawFileTypesConfig, formatRawIgnorePatternsConfig } from "../utils/config";
 
-export async function openFileInNewTab(filePath: string) {
-  const doc = await vscode.workspace.openTextDocument(createUri(filePath));
+export async function openFileInNewTab(path: string) {
+  const doc = await vscode.workspace.openTextDocument(createUri(path));
   await vscode.window.showTextDocument(doc, { preview: false });
 }
 

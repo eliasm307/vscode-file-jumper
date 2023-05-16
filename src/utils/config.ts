@@ -1,5 +1,3 @@
-// todo test
-
 export type FileTypeConfig = {
   name: string;
   marker: string;

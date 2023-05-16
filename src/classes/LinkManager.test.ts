@@ -36,7 +36,7 @@ describe("LinkManager", () => {
   }
 
   function registerDefaultFiles() {
-    linkManager.registerFiles([
+    linkManager.addPathsAndNotify([
       // ignored files
       "/root/node_modules/package/src/classes/Entity.ts",
       "/root/node_modules/package/test/classes/Entity.test.ts",
@@ -84,8 +84,8 @@ describe("LinkManager", () => {
     it("returns the correct file meta data with all related files", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
-      const filePath = "/root/src/classes/Entity.ts";
-      const sourceFileMetaData = linkManager.getFileMetaData(filePath);
+      const path = "/root/src/classes/Entity.ts";
+      const sourceFileMetaData = linkManager.getFileMetaData(path);
       assert.strictEqual(sourceFileMetaData?.fileType.name, "Source", "Source file type should be found");
       assert.deepStrictEqual(sourceFileMetaData?.relatedFiles, [
         {
@@ -105,7 +105,7 @@ describe("LinkManager", () => {
         },
       ]);
       assert.deepStrictEqual(
-        linkManager.getDecorationData(filePath),
+        linkManager.getDecorationData(path),
         {
           badgeText: "🧪📖📦",
           tooltip: "Links: Test + Documentation + Build Output",
@@ -117,9 +117,9 @@ describe("LinkManager", () => {
     it("returns the correct file meta data with all related files, using helpers", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
-      const filePath = "/root/src/classes/Entity.ts";
-      assert.strictEqual(linkManager.getFileType(filePath)?.name, "Source", "Source file type should be found");
-      assert.deepStrictEqual(linkManager.getRelatedFiles(filePath), [
+      const path = "/root/src/classes/Entity.ts";
+      assert.strictEqual(linkManager.getFileType(path)?.name, "Source", "Source file type should be found");
+      assert.deepStrictEqual(linkManager.getRelatedFiles(path), [
         {
           typeName: "Test",
           marker: "🧪",
@@ -141,18 +141,18 @@ describe("LinkManager", () => {
     it("returns correct file meta data with no related files", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
-      const filePath = "/root/test/classes/Entity2.test.ts";
-      const fileMetaData = linkManager.getFileMetaData(filePath);
+      const path = "/root/test/classes/Entity2.test.ts";
+      const fileMetaData = linkManager.getFileMetaData(path);
       assert.strictEqual(fileMetaData?.fileType.name, "Test", "Test file type should be found");
       assert.deepStrictEqual(fileMetaData?.relatedFiles, [], "No related files should be found");
-      assert.isUndefined(linkManager.getDecorationData(filePath), "no decoration data when no related files found");
+      assert.isUndefined(linkManager.getDecorationData(path), "no decoration data when no related files found");
     });
 
     it("returns correct file meta data when file is not related to all other possible types via onlyLinkTo", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
-      const filePath = "/root/docs/classes/Entity.md";
-      const fileMetaData = linkManager.getFileMetaData(filePath);
+      const path = "/root/docs/classes/Entity.md";
+      const fileMetaData = linkManager.getFileMetaData(path);
       assert.strictEqual(fileMetaData?.fileType.name, "Documentation", "correct file type found");
       assert.deepStrictEqual(
         fileMetaData?.relatedFiles,
@@ -166,7 +166,7 @@ describe("LinkManager", () => {
         "correct related files found",
       );
       assert.deepStrictEqual(
-        linkManager.getDecorationData(filePath),
+        linkManager.getDecorationData(path),
         {
           badgeText: "💻",
           tooltip: "Links: Source",
@@ -231,7 +231,7 @@ describe("LinkManager", () => {
         ignorePatterns: ["\\/node_modules\\/"],
         showDebugLogs: false,
       });
-      linkManager.registerFiles([
+      linkManager.addPathsAndNotify([
         "/root/src/classes/Entity.ts",
         "/root/src/classes/Entity2.ts",
         "/root/test/classes/Entity.test.ts",
@@ -242,8 +242,8 @@ describe("LinkManager", () => {
         "/root/dist/classes/Entity.json",
       ]);
 
-      const filePath = "/root/src/classes/Entity.ts";
-      const fileMetaData = linkManager.getFileMetaData(filePath);
+      const path = "/root/src/classes/Entity.ts";
+      const fileMetaData = linkManager.getFileMetaData(path);
       assert.strictEqual(fileMetaData?.fileType.name, "Source", "Correct file type should be found");
       assert.deepStrictEqual(fileMetaData?.relatedFiles, [
         {
@@ -273,7 +273,7 @@ describe("LinkManager", () => {
         },
       ]);
       assert.deepStrictEqual(
-        linkManager.getDecorationData(filePath),
+        linkManager.getDecorationData(path),
         {
           badgeText: "🧪📦",
           tooltip: "Links: Test + Build Output",
@@ -286,7 +286,7 @@ describe("LinkManager", () => {
   describe("#reset", () => {
     it("should reset all file types", () => {
       linkManager = createDefaultTestInstance();
-      linkManager.registerFiles([
+      linkManager.addPathsAndNotify([
         "/root/src/classes/Entity.ts",
         "/root/test/classes/Entity.test.ts",
         "/root/test/classes/Entity2.test.ts",
@@ -295,23 +295,20 @@ describe("LinkManager", () => {
         "/root/src/unknown/file/path.ts",
       ]);
 
-      const sourceFilePath = "/root/src/classes/Entity.ts";
+      const sourcepath = "/root/src/classes/Entity.ts";
 
-      assert.isTrue(linkManager.getRelatedFiles(sourceFilePath).length > 0, "Files related to Source file should be found");
+      assert.isTrue(linkManager.getRelatedFiles(sourcepath).length > 0, "Files related to Source file should be found");
 
       linkManager.reset();
 
-      assert.isTrue(
-        linkManager.getRelatedFiles(sourceFilePath).length === 0,
-        "Files related to Source file should not be found after reset",
-      );
+      assert.isTrue(linkManager.getRelatedFiles(sourcepath).length === 0, "Files related to Source file should not be found after reset");
     });
   });
 
-  describe("#getFilePathsWithRelatedFiles", () => {
+  describe("#getpathsWithRelatedFiles", () => {
     it("should return all files that have related files", () => {
       linkManager = createDefaultTestInstance();
-      linkManager.registerFiles([
+      linkManager.addPathsAndNotify([
         // ignored files
         "/root/node_modules/package/src/classes/Entity.ts",
         "/root/node_modules/package/test/classes/Entity.test.ts",
@@ -329,7 +326,7 @@ describe("LinkManager", () => {
       ]);
 
       assert.deepStrictEqual(
-        linkManager.getFilePathsWithRelatedFiles(),
+        linkManager.getPathsWithRelatedFiles(),
         ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md"],
         "correct files found",
       );

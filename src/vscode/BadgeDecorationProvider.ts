@@ -5,13 +5,11 @@ import Logger from "../classes/Logger";
 export default class BadgeDecorationProvider implements vscode.FileDecorationProvider {
   constructor(
     private readonly config: {
-      getDecorationData: (filePath: string) => DecorationData | undefined;
+      getDecorationData: (path: string) => DecorationData | undefined;
     },
   ) {}
 
-  private onDidChangeFileDecorationsEmitter = new vscode.EventEmitter<
-    vscode.Uri | vscode.Uri[] | undefined
-  >();
+  private onDidChangeFileDecorationsEmitter = new vscode.EventEmitter<vscode.Uri | vscode.Uri[] | undefined>();
 
   onDidChangeFileDecorations = this.onDidChangeFileDecorationsEmitter.event;
 

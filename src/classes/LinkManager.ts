@@ -9,14 +9,10 @@ export default class LinkManager {
 
   private ignorePatterns: RegExp[] = [];
 
-  private registeredFilePaths: string[] = [];
+  private registeredPaths: Set<string> = new Set();
 
-  /**
-   * @remark cache not cleared on reset as its not context specific (as long as the FileType instances are the same)
-   * and it doesn't affect behaviour
-   */
   // todo investigate if this is actually worth it
-  private filePathToFileTypeCache: Map<string, FileType> = new Map();
+  private fullPathToFileTypeCache: Map<string, FileType> = new Map();
 
   constructor(
     private config: MainConfig,
@@ -24,54 +20,105 @@ export default class LinkManager {
       onFileLinksUpdated: () => void;
     },
   ) {
-    Logger.info("LinkManager initial config", config);
+    this.applyConfig(config);
+  }
+
+  private applyConfig(config: MainConfig): void {
+    Logger.info("#applyConfig", config);
+    this.config = config;
+    this.fullPathToFileTypeCache.clear();
+    this.fileTypes.forEach((fileType) => fileType.dispose());
     this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
     this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
   }
 
-  fileShouldBeIgnored(filePath: string): boolean {
-    return this.ignorePatterns.some((regex) => regex.test(filePath));
+  private pathShouldBeIgnored(path: string): boolean {
+    return this.ignorePatterns.some((regex) => regex.test(path));
   }
 
-  registerFiles(filePaths: string[]): void {
-    Logger.info("#registerFiles", filePaths);
-    const endTimerAndLog = Logger.startTimer(`#registerFiles(${filePaths.length})`);
-    this.registeredFilePaths = filePaths.filter((filePath) => !this.fileShouldBeIgnored(filePath));
-    if (this.registeredFilePaths.length) {
-      this.fileTypes.forEach((fileType) => fileType.registerPaths(this.registeredFilePaths));
+  addPathsAndNotify(paths: string[]): void {
+    Logger.info("#addFiles", paths);
+    const endTimerAndLog = Logger.startTimer(`#addFiles(${paths.length})`);
+    const relevantFiles = paths.filter((path) => !this.pathShouldBeIgnored(path));
+    const includesKnownType = relevantFiles.some((path) => this.getFileType(path));
+    if (!includesKnownType) {
+      return;
     }
-    endTimerAndLog();
 
+    this.applyPathAdditions(relevantFiles);
+    this.notifyFileLinksUpdated();
+    endTimerAndLog();
+  }
+
+  private applyPathAdditions(paths: Set<string> | string[]) {
+    paths.forEach((path) => this.registeredPaths.add(path));
+    this.fileTypes.forEach((fileType) => fileType.addPaths(paths));
+  }
+
+  removePathsAndNotify(paths: string[]) {
+    const relevantFiles = paths.filter((path) => !this.pathShouldBeIgnored(path));
+    const includesKnownType = relevantFiles.some((path) => this.getFileType(path));
+    if (!includesKnownType) {
+      return;
+    }
+
+    this.applyPathRemovals(relevantFiles);
     this.notifyFileLinksUpdated();
   }
 
+  private applyPathRemovals(paths: string[]) {
+    paths.forEach((path) => this.registeredPaths.delete(path));
+    this.fileTypes.forEach((fileType) => fileType.removePaths(paths));
+  }
+
+  renameFilesAndNotify({ oldPaths, newPaths }: { oldPaths: string[]; newPaths: string[] }) {
+    const oldRelevantPaths = oldPaths.filter((path) => !this.pathShouldBeIgnored(path));
+    const oldPathsIncludeKnownType = oldRelevantPaths.some((path) => this.getFileType(path));
+    const newRelevantPaths = newPaths.filter((path) => !this.pathShouldBeIgnored(path));
+    const newPathsIncludeKnownType = newRelevantPaths.some((path) => this.getFileType(path));
+    if (!oldPathsIncludeKnownType && !newPathsIncludeKnownType) {
+      return;
+    }
+
+    this.applyFileRenames({ oldPaths: oldRelevantPaths, newPaths: newRelevantPaths });
+    this.notifyFileLinksUpdated();
+  }
+
+  private applyFileRenames({ oldPaths, newPaths }: { oldPaths: string[]; newPaths: string[] }) {
+    this.applyPathRemovals(oldPaths);
+    this.applyPathAdditions(newPaths);
+  }
+
+  /**
+   * We dont bother trying to figure out the exact paths that changed to know what to update since the editor only re-renders the visible items so a full re-render is fine
+   */
   private notifyFileLinksUpdated() {
     this.options?.onFileLinksUpdated();
   }
 
-  getFileType(filePath: string): FileType | undefined {
-    if (this.fileShouldBeIgnored(filePath)) {
+  getFileType(path: string): FileType | undefined {
+    if (this.pathShouldBeIgnored(path)) {
       return;
     }
 
-    const cachedFileType = this.filePathToFileTypeCache.get(filePath);
+    const cachedFileType = this.fullPathToFileTypeCache.get(path);
     if (cachedFileType) {
       return cachedFileType;
     }
     for (const fileType of this.fileTypes) {
-      if (fileType.matches(filePath)) {
-        this.filePathToFileTypeCache.set(filePath, fileType);
+      if (fileType.matches(path)) {
+        this.fullPathToFileTypeCache.set(path, fileType);
         return fileType;
       }
     }
   }
 
-  getFileMetaData(inputFilePath: string): FileMetaData | undefined {
-    const inputFileType = this.getFileType(inputFilePath);
+  getFileMetaData(inputPath: string): FileMetaData | undefined {
+    const inputFileType = this.getFileType(inputPath);
     if (!inputFileType) {
       return; // file is not of a known type
     }
-    const keyPath = inputFileType.getKeyPath(inputFilePath);
+    const keyPath = inputFileType.getKeyPath(inputPath);
 
     let relatedFiles: RelatedFileData[] = [];
     if (keyPath) {
@@ -90,38 +137,38 @@ export default class LinkManager {
     return metaData;
   }
 
-  getRelatedFiles(filePath: string): RelatedFileData[] {
-    return this.getFileMetaData(filePath)?.relatedFiles || [];
+  getRelatedFiles(path: string): RelatedFileData[] {
+    return this.getFileMetaData(path)?.relatedFiles || [];
   }
 
-  getFilePathsWithRelatedFiles(): string[] {
-    return this.registeredFilePaths.filter((filePath) => this.getRelatedFiles(filePath).length);
+  getPathsWithRelatedFiles(): string[] {
+    return [...this.registeredPaths].filter((path) => this.getRelatedFiles(path).length);
   }
 
-  getDecorationData(filePath: string): DecorationData | undefined {
-    const runKey = `#getDecorationData: ${filePath}`;
+  getDecorationData(path: string): DecorationData | undefined {
+    const runKey = `#getDecorationData: ${path}`;
     const endTimerAndLog = Logger.startTimer(runKey);
 
     try {
-      const metaData = this.getFileMetaData(filePath);
+      const metaData = this.getFileMetaData(path);
 
       const relatedFiles = metaData?.relatedFiles;
       if (!relatedFiles?.length) {
         Logger.warn(runKey, "Could not get metaData");
-        const foundRawFileType = this.config.fileTypes.find((fileType) => {
-          return fileType.patterns.some((pattern) => {
-            return new RegExp(pattern).test(filePath);
-          });
-        });
+        // const foundRawFileType = this.config.fileTypes.find((fileType) => {
+        //   return fileType.patterns.some((pattern) => {
+        //     return new RegExp(pattern).test(path);
+        //   });
+        // });
 
-        const foundFileType = this.getFileType(filePath);
-        Logger.warn(runKey, "File type", {
-          foundFileType,
-          foundRawFileType,
-        });
-        if (!foundFileType) {
-          Logger.warn(runKey, "Available file types", this.fileTypes);
-        }
+        // const foundFileType = this.getFileType(path);
+        // Logger.warn(runKey, "File type", {
+        //   foundFileType,
+        //   foundRawFileType,
+        // });
+        // if (!foundFileType) {
+        //   Logger.warn(runKey, "Available file types", this.fileTypes);
+        // }
         return;
       }
 
@@ -143,40 +190,31 @@ export default class LinkManager {
 
   /** This resets the instance with the expectation that it will be re-used */
   reset() {
+    // we are keeping the same fileTypes instances, so dont need to clear cache
     this.fileTypes.forEach((fileType) => fileType.reset());
-    this.registeredFilePaths = [];
+    this.registeredPaths = new Set();
   }
 
   /** This disposes of the instance with the expectation that it will not be re-used */
   dispose() {
     this.fileTypes.forEach((fileType) => fileType.dispose());
-    this.filePathToFileTypeCache.clear();
-    this.registeredFilePaths = [];
-  }
-
-  addFiles(arg0: string[]) {
-    // todo check if the changed files are a known type and might affect links before recalculating
-    Logger.warn("LinkManager#addFiles", arg0);
-    this.notifyFileLinksUpdated();
-    throw new Error("Method not implemented.");
-  }
-
-  removeFiles(arg0: string[]) {
-    // todo check if the changed files are a known type and might affect links before recalculating
-    Logger.warn("LinkManager#removeFiles", arg0);
-    this.notifyFileLinksUpdated();
-    throw new Error("Method not implemented.");
+    this.fullPathToFileTypeCache.clear();
+    // @ts-expect-error [allowed on dispose]
+    this.registeredPaths = null;
   }
 
   updateConfig(newConfig: MainConfig) {
     Logger.warn("LinkManager#updateConfig", newConfig);
     const configHasChanged = !mainConfigsAreEqual(this.config, newConfig);
-
     if (!configHasChanged) {
       return;
     }
 
+    const initiallyRegisteredPaths = new Set(this.registeredPaths);
+    this.reset();
+    this.applyConfig(newConfig);
+    this.applyPathAdditions(initiallyRegisteredPaths);
+
     this.notifyFileLinksUpdated();
-    throw new Error("Method not implemented.");
   }
 }

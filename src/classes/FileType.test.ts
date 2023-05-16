@@ -11,7 +11,7 @@ describe("FileType", () => {
       marker: "🧪",
       patterns: ["\\/test\\/(.*)\\.test\\.ts"],
     });
-    fileType.registerPaths(["/test/relatedFile0.test.ts", "/test/dir1/relatedFile1.test.ts", "/test/dir1/dir2/relatedFile2.test.ts"]);
+    fileType.addPaths(["/test/relatedFile0.test.ts", "/test/dir1/relatedFile1.test.ts", "/test/dir1/dir2/relatedFile2.test.ts"]);
     return fileType;
   }
 
@@ -60,7 +60,7 @@ describe("FileType", () => {
         marker: "💻",
         patterns: ["\\/src\\/(.*)\\.mjs$", "\\/src\\/(.*)\\.(service\\.js|types\\.d\\.ts|styles\\.css)$"],
       });
-      fileType.registerPaths([
+      fileType.addPaths([
         "/src/relatedFile0.ts",
         "/src/dir1/relatedFile0.mjs",
         "/src/dir1/relatedFile0.service.js",
@@ -173,7 +173,7 @@ describe("FileType", () => {
     });
   });
 
-  describe("#deRegisterFiles", () => {
+  describe("#removePaths", () => {
     const validKeyPath0 = "relatedFile0" as KeyPath;
     const fullPath0 = "/test/relatedFile0.test.ts";
     const validKeyPath1 = "dir1/relatedFile1" as KeyPath;
@@ -229,7 +229,7 @@ describe("FileType", () => {
       assert.isTrue(fileType.matches(fullPath2), "file2 should match");
 
       // de-register file 1
-      fileType.deRegisterPaths([fullPath1]);
+      fileType.removePaths([fullPath1]);
 
       // file 1 should not be found anymore
       assertFile1IsRegistered(false);
@@ -239,7 +239,7 @@ describe("FileType", () => {
       assert.isTrue(fileType.matches(fullPath2), "file2 should still match");
 
       // de-register file 2
-      fileType.deRegisterPaths([fullPath2]);
+      fileType.removePaths([fullPath2]);
 
       // file 2 should not be found anymore
       assertFile2IsRegistered(false);
@@ -255,7 +255,7 @@ describe("FileType", () => {
       assertFile2IsRegistered(true);
 
       // de-register unknown file
-      fileType.deRegisterPaths(["/test/dir1/dir2/unknown.test.ts"]);
+      fileType.removePaths(["/test/dir1/dir2/unknown.test.ts"]);
 
       // all files should still be found
       assertFile0IsRegistered(true);
