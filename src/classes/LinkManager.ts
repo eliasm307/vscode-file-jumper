@@ -20,16 +20,16 @@ export default class LinkManager {
     path: string;
   }): DecorationData | undefined {
     const endTimer = Logger.startTimer(`${decoratorFileType.name}Decorator#getFileTypeDecoratorData: ${path} `);
-    const shouldBeDecorated = this.pathIsLinkedToFileType({ path, fileType: decoratorFileType });
+    const shouldBeDecorated = this.pathIsLinkedToFileType({ path, fileTypeName: decoratorFileType.name });
     endTimer();
     if (shouldBeDecorated) {
       return decoratorFileType.getDecorationData();
     }
   }
 
-  private pathIsLinkedToFileType({ path, fileType }: { path: string; fileType: FileType }): boolean {
+  private pathIsLinkedToFileType({ path, fileTypeName }: { path: string; fileTypeName: string }): boolean {
     const linkedFiles = this.getFilesLinkedFromPath(path);
-    return linkedFiles.some((linkedFile) => linkedFile.typeName === fileType.name);
+    return linkedFiles.some((linkedFile) => linkedFile.typeName === fileTypeName);
   }
 
   getFileTypes() {

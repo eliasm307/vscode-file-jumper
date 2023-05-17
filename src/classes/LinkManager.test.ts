@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 import { describe, it, assert, afterEach, beforeEach } from "vitest";
 import fs from "fs";
 import pathModule from "path";
@@ -69,9 +69,7 @@ describe("LinkManager", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
       const path = "/root/src/classes/Entity.ts";
-      const sourceFileMetaData = linkManager.getFileMetaData(path);
-      assert.strictEqual(sourceFileMetaData?.fileType.name, "Source", "Source file type should be found");
-      assert.deepStrictEqual(sourceFileMetaData?.linkedFiles, [
+      assert.deepStrictEqual(linkManager.getFilesLinkedFromPath(path), [
         {
           typeName: "Test",
           marker: "🧪",
@@ -88,8 +86,11 @@ describe("LinkManager", () => {
           fullPath: "/root/dist/classes/Entity.js",
         },
       ]);
+
+      const actualFileTypes = linkManager.getFileTypes();
+      assert.deepStrictEqual(actualFileTypes, [], "returns correct file types");
       assert.deepStrictEqual(
-        linkManager.getDecorationData(path),
+        linkManager.getFileTypeDecoratorData({ path, decoratorFileType: actualFileTypes[0] }),
         {
           badgeText: "🧪📖📦",
           tooltip: "Links: Test + Documentation + Build Output",
@@ -366,12 +367,12 @@ describe("LinkManager", () => {
           let startTime = Date.now();
           linkManager.addPathsAndNotify(eslintPaths);
           const addPathsDurationMs = Date.now() - startTime;
-          // eslint-disable-next-line no-console
+
           console.log(`#addPathsAndNotify actually took`, addPathsDurationMs, `ms`);
           assert.isBelow(addPathsDurationMs, 50, `should take less than 50ms to add ${fileCount} files`);
 
           // get the decorations for all the files
-          // eslint-disable-next-line no-console
+
           actualDecorations = {};
           startTime = Date.now();
           eslintPaths.forEach((path) => {
