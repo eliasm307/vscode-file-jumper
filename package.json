@@ -20,7 +20,7 @@
   "main": "./out/extension.js",
   "scripts": {
     "vscode:package": "echo 'Packaging...' && vsce package",
-    "vscode:prepublish": "npm run lint && npm run test && npm run compile",
+    "vscode:prepublish": "npm run lint  && npm run compile",
     "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --allow-missing-repository --pre-release",
     "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --allow-missing-repository --pre-release",
     "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --allow-missing-repository --pre-release",

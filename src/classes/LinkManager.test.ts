@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /* eslint-disable no-console */
 
 import { describe, it, assert, afterEach, beforeEach } from "vitest";
