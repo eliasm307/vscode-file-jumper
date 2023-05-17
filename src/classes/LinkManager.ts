@@ -80,7 +80,13 @@ export default class LinkManager {
 
     if (relevantPathsAdded.length) {
       this.applyPathAdditions(relevantPathsAdded);
-      this.notifyFileLinksUpdated([...relevantPathsAdded, ...this.getIndirectlyAffectedPaths(relevantPathsAdded)]);
+
+      const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths(relevantPathsAdded);
+      const affectedPaths = [...relevantPathsAdded, ...indirectlyAffectedPaths];
+
+      Logger.info("#addFiles", { relevantPathsAdded, indirectlyAffectedPaths, affectedPaths });
+
+      this.notifyFileLinksUpdated(affectedPaths);
     }
     endTimerAndLog();
   }
