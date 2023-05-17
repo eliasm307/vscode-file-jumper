@@ -45,14 +45,14 @@ export default class LinkManager {
    */
   private allRelevantPaths: Set<string> = new Set();
 
-  private onFileLinksUpdatedHandlers: OnFileLinksUpdatedHandler[] = [];
+  private onFileLinksUpdatedHandler: OnFileLinksUpdatedHandler | undefined;
 
   constructor(private config: MainConfig) {
     this.applyConfig(config);
   }
 
-  setFileLinksUpdatedHandler(handler: OnFileLinksUpdatedHandler): void {
-    this.onFileLinksUpdatedHandlers.push(handler);
+  setOnFileLinksUpdatedHandler(handler: OnFileLinksUpdatedHandler): void {
+    this.onFileLinksUpdatedHandler = handler;
   }
 
   private applyConfig(config: MainConfig): void {
@@ -98,6 +98,9 @@ export default class LinkManager {
     if (relevantPathsRemoved.length) {
       this.applyPathRemovals(relevantPathsRemoved);
       const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths(relevantPathsRemoved);
+
+      Logger.info("#removeFiles", { relevantPathsRemoved, indirectlyAffectedPaths });
+
       this.notifyFileLinksUpdated(indirectlyAffectedPaths);
     }
   }
@@ -124,14 +127,16 @@ export default class LinkManager {
     this.applyPathRemovals(relevantPathsRemoved);
     this.applyPathAdditions(relevantPathsAdded);
 
-    this.notifyFileLinksUpdated([
-      ...relevantPathsAdded,
-      ...this.getIndirectlyAffectedPaths([...relevantPathsAdded, ...relevantPathsRemoved]),
-    ]);
+    const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths([...relevantPathsAdded, ...relevantPathsRemoved]);
+    const affectedPaths = [...relevantPathsAdded, ...indirectlyAffectedPaths];
+
+    Logger.info("#renameFilesAndNotify", { oldPaths, newPaths, indirectlyAffectedPaths, affectedPaths });
+
+    this.notifyFileLinksUpdated(affectedPaths);
   }
 
   private notifyFileLinksUpdated(affectedPaths: string[] | null) {
-    this.onFileLinksUpdatedHandlers.forEach((handler) => handler(affectedPaths));
+    this.onFileLinksUpdatedHandler?.(affectedPaths);
   }
 
   /**
@@ -181,7 +186,7 @@ export default class LinkManager {
    * We need to do a full refresh here as the config change could also change what files we consider "relevant"
    * so we need to re-evaluate the entire workspace
    */
-  updateConfig(newWorkspace: { config: MainConfig; paths: string[] }) {
+  resetConfig(newWorkspace: { config: MainConfig; paths: string[] }) {
     const configHasChanged = !mainConfigsAreEqual(this.config, newWorkspace.config);
     if (!configHasChanged) {
       return;
@@ -189,9 +194,11 @@ export default class LinkManager {
     Logger.warn("LinkManager#updateConfig", newWorkspace.config);
     this.revertToInitial();
     this.applyConfig(newWorkspace.config);
-    this.applyPathAdditions(newWorkspace.paths); // need to consider all workspace paths
 
-    // need to do a full refresh even for paths we disregarded before
+    const relevantPaths = newWorkspace.paths.filter((path) => !this.pathShouldBeIgnored(path));
+    this.applyPathAdditions(relevantPaths);
+
+    // need to do a full refresh even for paths we disregarded before as we dont know what changed
     this.notifyFileLinksUpdated(null);
   }
 }

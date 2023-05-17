@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import type { DecorationData } from "../types";
 
-export default class BadgeDecorationProvider implements vscode.FileDecorationProvider {
+export default class DecorationProvider implements vscode.FileDecorationProvider {
   constructor(
     private readonly config: {
       getDecorationData: (path: string) => DecorationData | undefined;

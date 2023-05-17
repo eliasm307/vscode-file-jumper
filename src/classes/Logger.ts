@@ -69,12 +69,20 @@ const Logger = {
   info: (...messages: unknown[]) => output({ level: "info", messages }),
   warn: (...messages: unknown[]) => output({ level: "warn", messages }),
   error: (...messages: unknown[]) => output({ level: "error", messages }),
-  startTimer: (key: string): (() => void) => {
+  startTimer: (
+    key: string,
+    options: { logIfTimeGreaterThanMs: number } = { logIfTimeGreaterThanMs: 2 },
+  ): (() => void) => {
     if (!Logger.isEnabled()) {
       return () => null;
     }
     const startTimeMs = Date.now();
-    return () => Logger.info(`⏱️ ${key} took ${Date.now() - startTimeMs}ms`);
+    return () => {
+      const durationMs = Date.now() - startTimeMs;
+      if (durationMs > options.logIfTimeGreaterThanMs) {
+        Logger.info(`⏱️ ${key} took ${Date.now() - startTimeMs}ms`);
+      }
+    };
   },
 };
 

@@ -20,7 +20,6 @@ import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
 import { getIssuesWithMainConfig } from "./utils/config";
 import LinkManager from "./classes/LinkManager";
-import BadgeDecorationProvider from "./vscode/LinkedFileTypeDecorationProvider";
 import {
   createUri,
   getAllWorkspacePaths,
@@ -30,6 +29,7 @@ import {
 } from "./vscode/utils";
 import Logger, { EXTENSION_KEY } from "./classes/Logger";
 import { shortenPath } from "./utils";
+import DecorationProviderManager from "./vscode/DecorationProviderManager";
 
 async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
   for (const issue of issues) {
@@ -45,7 +45,8 @@ export async function activate(context: vscode.ExtensionContext) {
     mainConfig = getMainConfig();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    return vscode.window.showErrorMessage(`Configuration issue: ${message}`);
+    Logger.error("Error getting main config:", message);
+    return vscode.window.showErrorMessage(`${EXTENSION_KEY} Configuration issue: ${message}`);
   }
 
   if (mainConfig.showDebugLogs) {
@@ -58,54 +59,51 @@ export async function activate(context: vscode.ExtensionContext) {
     Logger.setEnabled(true); // default disabled
   }
 
-  Logger.info("extension activating...");
+  Logger.info("Extension activating...");
 
   const configIssues = getIssuesWithMainConfig(mainConfig);
   if (configIssues.length) {
     await logAndShowIssuesWithConfig(configIssues);
-    Logger.info("extension not activated due to config issues");
+    Logger.info("Extension not activated due to config issues");
     return;
   }
 
-  Logger.info("extension activated with valid config:", mainConfig);
+  Logger.info("Extension activated with valid config:", mainConfig);
 
   const linkManager = new LinkManager(mainConfig);
 
-  const decorationProviders = linkManager.getFileTypes().map((decoratorFileType) => {
-    return new BadgeDecorationProvider({
-      getDecorationData: (path) => linkManager.getFileTypeDecoratorData({ decoratorFileType, path }),
-    });
+  const decorationProviderManager = new DecorationProviderManager({
+    getDecorationData: (config) => linkManager.getFileTypeDecoratorData(config),
   });
 
-  linkManager.setFileLinksUpdatedHandler((affectedPaths) => {
+  linkManager.setOnFileLinksUpdatedHandler((affectedPaths) => {
     // need to use FS paths for context key so they work with menu items conditions (they dont have an option to use the normalised path)
     const fsPathsWithLinks = linkManager
       .getAllPathsWithOutgoingLinks()
       .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-    Logger.info("#onFileLinksUpdated: fsPathsWithLinks = ", fsPathsWithLinks);
     const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "coLocate.filePathsWithLinks";
+    // this is used to show the context menu item conditionally on files we know have links
     void vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
 
     // notify decorators of changes
-    const affectedPathUris = affectedPaths?.map((path) => vscode.Uri.file(path));
-    // todo these should update when the config changes, maybe throw this file links updated out when the config changes and make a new one with new decorators
-    decorationProviders.forEach((provider) => provider.notifyFileDecorationsChanged(affectedPathUris));
+    // todo debug this getting more paths that it needs
+    Logger.info("onFileLinksUpdated handler called with affectedPaths:", affectedPaths);
+    decorationProviderManager.notifyFileDecorationsChanged(affectedPaths);
   });
 
   const allPaths = await getAllWorkspacePaths();
   Logger.info("allPaths", allPaths);
   linkManager.addPathsAndNotify(allPaths); // should happen after setting the file links updated handler so initial setup is handled
 
-  // todo this should handle when config changes
-  const decorationProviderSubscriptions = decorationProviders.map((provider) => {
-    return vscode.window.registerFileDecorationProvider(provider);
-  });
+  // should happen after the linkManager is setup with files,
+  // because the providers get used as soon as they are registered and need to be able to get the file links
+  decorationProviderManager.setFileTypes(linkManager.getFileTypes());
 
   context.subscriptions.push(
     { dispose: () => linkManager.revertToInitial() },
+    { dispose: () => decorationProviderManager.dispose() },
     registerNavigateCommand(linkManager),
-    ...decorationProviderSubscriptions,
     /**
      * @remark When renaming a folder with children only one event is fired.
      */
@@ -169,14 +167,16 @@ export async function activate(context: vscode.ExtensionContext) {
         const newConfigIssues = getIssuesWithMainConfig(newMainConfig);
         if (newConfigIssues.length) {
           await logAndShowIssuesWithConfig(newConfigIssues);
-          Logger.info("config change not applied due to config issues");
+          Logger.info(`config change not applied due to config issues: [ ${newConfigIssues.join(", ")} ]`);
           return;
         }
 
-        linkManager.updateConfig({
+        linkManager.resetConfig({
           config: newMainConfig,
           paths: await getAllWorkspacePaths(),
         });
+
+        decorationProviderManager.setFileTypes(linkManager.getFileTypes());
 
         // show the user error before throwing it internally
       } catch (error) {
