@@ -102,7 +102,7 @@ describe("LinkManager", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
       const path = "/root/src/classes/Entity.ts";
-      assert.deepStrictEqual(linkManager.getFilesLinkedFrom(path), [
+      assert.deepStrictEqual(linkManager.getFilesLinkedFromPath(path), [
         {
           typeName: "Test",
           marker: "🧪",
@@ -281,14 +281,14 @@ describe("LinkManager", () => {
       const sourcePath = "/root/src/classes/Entity.ts";
 
       assert.isTrue(
-        linkManager.getFilesLinkedFrom(sourcePath).length > 0,
+        linkManager.getFilesLinkedFromPath(sourcePath).length > 0,
         "Files related to Source file should be found",
       );
 
       linkManager.revertToInitial();
 
       assert.isTrue(
-        linkManager.getFilesLinkedFrom(sourcePath).length === 0,
+        linkManager.getFilesLinkedFromPath(sourcePath).length === 0,
         "Files related to Source file should not be found after reset",
       );
     });
@@ -315,7 +315,7 @@ describe("LinkManager", () => {
       ]);
 
       assert.deepStrictEqual(
-        linkManager.getAllPathsWithLinks(),
+        linkManager.getAllPathsWithOutgoingLinks(),
         ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md"],
         "correct files found",
       );

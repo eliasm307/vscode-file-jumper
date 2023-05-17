@@ -1,12 +1,41 @@
 import FileType from "./FileType";
-import type { DecorationData, FileMetaData, LinkedFileData } from "../types";
+import type { DecorationData, KeyPath, LinkedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
 import { mainConfigsAreEqual } from "../utils/config";
 import Logger from "./Logger";
 
 type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => void;
 
+type FileInfo = { keyPath: KeyPath; type: FileType };
+
 export default class LinkManager {
+  /**
+   * Determines whether the given path should be decorated as linked to the given file type and provides the decoration if so
+   */
+  getFileTypeDecoratorData({
+    decoratorFileType,
+    path,
+  }: {
+    decoratorFileType: FileType;
+    path: string;
+  }): DecorationData | undefined {
+    const endTimer = Logger.startTimer(`${decoratorFileType.name}Decorator#getFileTypeDecoratorData: ${path} `);
+    const shouldBeDecorated = this.pathIsLinkedToFileType({ path, fileType: decoratorFileType });
+    endTimer();
+    if (shouldBeDecorated) {
+      return decoratorFileType.getDecorationData();
+    }
+  }
+
+  private pathIsLinkedToFileType({ path, fileType }: { path: string; fileType: FileType }): boolean {
+    const linkedFiles = this.getFilesLinkedFromPath(path);
+    return linkedFiles.some((linkedFile) => linkedFile.typeName === fileType.name);
+  }
+
+  getFileTypes() {
+    return [...this.fileTypes];
+  }
+
   private fileTypes: FileType[] = [];
 
   private ignorePatterns: RegExp[] = [];
@@ -22,7 +51,7 @@ export default class LinkManager {
     this.applyConfig(config);
   }
 
-  onFileLinksUpdated(handler: OnFileLinksUpdatedHandler): void {
+  setFileLinksUpdatedHandler(handler: OnFileLinksUpdatedHandler): void {
     this.onFileLinksUpdatedHandlers.push(handler);
   }
 
@@ -39,7 +68,7 @@ export default class LinkManager {
   }
 
   private getIndirectlyAffectedPaths(pathsModified: string[]): string[] {
-    return pathsModified.flatMap((path) => this.getFilesLinkedFrom(path)).map((file) => file.fullPath);
+    return pathsModified.flatMap((path) => this.getFilesLinkedFromPath(path)).map((file) => file.fullPath);
   }
 
   addPathsAndNotify(paths: string[]): void {
@@ -109,102 +138,37 @@ export default class LinkManager {
    * @remark This used to be cached however there weren't any significant performance gains
    * so decided to simplify until there is a need for it
    */
-  private getFileType(path: string): FileType | undefined {
-    if (!this.pathShouldBeIgnored(path)) {
-      return this.fileTypes.find((fileType) => fileType.matches(path));
+  private getFileInfo(path: string): FileInfo | undefined {
+    if (this.pathShouldBeIgnored(path)) {
+      return;
+    }
+    for (const type of this.fileTypes) {
+      const keyPath = type.getKeyPath(path);
+      if (keyPath) {
+        return { type, keyPath };
+      }
     }
   }
 
   private isKnownFileTypePath(path: string): boolean {
-    return !!this.getFileType(path);
+    return !!this.getFileInfo(path);
   }
 
-  getFileMetaData(inputPath: string): FileMetaData | undefined {
-    const inputFileType = this.getFileType(inputPath);
-    if (!inputFileType) {
-      return; // file is not of a known type
+  getFilesLinkedFromPath(path: string): LinkedFileData[] {
+    const targetFile = this.getFileInfo(path);
+    if (!targetFile) {
+      return []; // file is not of a known type
     }
 
-    const keyPath = inputFileType.getKeyPath(inputPath)!;
-
-    return {
-      fileType: inputFileType,
-      linkedFiles: this.fileTypes
-        .filter((fileType) => fileType !== inputFileType) // prevent a file from being related to itself
-        .filter((fileType) => inputFileType.allowsLinksTo(fileType))
-        .filter((fileType) => fileType.allowsLinksFrom(inputFileType))
-        .flatMap((fileType) => fileType.getLinkedFiles(keyPath)),
-    };
+    return this.fileTypes
+      .filter((fileType) => fileType !== targetFile.type) // prevent a file from being related to itself
+      .filter((fileType) => targetFile.type.allowsLinksTo(fileType))
+      .filter((fileType) => fileType.allowsLinksFrom(targetFile.type))
+      .flatMap((fileType) => fileType.getLinkedFilesFromKeyPath(targetFile.keyPath));
   }
 
-  getFilesLinkedFrom(path: string): LinkedFileData[] {
-    return this.getFileMetaData(path)?.linkedFiles || [];
-  }
-
-  getAllPathsWithLinks(): string[] {
-    return [...this.allRelevantPaths].filter((path) => this.getFilesLinkedFrom(path).length);
-  }
-
-  getDecorationData(path: string): DecorationData | undefined {
-    const runKey = `#getDecorationData: ${path}`;
-    const endTimerAndLog = Logger.startTimer(runKey);
-
-    try {
-      const fileMetaData = this.getFileMetaData(path);
-      const relatedFiles = fileMetaData?.linkedFiles;
-      if (!relatedFiles?.length) {
-        if (!fileMetaData) {
-          Logger.warn(runKey, "Could not get metaData");
-        } else {
-          Logger.warn(runKey, "No related files", {
-            typeName: fileMetaData.fileType.name,
-            keyPath: fileMetaData.fileType.getKeyPath(path),
-            linkedFilesCount: fileMetaData.linkedFiles?.length,
-          });
-        }
-        // const foundRawFileType = this.config.fileTypes.find((fileType) => {
-        //   return fileType.patterns.some((pattern) => {
-        //     return new RegExp(pattern).test(path);
-        //   });
-        // });
-
-        // const foundFileType = this.getFileType(path);
-        // Logger.warn(runKey, "File type", {
-        //   foundFileType,
-        //   foundRawFileType,
-        // });
-        // if (!foundFileType) {
-        //   Logger.warn(runKey, "Available file types", this.fileTypes);
-        // }
-        return;
-      }
-
-      Logger.info(runKey, "Found related files");
-
-      const uniqueRelatedFileTypeNames = new Set<string>();
-      relatedFiles.forEach((file) => uniqueRelatedFileTypeNames.add(file.typeName));
-      const uniqueRelatedFileMarkers = new Set<string>();
-      relatedFiles.forEach((file) => uniqueRelatedFileMarkers.add(file.marker));
-
-      const decorationData: DecorationData = {
-        badgeText: [...uniqueRelatedFileMarkers].join(""),
-        tooltip: `Links: ${[...uniqueRelatedFileTypeNames].join(" + ")}`,
-      };
-
-      Logger.info(runKey, "Found related files details", {
-        keyPath: fileMetaData?.fileType.getKeyPath(path),
-        relatedFiles,
-        uniqueRelatedFileTypeNames,
-        uniqueRelatedFileMarkers,
-        decorationData,
-      });
-
-      return decorationData;
-
-      // time
-    } finally {
-      endTimerAndLog();
-    }
+  getAllPathsWithOutgoingLinks(): string[] {
+    return [...this.allRelevantPaths].filter((path) => this.getFilesLinkedFromPath(path).length);
   }
 
   /** This reverts the instance to its initial state */

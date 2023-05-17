@@ -20,7 +20,7 @@ import * as vscode from "vscode";
 import type { MainConfig } from "./utils/config";
 import { getIssuesWithMainConfig } from "./utils/config";
 import LinkManager from "./classes/LinkManager";
-import BadgeDecorationProvider from "./vscode/BadgeDecorationProvider";
+import BadgeDecorationProvider from "./vscode/LinkedFileTypeDecorationProvider";
 import {
   createUri,
   getAllWorkspacePaths,
@@ -70,32 +70,42 @@ export async function activate(context: vscode.ExtensionContext) {
   Logger.info("extension activated with valid config:", mainConfig);
 
   const linkManager = new LinkManager(mainConfig);
-  const badgeDecorationProvider = new BadgeDecorationProvider({
-    getDecorationData: (path) => linkManager.getDecorationData(path),
+
+  const decorationProviders = linkManager.getFileTypes().map((decoratorFileType) => {
+    return new BadgeDecorationProvider({
+      getDecorationData: (path) => linkManager.getFileTypeDecoratorData({ decoratorFileType, path }),
+    });
   });
 
-  linkManager.onFileLinksUpdated((affectedPaths) => {
+  linkManager.setFileLinksUpdatedHandler((affectedPaths) => {
     // need to use FS paths for context key so they work with menu items conditions (they dont have an option to use the normalised path)
     const fsPathsWithLinks = linkManager
-      .getAllPathsWithLinks()
+      .getAllPathsWithOutgoingLinks()
       .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
     Logger.info("#onFileLinksUpdated: fsPathsWithLinks = ", fsPathsWithLinks);
     const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "coLocate.filePathsWithLinks";
     void vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
 
+    // notify decorators of changes
     const affectedPathUris = affectedPaths?.map((path) => vscode.Uri.file(path));
-    badgeDecorationProvider.notifyFileDecorationsChanged(affectedPathUris);
+    // todo these should update when the config changes, maybe throw this file links updated out when the config changes and make a new one with new decorators
+    decorationProviders.forEach((provider) => provider.notifyFileDecorationsChanged(affectedPathUris));
   });
 
   const allPaths = await getAllWorkspacePaths();
   Logger.info("allPaths", allPaths);
-  linkManager.addPathsAndNotify(allPaths);
+  linkManager.addPathsAndNotify(allPaths); // should happen after setting the file links updated handler so initial setup is handled
+
+  // todo this should handle when config changes
+  const decorationProviderSubscriptions = decorationProviders.map((provider) => {
+    return vscode.window.registerFileDecorationProvider(provider);
+  });
 
   context.subscriptions.push(
     { dispose: () => linkManager.revertToInitial() },
     registerNavigateCommand(linkManager),
-    vscode.window.registerFileDecorationProvider(badgeDecorationProvider),
+    ...decorationProviderSubscriptions,
     /**
      * @remark When renaming a folder with children only one event is fired.
      */
@@ -118,7 +128,6 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidCreateFiles(async (e) => {
       try {
         linkManager.addPathsAndNotify(e.files.map((file) => file.path));
-        badgeDecorationProvider.notifyFileDecorationsChanged();
 
         // show user error before throwing it internally
       } catch (error) {
@@ -136,7 +145,6 @@ export async function activate(context: vscode.ExtensionContext) {
       try {
         Logger.warn("onDidDeleteFiles", e);
         linkManager.removePathsAndNotify(e.files.map((file) => file.path));
-        badgeDecorationProvider.notifyFileDecorationsChanged();
 
         // show user error before throwing it internally
       } catch (error) {
@@ -169,7 +177,6 @@ export async function activate(context: vscode.ExtensionContext) {
           config: newMainConfig,
           paths: await getAllWorkspacePaths(),
         });
-        badgeDecorationProvider.notifyFileDecorationsChanged();
 
         // show the user error before throwing it internally
       } catch (error) {
@@ -188,7 +195,7 @@ function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
   const disposable = vscode.commands.registerCommand("coLocate.navigateCommand", async (uri: vscode.Uri) => {
-    const quickPickItems = linkManager.getFilesLinkedFrom(uri.path).map((relatedFile) => {
+    const quickPickItems = linkManager.getFilesLinkedFromPath(uri.path).map((relatedFile) => {
       return {
         label: `${relatedFile.marker} ${relatedFile.typeName}`,
         // if this overflows the end of the path is hidden and we want to prioritise the end of the path so we shorten it

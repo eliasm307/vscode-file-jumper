@@ -19,12 +19,12 @@ describe("FileType", () => {
     fileType.dispose();
   });
 
-  describe("#getLinkedFiles", () => {
+  describe("#getLinkedFilesFromKeyPath", () => {
     it("should return the linked file", () => {
       fileType = createFileTypeWithRegisteredFiles();
 
       assert.deepStrictEqual(
-        fileType.getLinkedFiles("dir1/file1" as KeyPath),
+        fileType.getLinkedFilesFromKeyPath("dir1/file1" as KeyPath),
         [
           {
             typeName: "test",
@@ -36,7 +36,7 @@ describe("FileType", () => {
       );
 
       assert.deepStrictEqual(
-        fileType.getLinkedFiles("dir1/dir2/file2" as KeyPath),
+        fileType.getLinkedFilesFromKeyPath("dir1/dir2/file2" as KeyPath),
         [
           {
             typeName: "test",
@@ -50,7 +50,7 @@ describe("FileType", () => {
 
     it("should return undefined if the file is not linked", () => {
       fileType = createFileTypeWithRegisteredFiles();
-      const linkedFiles = fileType.getLinkedFiles("dir1/otherFile.ts" as KeyPath);
+      const linkedFiles = fileType.getLinkedFilesFromKeyPath("dir1/otherFile.ts" as KeyPath);
       assert.deepStrictEqual(linkedFiles, [], "linked file should not be found");
     });
 
@@ -71,7 +71,7 @@ describe("FileType", () => {
       ]);
 
       assert.deepStrictEqual(
-        fileType.getLinkedFiles("dir1/file0" as KeyPath),
+        fileType.getLinkedFilesFromKeyPath("dir1/file0" as KeyPath),
         [
           {
             typeName: "Source",
@@ -160,7 +160,7 @@ describe("FileType", () => {
       const matchingFullPath = "/test/dir1/file1.test.ts";
 
       assert.deepStrictEqual(
-        fileType.getLinkedFiles(validKeyPath),
+        fileType.getLinkedFilesFromKeyPath(validKeyPath),
         [{ typeName: "test", marker: "🧪", fullPath: "/test/dir1/file1.test.ts" }],
         "linked file should be found",
       );
@@ -168,7 +168,7 @@ describe("FileType", () => {
 
       fileType.dispose();
 
-      assert.deepStrictEqual(fileType.getLinkedFiles(validKeyPath), [], "linked file should not be found");
+      assert.deepStrictEqual(fileType.getLinkedFilesFromKeyPath(validKeyPath), [], "linked file should not be found");
       assert.isTrue(fileType.matches(matchingFullPath), "file should still match after reset");
     });
   });
@@ -184,36 +184,48 @@ describe("FileType", () => {
     function assertFile0IsRegistered(expectRegistered: boolean): void {
       if (expectRegistered) {
         assert.deepStrictEqual(
-          fileType.getLinkedFiles(validKeyPath0),
+          fileType.getLinkedFilesFromKeyPath(validKeyPath0),
           [{ typeName: "test", marker: "🧪", fullPath: fullPath0 }],
           "linked file0 should be found",
         );
       } else {
-        assert.deepStrictEqual(fileType.getLinkedFiles(validKeyPath0), [], "linked file0 should not be found");
+        assert.deepStrictEqual(
+          fileType.getLinkedFilesFromKeyPath(validKeyPath0),
+          [],
+          "linked file0 should not be found",
+        );
       }
     }
 
     function assertFile1IsRegistered(expectRegistered: boolean): void {
       if (expectRegistered) {
         assert.deepStrictEqual(
-          fileType.getLinkedFiles(validKeyPath1),
+          fileType.getLinkedFilesFromKeyPath(validKeyPath1),
           [{ typeName: "test", marker: "🧪", fullPath: fullPath1 }],
           "linked file1 should be found",
         );
       } else {
-        assert.deepStrictEqual(fileType.getLinkedFiles(validKeyPath1), [], "linked file1 should not be found");
+        assert.deepStrictEqual(
+          fileType.getLinkedFilesFromKeyPath(validKeyPath1),
+          [],
+          "linked file1 should not be found",
+        );
       }
     }
 
     function assertFile2IsRegistered(expectRegistered: boolean): void {
       if (expectRegistered) {
         assert.deepStrictEqual(
-          fileType.getLinkedFiles(validKeyPath2),
+          fileType.getLinkedFilesFromKeyPath(validKeyPath2),
           [{ typeName: "test", marker: "🧪", fullPath: fullPath2 }],
           "linked file2 should be found",
         );
       } else {
-        assert.deepStrictEqual(fileType.getLinkedFiles(validKeyPath2), [], "linked file2 should not be found");
+        assert.deepStrictEqual(
+          fileType.getLinkedFilesFromKeyPath(validKeyPath2),
+          [],
+          "linked file2 should not be found",
+        );
       }
     }
 

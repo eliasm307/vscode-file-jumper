@@ -1,9 +1,9 @@
-import type { KeyPath, LinkedFileData } from "../types";
+import type { DecorationData, KeyPath, LinkedFileData } from "../types";
 import type { FileTypeConfig } from "../utils/config";
 import Logger from "./Logger";
 
 export default class FileType {
-  public readonly name: string;
+  readonly name: string;
 
   private readonly patterns: RegExp[];
 
@@ -32,7 +32,7 @@ export default class FileType {
     return this.patterns.some((regex) => regex.test(path));
   }
 
-  getLinkedFiles(keyPath: KeyPath): LinkedFileData[] {
+  getLinkedFilesFromKeyPath(keyPath: KeyPath): LinkedFileData[] {
     const fullPathsSet = this.keyPathToFullPathsMap.get(keyPath);
     const fullPathsArray = fullPathsSet ? [...fullPathsSet] : [];
     return fullPathsArray.map((fullPath) => ({
@@ -46,12 +46,12 @@ export default class FileType {
     paths.forEach((fullPath) => {
       const keyPath = this.getKeyPath(fullPath);
       if (!keyPath) {
-        return;
+        return; // not a valid path for this file type
       }
       Logger.info(`Registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`);
-      const existingFullPathsSet = this.keyPathToFullPathsMap.get(keyPath) || new Set();
-      existingFullPathsSet.add(fullPath);
-      this.keyPathToFullPathsMap.set(keyPath, existingFullPathsSet);
+      const fullPathsSet = this.keyPathToFullPathsMap.get(keyPath) || new Set();
+      fullPathsSet.add(fullPath);
+      this.keyPathToFullPathsMap.set(keyPath, fullPathsSet);
     });
   }
 
@@ -86,7 +86,7 @@ export default class FileType {
   /**
    * @remark This was cached initially however there wasn't a significant performance improvement so decided to simplify
    */
-  public getKeyPath(path: string): KeyPath | null | undefined {
+  getKeyPath(path: string): KeyPath | null | undefined {
     for (const regex of this.patterns) {
       const regexMatch = path.match(regex);
       const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
@@ -98,5 +98,12 @@ export default class FileType {
 
   dispose() {
     this.keyPathToFullPathsMap.clear();
+  }
+
+  getDecorationData(): DecorationData {
+    return {
+      badgeText: this.config.marker,
+      tooltip: `${this.config.marker} ${this.name}`,
+    };
   }
 }
