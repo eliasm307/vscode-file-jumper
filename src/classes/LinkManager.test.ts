@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { describe, it, assert, afterEach, beforeEach } from "vitest";
+import { describe, it, assert, afterEach } from "vitest";
 import fs from "fs";
 import pathModule from "path";
 import LinkManager from "./LinkManager";
@@ -40,6 +40,24 @@ describe("LinkManager", () => {
     });
   }
 
+  const TEST_FILE_TYPE_NAMES = ["Source", "Test", "Documentation", "Build Output"] as const;
+  type TestFileTypeName = (typeof TEST_FILE_TYPE_NAMES)[number];
+
+  function assertDecorationDataForPath({
+    path,
+    expected,
+  }: {
+    path: string;
+    expected: Record<TestFileTypeName, DecorationData | undefined>;
+  }) {
+    const actual = TEST_FILE_TYPE_NAMES.reduce((out, fileTypeName) => {
+      out[fileTypeName] = linkManager.getFileTypeDecoratorData({ path, fileTypeName });
+      return out;
+    }, {} as Record<TestFileTypeName, DecorationData | undefined>);
+
+    assert.deepStrictEqual(actual, expected, `Decoration data for "${path}" is correct`);
+  }
+
   function registerDefaultFiles() {
     linkManager.addPathsAndNotify([
       // ignored files
@@ -50,6 +68,8 @@ describe("LinkManager", () => {
       // non-ignored files
       "/root/dist/classes/Entity.js",
       "/root/src/classes/Entity.ts",
+      "/root/src/classes/Entity2.ts",
+      "/root/src/classes/Entity3.ts",
       "/root/test/classes/Entity.test.ts",
       "/root/test/classes/Entity2.test.ts",
       "/root/docs/classes/Entity.md",
@@ -60,16 +80,15 @@ describe("LinkManager", () => {
 
   afterEach(() => {
     linkManager?.revertToInitial();
+    linkManager = undefined as any; // prevent re-use
   });
 
   describe("meta data functionality", () => {
-    beforeEach(() => {});
-
-    it("returns the correct file meta data with all related files", () => {
+    it("returns the correct file meta data with all related file decorations", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
       const path = "/root/src/classes/Entity.ts";
-      assert.deepStrictEqual(linkManager.getFilesLinkedFromPath(path), [
+      assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
         {
           typeName: "Test",
           marker: "🧪",
@@ -87,59 +106,62 @@ describe("LinkManager", () => {
         },
       ]);
 
-      const actualFileTypes = linkManager.getFileTypes();
-      assert.deepStrictEqual(actualFileTypes, [], "returns correct file types");
-      assert.deepStrictEqual(
-        linkManager.getFileTypeDecoratorData({ path, decoratorFileType: actualFileTypes[0] }),
-        {
-          badgeText: "🧪📖📦",
-          tooltip: "Links: Test + Documentation + Build Output",
+      assertDecorationDataForPath({
+        path,
+        expected: {
+          Source: undefined, // no decoration for own file type
+          Test: {
+            badgeText: "🧪",
+            tooltip: "🧪 Test",
+          },
+          Documentation: {
+            badgeText: "📖",
+            tooltip: "📖 Documentation",
+          },
+
+          "Build Output": {
+            badgeText: "📦",
+            tooltip: "📦 Build Output",
+          },
         },
-        "correct related file markers found",
-      );
+      });
     });
 
-    it("returns the correct file meta data with all related files, using helpers", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
-      const path = "/root/src/classes/Entity.ts";
-      assert.deepStrictEqual(linkManager.getFilesLinkedFromPath(path), [
-        {
-          typeName: "Test",
-          marker: "🧪",
-          fullPath: "/root/test/classes/Entity.test.ts",
-        },
-        {
-          typeName: "Documentation",
-          marker: "📖",
-          fullPath: "/root/docs/classes/Entity.md",
-        },
-        {
-          typeName: "Build Output",
-          marker: "📦",
-          fullPath: "/root/dist/classes/Entity.js",
-        },
-      ]);
-    });
-
-    it("returns correct file meta data with no related files", () => {
+    it("returns correct decorations when a path is not linked to all available file types", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
       const path = "/root/test/classes/Entity2.test.ts";
-      const fileMetaData = linkManager.getFileMetaData(path);
-      assert.strictEqual(fileMetaData?.fileType.name, "Test", "Test file type should be found");
-      assert.deepStrictEqual(fileMetaData?.linkedFiles, [], "No related files should be found");
-      assert.isUndefined(linkManager.getDecorationData(path), "no decoration data when no related files found");
+
+      assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
+        {
+          typeName: "Source",
+          marker: "💻",
+          fullPath: "/root/src/classes/Entity2.ts",
+        },
+        // no Documentation or Build Output
+      ]);
+
+      assertDecorationDataForPath({
+        path,
+        expected: {
+          Source: {
+            badgeText: "💻",
+            tooltip: "💻 Source",
+          },
+          Test: undefined, // no decoration for own file type
+          Documentation: undefined,
+          "Build Output": undefined,
+        },
+      });
     });
 
-    it("returns correct file meta data when file is not related to all other possible types via onlyLinkTo", () => {
+    it("returns correct file meta data when file is not linked to all other possible types via onlyLinkTo", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
       const path = "/root/docs/classes/Entity.md";
-      const fileMetaData = linkManager.getFileMetaData(path);
-      assert.strictEqual(fileMetaData?.fileType.name, "Documentation", "correct file type found");
+
       assert.deepStrictEqual(
-        fileMetaData?.linkedFiles,
+        linkManager.getLinkedFilesFromPath(path),
         [
           {
             typeName: "Source",
@@ -149,47 +171,105 @@ describe("LinkManager", () => {
         ],
         "correct related files found",
       );
-      assert.deepStrictEqual(
-        linkManager.getDecorationData(path),
-        {
-          badgeText: "💻",
-          tooltip: "Links: Source",
+
+      assertDecorationDataForPath({
+        path,
+        expected: {
+          Source: {
+            badgeText: "💻",
+            tooltip: "💻 Source",
+          },
+          Test: undefined, // source has link to this but not docs
+          Documentation: undefined, // no decoration for own file type
+          "Build Output": undefined, // source has link to this but not docs
         },
-        "correct related file markers found with partial links",
-      );
+      });
     });
 
     it("allows files to link to other files that dont link back to them, except if they use onlyLinkFrom", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
-      const testFileMetaData = linkManager.getFileMetaData("/root/test/classes/Entity.test.ts");
-      assert.strictEqual(testFileMetaData?.fileType.name, "Test", "Test file type should be found");
-      assert.deepStrictEqual(testFileMetaData?.linkedFiles, [
-        {
-          typeName: "Source",
-          marker: "💻",
-          fullPath: "/root/src/classes/Entity.ts",
+      const path = "/root/test/classes/Entity.test.ts";
+
+      assert.deepStrictEqual(
+        linkManager.getLinkedFilesFromPath(path),
+        [
+          {
+            typeName: "Source",
+            marker: "💻",
+            fullPath: "/root/src/classes/Entity.ts",
+          },
+          {
+            typeName: "Documentation", // docs dont link to tests but tests link to docs due to onlyLinkFrom
+            marker: "📖",
+            fullPath: "/root/docs/classes/Entity.md",
+          },
+          // no Build Output as it is only linked from source
+        ],
+        "correct related files found",
+      );
+
+      assertDecorationDataForPath({
+        path,
+        expected: {
+          Source: {
+            badgeText: "💻",
+            tooltip: "💻 Source",
+          },
+          Test: undefined, // no decoration for own file type
+          Documentation: {
+            badgeText: "📖",
+            tooltip: "📖 Documentation",
+          },
+          "Build Output": undefined, // can only be linked from source
         },
-        {
-          typeName: "Documentation", // docs dont link back to tests
-          marker: "📖",
-          fullPath: "/root/docs/classes/Entity.md",
-        },
-      ]);
+      });
     });
 
-    it("does not return meta data for ignored file", () => {
+    function assertPathHasNoLinksOrDecoration(path: string): void {
+      assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), []);
+
+      assertDecorationDataForPath({
+        path,
+        expected: {
+          Source: undefined,
+          Test: undefined,
+          Documentation: undefined,
+          "Build Output": undefined,
+        },
+      });
+    }
+
+    it("does not return file meta data for a file that is ignored", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
-      const ignoredFileMetaData = linkManager.getFileMetaData("/root/node_modules/package/src/classes/Entity.ts");
-      assert.isUndefined(ignoredFileMetaData, "Ignored file should not be found");
+      const path = "/root/node_modules/package/src/classes/Entity.ts";
+
+      assertPathHasNoLinksOrDecoration(path);
     });
 
-    it("should return undefined if the file doesn't exist/isn't registered", () => {
+    it("returns correct file meta data with no related files", () => {
       linkManager = createDefaultTestInstance();
       registerDefaultFiles();
-      const unknownFileMetaData = linkManager.getFileMetaData("/root/unknown/file/path.ts");
-      assert.isUndefined(unknownFileMetaData, "Unknown file should not be found");
+      const path = "/root/test/classes/Entity3.ts";
+
+      assertPathHasNoLinksOrDecoration(path);
+    });
+
+    it("should return undefined if the file exists but is an unknown type", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
+      const path = "/root/unknown/file/path.ts";
+
+      assertPathHasNoLinksOrDecoration(path);
+    });
+
+    it("should return undefined if the file is not registered/doesn't exist", () => {
+      linkManager = createDefaultTestInstance();
+      registerDefaultFiles();
+      const path = "/root/i-dont-exist/file/path.ts";
+
+      assertPathHasNoLinksOrDecoration(path);
     });
 
     it("allows linking to multiple related files of the same type", () => {
@@ -227,9 +307,8 @@ describe("LinkManager", () => {
       ]);
 
       const path = "/root/src/classes/Entity.ts";
-      const fileMetaData = linkManager.getFileMetaData(path);
-      assert.strictEqual(fileMetaData?.fileType.name, "Source", "Correct file type should be found");
-      assert.deepStrictEqual(fileMetaData?.linkedFiles, [
+
+      assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
         {
           typeName: "Test",
           marker: "🧪",
@@ -256,14 +335,22 @@ describe("LinkManager", () => {
           fullPath: "/root/dist/classes/Entity.json",
         },
       ]);
-      assert.deepStrictEqual(
-        linkManager.getDecorationData(path),
-        {
-          badgeText: "🧪📦",
-          tooltip: "Links: Test + Build Output",
+
+      assertDecorationDataForPath({
+        path,
+        expected: {
+          Source: undefined, // no decoration for own file type
+          Test: {
+            badgeText: "🧪",
+            tooltip: "🧪 Test",
+          },
+          "Build Output": {
+            badgeText: "📦",
+            tooltip: "📦 Build Output",
+          },
+          Documentation: undefined,
         },
-        "correct related file markers found with single entry for multiple linked files",
-      );
+      });
     });
   });
 
@@ -282,14 +369,14 @@ describe("LinkManager", () => {
       const sourcePath = "/root/src/classes/Entity.ts";
 
       assert.isTrue(
-        linkManager.getFilesLinkedFromPath(sourcePath).length > 0,
+        linkManager.getLinkedFilesFromPath(sourcePath).length > 0,
         "Files related to Source file should be found",
       );
 
       linkManager.revertToInitial();
 
       assert.isTrue(
-        linkManager.getFilesLinkedFromPath(sourcePath).length === 0,
+        linkManager.getLinkedFilesFromPath(sourcePath).length === 0,
         "Files related to Source file should not be found after reset",
       );
     });
@@ -348,7 +435,7 @@ describe("LinkManager", () => {
       });
     }
 
-    type DecorationsMap = Record<string, DecorationData | null>;
+    type PathToDecorationsMap = Record<string, DecorationData[] | null>;
 
     it("should be fast and accurate", async () => {
       const eslintPathsPath = pathModule.join(__dirname, "LinkManagerTestData/eslint-project-files.json");
@@ -356,7 +443,7 @@ describe("LinkManager", () => {
       const fileCount = eslintPaths.length;
       console.log(`Testing ${fileCount} Eslint files`);
 
-      let actualDecorations: DecorationsMap = {};
+      let actualDecorationsMap: PathToDecorationsMap = {};
       Array(3)
         .fill(0)
         .forEach((_, i) => {
@@ -373,13 +460,17 @@ describe("LinkManager", () => {
 
           // get the decorations for all the files
 
-          actualDecorations = {};
+          actualDecorationsMap = {};
           startTime = Date.now();
           eslintPaths.forEach((path) => {
-            const decoration = linkManager.getDecorationData(path);
-            if (decoration) {
-              actualDecorations[path] = decoration;
-            }
+            TEST_FILE_TYPE_NAMES.forEach((fileTypeName) => {
+              const decoration = linkManager.getFileTypeDecoratorData({ path, fileTypeName });
+              if (decoration) {
+                const pathDecorations = actualDecorationsMap[path] || [];
+                pathDecorations.push(decoration);
+                actualDecorationsMap[path] = pathDecorations;
+              }
+            });
           });
           const getDecorationsDurationMs = Date.now() - startTime;
           console.log(`#getDecorations actually took`, getDecorationsDurationMs, `ms`);
@@ -405,13 +496,31 @@ describe("LinkManager", () => {
           __dirname,
           "LinkManagerTestData/actual-eslint-project-decorations.json",
         );
-        fs.writeFileSync(actualDecorationsPath, JSON.stringify(actualDecorations, null, 2));
-        const expectedDecorations: DecorationsMap = JSON.parse(fs.readFileSync(expectedDecorationsPath, "utf8"));
-        assert.deepStrictEqual(actualDecorations, expectedDecorations, "eslint decorations should match expected");
+        fs.writeFileSync(actualDecorationsPath, JSON.stringify(actualDecorationsMap, null, 2));
+        const expectedDecorationsMap: PathToDecorationsMap = JSON.parse(
+          fs.readFileSync(expectedDecorationsPath, "utf8"),
+        );
 
+        // using deep strict equal produces unhelpful diff because the data is large, so we do a manual comparison for each item
+        Object.entries(expectedDecorationsMap).forEach(([path, expectedFileDecorations]) => {
+          const actualFileDecorations = actualDecorationsMap[path];
+          assert.isDefined(actualFileDecorations, `actual decorations for ${path} should exist`);
+          assert.deepStrictEqual(
+            actualFileDecorations,
+            expectedFileDecorations,
+            `decorations for "${path}" should match expected`,
+          );
+        });
+
+        // asserting the total count after so we see any differences first
+        assert.strictEqual(
+          Object.keys(actualDecorationsMap).length,
+          Object.keys(expectedDecorationsMap).length,
+          "same number of files should be decorated",
+        );
         // create the snapshot file
       } else {
-        fs.writeFileSync(expectedDecorationsPath, JSON.stringify(actualDecorations, null, 2), "utf8");
+        fs.writeFileSync(expectedDecorationsPath, JSON.stringify(actualDecorationsMap, null, 2), "utf8");
         assert.fail("eslint decorations snapshot file created");
       }
     });

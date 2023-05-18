@@ -8,34 +8,12 @@ type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => void;
 
 type FileInfo = { keyPath: KeyPath; type: FileType };
 
+type PathData = {
+  file: FileInfo;
+  allowedFileTypesForOutgoingLinks: FileType[];
+};
+
 export default class LinkManager {
-  /**
-   * Determines whether the given path should be decorated as linked to the given file type and provides the decoration if so
-   */
-  getFileTypeDecoratorData({
-    decoratorFileType,
-    path,
-  }: {
-    decoratorFileType: FileType;
-    path: string;
-  }): DecorationData | undefined {
-    const endTimer = Logger.startTimer(`${decoratorFileType.name}Decorator#getFileTypeDecoratorData: ${path} `);
-    const shouldBeDecorated = this.pathIsLinkedToFileType({ path, fileTypeName: decoratorFileType.name });
-    endTimer();
-    if (shouldBeDecorated) {
-      return decoratorFileType.getDecorationData();
-    }
-  }
-
-  private pathIsLinkedToFileType({ path, fileTypeName }: { path: string; fileTypeName: string }): boolean {
-    const linkedFiles = this.getFilesLinkedFromPath(path);
-    return linkedFiles.some((linkedFile) => linkedFile.typeName === fileTypeName);
-  }
-
-  getFileTypes() {
-    return [...this.fileTypes];
-  }
-
   private fileTypes: FileType[] = [];
 
   private ignorePatterns: RegExp[] = [];
@@ -43,16 +21,14 @@ export default class LinkManager {
   /**
    * This represents all the relevant paths the link manager is aware of that are of a known type
    */
+  // readonly #pathDataCache: Map<string, PathData | null> = new Map();
+
   private allRelevantPaths: Set<string> = new Set();
 
   private onFileLinksUpdatedHandler: OnFileLinksUpdatedHandler | undefined;
 
   constructor(private config: MainConfig) {
     this.applyConfig(config);
-  }
-
-  setOnFileLinksUpdatedHandler(handler: OnFileLinksUpdatedHandler): void {
-    this.onFileLinksUpdatedHandler = handler;
   }
 
   private applyConfig(config: MainConfig): void {
@@ -63,12 +39,16 @@ export default class LinkManager {
     this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
   }
 
+  setOnFileLinksUpdatedHandler(handler: OnFileLinksUpdatedHandler): void {
+    this.onFileLinksUpdatedHandler = handler;
+  }
+
   private pathShouldBeIgnored(path: string): boolean {
     return this.ignorePatterns.some((regex) => regex.test(path));
   }
 
   private getIndirectlyAffectedPaths(pathsModified: string[]): string[] {
-    return pathsModified.flatMap((path) => this.getFilesLinkedFromPath(path)).map((file) => file.fullPath);
+    return pathsModified.flatMap((path) => this.getLinkedFilesFromPath(path)).map((file) => file.fullPath);
   }
 
   addPathsAndNotify(paths: string[]): void {
@@ -165,34 +145,85 @@ export default class LinkManager {
     return !!this.getFileInfo(path);
   }
 
-  getFilesLinkedFromPath(path: string): LinkedFileData[] {
+  /**
+   * Determines whether the given path should be decorated as linked to the given file type and provides the decoration if so
+   */
+  getFileTypeDecoratorData({ fileTypeName, path }: { fileTypeName: string; path: string }): DecorationData | undefined {
+    const endTimer = Logger.startTimer(`${fileTypeName}Decorator#getFileTypeDecoratorData: ${path} `);
+    try {
+      const pathData = this.getPathData(path);
+      if (!pathData) {
+        return;
+      }
+
+      // we only get a file type if the file is linked to the given file type and so should be decorated by the file type decorator
+      const linkedDecoratorFileType = pathData.allowedFileTypesForOutgoingLinks.find(
+        (linkedFileType) => linkedFileType.name === fileTypeName,
+      );
+
+      const outgoingLinksToDecorate = linkedDecoratorFileType?.getLinkedFilesFromKeyPath(pathData.file.keyPath);
+      if (outgoingLinksToDecorate?.length) {
+        return linkedDecoratorFileType?.getDecorationData(); // only apply allowed file type decoration if there are linked files of that type
+      }
+
+      // log timing
+    } finally {
+      endTimer();
+    }
+  }
+
+  private getPathData(path: string): PathData | null | undefined {
+    // this gets called multiple times for the same file for different file type decorators so caching makes sense
+    // const cached = this.#pathDataCache.get(path);
+    // if (typeof cached !== "undefined") {
+    //   return cached;
+    // }
+
     const targetFile = this.getFileInfo(path);
     if (!targetFile) {
-      return []; // file is not of a known type
+      // this.#pathDataCache.set(path, null);
+      return; // file is not of a known type
     }
 
-    return this.fileTypes
-      .filter((fileType) => fileType !== targetFile.type) // prevent a file from being related to itself
+    const allowedFileTypesForOutgoingLinks = this.fileTypes
+      .filter((fileType) => fileType.name !== targetFile.type.name) // prevent a file from being related to itself
       .filter((fileType) => targetFile.type.allowsLinksTo(fileType))
-      .filter((fileType) => fileType.allowsLinksFrom(targetFile.type))
-      .flatMap((fileType) => fileType.getLinkedFilesFromKeyPath(targetFile.keyPath));
+      .filter((fileType) => fileType.allowsLinksFrom(targetFile.type));
+
+    const metaData = { file: targetFile, allowedFileTypesForOutgoingLinks };
+    // this.#pathDataCache.set(path, metaData);
+    return metaData;
+  }
+
+  /**
+   * Gets all the files with outgoing links from the given path
+   */
+  getLinkedFilesFromPath(path: string): LinkedFileData[] {
+    const pathData = this.getPathData(path);
+    if (!pathData) {
+      return [];
+    }
+    return pathData.allowedFileTypesForOutgoingLinks.flatMap((fileType) => {
+      return fileType.getLinkedFilesFromKeyPath(pathData.file.keyPath);
+    });
   }
 
   getAllPathsWithOutgoingLinks(): string[] {
-    return [...this.allRelevantPaths].filter((path) => this.getFilesLinkedFromPath(path).length);
+    return [...this.allRelevantPaths].filter((path) => this.getLinkedFilesFromPath(path).length);
   }
 
   /** This reverts the instance to its initial state */
   revertToInitial() {
     this.fileTypes.forEach((fileType) => fileType.dispose());
     this.allRelevantPaths.clear();
+    // this.#pathDataCache.clear();
   }
 
   /**
    * We need to do a full refresh here as the config change could also change what files we consider "relevant"
    * so we need to re-evaluate the entire workspace
    */
-  resetConfig(newWorkspace: { config: MainConfig; paths: string[] }) {
+  setConfig(newWorkspace: { config: MainConfig; paths: string[] }) {
     const configHasChanged = !mainConfigsAreEqual(this.config, newWorkspace.config);
     if (!configHasChanged) {
       return;
@@ -204,7 +235,7 @@ export default class LinkManager {
     const relevantPaths = newWorkspace.paths.filter((path) => !this.pathShouldBeIgnored(path));
     this.applyPathAdditions(relevantPaths);
 
-    // need to do a full refresh even for paths we disregarded before as we dont know what changed
+    // need to do a full refresh as the list of relevant files might have changed
     this.notifyFileLinksUpdated(null);
   }
 }

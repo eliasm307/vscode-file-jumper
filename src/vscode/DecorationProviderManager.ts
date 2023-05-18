@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import * as vscode from "vscode";
-import type FileType from "../classes/FileType";
 import type { DecorationData } from "../types";
 import DecorationProvider from "./DecorationProvider";
 
@@ -11,21 +10,22 @@ export default class DecorationProviderManager {
 
   constructor(
     private readonly config: {
-      getDecorationData: ({
-        decoratorFileType,
-        path,
-      }: {
-        decoratorFileType: FileType;
-        path: string;
-      }) => DecorationData | undefined;
+      getDecorationData: ({ fileTypeName, path }: { fileTypeName: string; path: string }) => DecorationData | undefined;
     },
   ) {}
 
-  setFileTypes(fileTypes: FileType[]): void {
+  private disposeRegisteredProviders(): void {
     this.subscriptions.forEach((subscription) => subscription.dispose());
-    this.decorationProviders = fileTypes.map((decoratorFileType) => {
+    this.subscriptions = [];
+  }
+
+  setFileTypeNames(newFileTypeNames: string[]): void {
+    this.disposeRegisteredProviders();
+
+    // create and register a provider for each new file type
+    this.decorationProviders = newFileTypeNames.map((fileTypeName) => {
       return new DecorationProvider({
-        getDecorationData: (path) => this.config.getDecorationData({ decoratorFileType, path }),
+        getDecorationData: (path) => this.config.getDecorationData({ fileTypeName, path }),
       });
     });
     this.subscriptions = this.decorationProviders.map((provider) => {
@@ -39,6 +39,6 @@ export default class DecorationProviderManager {
   }
 
   dispose(): void {
-    this.subscriptions.forEach((subscription) => subscription.dispose());
+    this.disposeRegisteredProviders();
   }
 }

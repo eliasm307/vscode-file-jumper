@@ -99,7 +99,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // should happen after the linkManager is setup with files,
   // because the providers get used as soon as they are registered and need to be able to get the file links
-  decorationProviderManager.setFileTypes(linkManager.getFileTypes());
+  const fileTypeNames = mainConfig.fileTypes.map((fileType) => fileType.name);
+  decorationProviderManager.setFileTypeNames(fileTypeNames);
 
   context.subscriptions.push(
     { dispose: () => linkManager.revertToInitial() },
@@ -172,12 +173,13 @@ export async function activate(context: vscode.ExtensionContext) {
           return;
         }
 
-        linkManager.resetConfig({
+        linkManager.setConfig({
           config: newMainConfig,
           paths: await getAllWorkspacePaths(),
         });
 
-        decorationProviderManager.setFileTypes(linkManager.getFileTypes());
+        const newFileTypeNames = newMainConfig.fileTypes.map((fileType) => fileType.name);
+        decorationProviderManager.setFileTypeNames(newFileTypeNames);
 
         // show the user error before throwing it internally
       } catch (error) {
@@ -196,12 +198,12 @@ function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
   const disposable = vscode.commands.registerCommand("coLocate.navigateCommand", async (uri: vscode.Uri) => {
-    const quickPickItems = linkManager.getFilesLinkedFromPath(uri.path).map((relatedFile) => {
+    const quickPickItems = linkManager.getLinkedFilesFromPath(uri.path).map((linkedFile) => {
       return {
-        label: `${relatedFile.marker} ${relatedFile.typeName}`,
+        label: `${linkedFile.marker} ${linkedFile.typeName}`,
         // if this overflows the end of the path is hidden and we want to prioritise the end of the path so we shorten it
-        detail: shortenPath(getWorkspaceRelativePath(relatedFile.fullPath)),
-        path: relatedFile.fullPath,
+        detail: shortenPath(getWorkspaceRelativePath(linkedFile.fullPath)),
+        path: linkedFile.fullPath,
       } satisfies vscode.QuickPickItem & { path: string };
     });
 
