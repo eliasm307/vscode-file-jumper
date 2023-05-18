@@ -16,6 +16,14 @@ export default class FileType {
    */
   private readonly keyPathToFullPathsMap: Map<string, Set<string>> = new Map();
 
+  /**
+   * @key full file path
+   *
+   * @remark cache not cleared on reset as its not context specific and doesn't affect behaviour
+   * @remark `null` means this was executed and no keypath found
+   */
+  private readonly fullPathToKeyPathCache: Map<string, KeyPath | null> = new Map();
+
   constructor(private readonly config: FileTypeConfig) {
     this.patterns = config.patterns.map((pattern) => new RegExp(pattern));
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
@@ -84,20 +92,29 @@ export default class FileType {
   }
 
   /**
-   * @remark This was cached initially however there wasn't a significant performance improvement so decided to simplify
+   * @remark
+   * This was measured to be a performance bottleneck, ie it gets called hundreds of times with the same paths
+   * and the caching makes a difference
    */
   getKeyPath(path: string): KeyPath | null | undefined {
+    const cachedKeyPath = this.fullPathToKeyPathCache.get(path);
+    if (typeof cachedKeyPath !== "undefined") {
+      return cachedKeyPath;
+    }
     for (const regex of this.patterns) {
       const regexMatch = path.match(regex);
       const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
       if (keyPath) {
+        this.fullPathToKeyPathCache.set(path, keyPath);
         return keyPath;
       }
     }
+    this.fullPathToKeyPathCache.set(path, null);
   }
 
   dispose() {
     this.keyPathToFullPathsMap.clear();
+    this.fullPathToKeyPathCache.clear();
   }
 
   getDecorationData(): DecorationData {

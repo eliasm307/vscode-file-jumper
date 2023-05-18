@@ -21,15 +21,14 @@ export default class LinkManager {
   /**
    * This represents all the relevant paths the link manager is aware of that are of a known type
    */
-  // readonly #pathDataCache: Map<string, PathData | null> = new Map();
 
-  private allRelevantPaths: Set<string> = new Set();
+  #allKnownRelevantPaths: Set<string> = new Set();
+
+  readonly #pathDataCache: Map<string, PathData | null> = new Map();
 
   private onFileLinksUpdatedHandler: OnFileLinksUpdatedHandler | undefined;
 
-  constructor(private config: MainConfig) {
-    this.applyConfig(config);
-  }
+  private config: MainConfig | undefined;
 
   private applyConfig(config: MainConfig): void {
     Logger.info("#applyConfig", config);
@@ -43,22 +42,21 @@ export default class LinkManager {
     this.onFileLinksUpdatedHandler = handler;
   }
 
-  private pathShouldBeIgnored(path: string): boolean {
-    return this.ignorePatterns.some((regex) => regex.test(path));
-  }
-
   private getIndirectlyAffectedPaths(pathsModified: string[]): string[] {
     return pathsModified.flatMap((path) => this.getLinkedFilesFromPath(path)).map((file) => file.fullPath);
   }
 
+  /**
+   * Add paths to the existing known paths, and notify the handler of any changes
+   */
   addPathsAndNotify(paths: string[]): void {
     Logger.info("#addFiles", paths);
     const endTimerAndLog = Logger.startTimer(`#addFiles(${paths.length})`);
-    const relevantPathsAdded = paths
-      .filter((path) => !this.pathShouldBeIgnored(path))
-      .filter((path) => this.isKnownFileTypePath(path));
-
-    if (relevantPathsAdded.length) {
+    try {
+      const relevantPathsAdded = paths.filter((path) => this.pathIsRelevant(path));
+      if (!relevantPathsAdded.length) {
+        return; // nothing to do
+      }
       this.applyPathAdditions(relevantPathsAdded);
 
       const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths(relevantPathsAdded);
@@ -67,20 +65,20 @@ export default class LinkManager {
       Logger.info("#addFiles", { relevantPathsAdded, indirectlyAffectedPaths, affectedPaths });
 
       this.notifyFileLinksUpdated(affectedPaths);
+
+      // log timing
+    } finally {
+      endTimerAndLog();
     }
-    endTimerAndLog();
   }
 
   private applyPathAdditions(paths: Set<string> | string[]) {
-    paths.forEach((path) => this.allRelevantPaths.add(path));
+    paths.forEach((path) => this.#allKnownRelevantPaths.add(path));
     this.fileTypes.forEach((fileType) => fileType.addPaths(paths));
   }
 
   removePathsAndNotify(paths: string[]) {
-    const relevantPathsRemoved = paths
-      .filter((path) => !this.pathShouldBeIgnored(path))
-      .filter((path) => this.isKnownFileTypePath(path));
-
+    const relevantPathsRemoved = paths.filter((path) => this.pathIsRelevant(path));
     if (relevantPathsRemoved.length) {
       this.applyPathRemovals(relevantPathsRemoved);
       const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths(relevantPathsRemoved);
@@ -92,19 +90,13 @@ export default class LinkManager {
   }
 
   private applyPathRemovals(paths: string[]) {
-    paths.forEach((path) => this.allRelevantPaths.delete(path));
+    paths.forEach((path) => this.#allKnownRelevantPaths.delete(path));
     this.fileTypes.forEach((fileType) => fileType.removePaths(paths));
   }
 
   renameFilesAndNotify({ oldPaths, newPaths }: { oldPaths: string[]; newPaths: string[] }) {
-    const relevantPathsRemoved = oldPaths
-      .filter((path) => !this.pathShouldBeIgnored(path))
-      .filter((path) => this.isKnownFileTypePath(path));
-
-    const relevantPathsAdded = newPaths
-      .filter((path) => !this.pathShouldBeIgnored(path))
-      .filter((path) => this.isKnownFileTypePath(path));
-
+    const relevantPathsRemoved = oldPaths.filter((path) => this.pathIsRelevant(path));
+    const relevantPathsAdded = newPaths.filter((path) => this.pathIsRelevant(path));
     const relevantFilesAffected = relevantPathsRemoved.length || relevantPathsAdded.length;
     if (!relevantFilesAffected) {
       return; // no known file types were affected so no need to update
@@ -130,8 +122,8 @@ export default class LinkManager {
    * so decided to simplify until there is a need for it
    */
   private getFileInfo(path: string): FileInfo | undefined {
-    if (this.pathShouldBeIgnored(path)) {
-      return;
+    if (!this.#allKnownRelevantPaths.has(path)) {
+      return; // we don't know about this path so we can't get any file info
     }
     for (const type of this.fileTypes) {
       const keyPath = type.getKeyPath(path);
@@ -141,8 +133,16 @@ export default class LinkManager {
     }
   }
 
-  private isKnownFileTypePath(path: string): boolean {
-    return !!this.getFileInfo(path);
+  /**
+   * @remark this gets called rarely, only when files are added or removed so doesn't need to be cached
+   */
+  private pathIsRelevant(path: string): boolean {
+    const shouldBeIgnored = this.ignorePatterns.some((regex) => regex.test(path));
+    if (shouldBeIgnored) {
+      return false;
+    }
+    const isKnownFileTypePath = this.fileTypes.some((fileType) => fileType.matches(path));
+    return isKnownFileTypePath;
   }
 
   /**
@@ -174,14 +174,15 @@ export default class LinkManager {
 
   private getPathData(path: string): PathData | null | undefined {
     // this gets called multiple times for the same file for different file type decorators so caching makes sense
-    // const cached = this.#pathDataCache.get(path);
-    // if (typeof cached !== "undefined") {
-    //   return cached;
-    // }
+    // also means we minimise delay showing quick pick options
+    const cached = this.#pathDataCache.get(path);
+    if (typeof cached !== "undefined") {
+      return cached;
+    }
 
     const targetFile = this.getFileInfo(path);
     if (!targetFile) {
-      // this.#pathDataCache.set(path, null);
+      this.#pathDataCache.set(path, null);
       return; // file is not of a known type
     }
 
@@ -191,7 +192,7 @@ export default class LinkManager {
       .filter((fileType) => fileType.allowsLinksFrom(targetFile.type));
 
     const metaData = { file: targetFile, allowedFileTypesForOutgoingLinks };
-    // this.#pathDataCache.set(path, metaData);
+    this.#pathDataCache.set(path, metaData);
     return metaData;
   }
 
@@ -199,40 +200,51 @@ export default class LinkManager {
    * Gets all the files with outgoing links from the given path
    */
   getLinkedFilesFromPath(path: string): LinkedFileData[] {
-    const pathData = this.getPathData(path);
-    if (!pathData) {
-      return [];
+    const stopTimer = Logger.startTimer(`LinkManager#getLinkedFilesFromPath: ${path}`);
+    try {
+      const pathData = this.getPathData(path);
+      if (!pathData) {
+        return [];
+      }
+      return pathData.allowedFileTypesForOutgoingLinks.flatMap((fileType) => {
+        return fileType.getLinkedFilesFromKeyPath(pathData.file.keyPath);
+      });
+
+      // log timing
+    } finally {
+      stopTimer();
     }
-    return pathData.allowedFileTypesForOutgoingLinks.flatMap((fileType) => {
-      return fileType.getLinkedFilesFromKeyPath(pathData.file.keyPath);
-    });
   }
 
   getAllPathsWithOutgoingLinks(): string[] {
-    return [...this.allRelevantPaths].filter((path) => this.getLinkedFilesFromPath(path).length);
+    const stopTimer = Logger.startTimer("LinkManager#getAllPathsWithOutgoingLinks");
+    const paths = [...this.#allKnownRelevantPaths].filter((path) => this.getLinkedFilesFromPath(path).length);
+    stopTimer();
+    return paths;
   }
 
   /** This reverts the instance to its initial state */
   revertToInitial() {
     this.fileTypes.forEach((fileType) => fileType.dispose());
-    this.allRelevantPaths.clear();
-    // this.#pathDataCache.clear();
+    this.fileTypes = [];
+    this.#allKnownRelevantPaths.clear();
+    this.#pathDataCache.clear();
   }
 
   /**
    * We need to do a full refresh here as the config change could also change what files we consider "relevant"
    * so we need to re-evaluate the entire workspace
    */
-  setConfig(newWorkspace: { config: MainConfig; paths: string[] }) {
-    const configHasChanged = !mainConfigsAreEqual(this.config, newWorkspace.config);
+  setContext(newContext: { config: MainConfig; paths: string[] }) {
+    const configHasChanged = !mainConfigsAreEqual(this.config, newContext.config);
     if (!configHasChanged) {
       return;
     }
-    Logger.warn("LinkManager#updateConfig", newWorkspace.config);
+    Logger.warn("LinkManager#updateConfig", newContext.config);
     this.revertToInitial();
-    this.applyConfig(newWorkspace.config);
+    this.applyConfig(newContext.config);
 
-    const relevantPaths = newWorkspace.paths.filter((path) => !this.pathShouldBeIgnored(path));
+    const relevantPaths = newContext.paths.filter((path) => this.pathIsRelevant(path));
     this.applyPathAdditions(relevantPaths);
 
     // need to do a full refresh as the list of relevant files might have changed

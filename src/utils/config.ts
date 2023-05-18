@@ -67,8 +67,8 @@ export function formatRawIgnorePatternsConfig(rawConfig: string[] | undefined): 
   return rawConfig;
 }
 
-export function mainConfigsAreEqual(a: MainConfig, b: MainConfig): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+export function mainConfigsAreEqual(a: MainConfig | undefined, b: MainConfig | undefined): boolean {
+  return !!a && JSON.stringify(a) === JSON.stringify(b);
 }
 
 /**

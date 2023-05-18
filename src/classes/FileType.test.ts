@@ -152,7 +152,7 @@ describe("FileType", () => {
     });
   });
 
-  describe("#reset", () => {
+  describe("#dispose", () => {
     it("should clear the registered files", () => {
       fileType = createFileTypeWithRegisteredFiles();
 
@@ -164,12 +164,12 @@ describe("FileType", () => {
         [{ typeName: "test", marker: "🧪", fullPath: "/test/dir1/file1.test.ts" }],
         "linked file should be found",
       );
-      assert.isTrue(fileType.matches(matchingFullPath), "file should match");
+      assert.strictEqual(fileType.getKeyPath(matchingFullPath), "dir1/file1", "file should match");
 
       fileType.dispose();
 
       assert.deepStrictEqual(fileType.getLinkedFilesFromKeyPath(validKeyPath), [], "linked file should not be found");
-      assert.isTrue(fileType.matches(matchingFullPath), "file should still match after reset");
+      assert.strictEqual(fileType.getKeyPath(matchingFullPath), "dir1/file1", "file should still match after");
     });
   });
 
@@ -240,11 +240,11 @@ describe("FileType", () => {
 
       // file 1 should be found
       assertFile0IsRegistered(true);
-      assert.isTrue(fileType.matches(fullPath1), "file1 should match");
+      assert.strictEqual(fileType.getKeyPath(fullPath1), "dir1/file1", "file1 should have keypath");
 
       // file 2 should be found
       assertFile2IsRegistered(true);
-      assert.isTrue(fileType.matches(fullPath2), "file2 should match");
+      assert.strictEqual(fileType.getKeyPath(fullPath2), "dir1/dir2/file2", "file2 should have keypath");
 
       // de-register file 1
       fileType.removePaths([fullPath1]);
@@ -254,14 +254,18 @@ describe("FileType", () => {
 
       // file 2 should still be found
       assertFile2IsRegistered(true);
-      assert.isTrue(fileType.matches(fullPath2), "file2 should still match");
+      assert.strictEqual(fileType.getKeyPath(fullPath2), "dir1/dir2/file2", "file2 should still have keypath");
 
       // de-register file 2
       fileType.removePaths([fullPath2]);
 
       // file 2 should not be found anymore
       assertFile2IsRegistered(false);
-      assert.isTrue(fileType.matches(fullPath2), "file2 should still match after reset");
+      assert.strictEqual(
+        fileType.getKeyPath(fullPath2),
+        "dir1/dir2/file2",
+        "file2 should still have keypath after reset",
+      );
     });
 
     it("is a no-op if the file is not registered", () => {

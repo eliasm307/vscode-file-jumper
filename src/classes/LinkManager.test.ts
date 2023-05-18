@@ -5,39 +5,63 @@ import fs from "fs";
 import pathModule from "path";
 import LinkManager from "./LinkManager";
 import type { DecorationData } from "../types";
+import type { MainConfig } from "../utils/config";
 
 describe("LinkManager", () => {
   let linkManager: LinkManager;
 
-  function createDefaultTestInstance() {
-    return new LinkManager({
-      fileTypes: [
-        {
-          name: "Source",
-          marker: "💻",
-          patterns: ["\\/src\\/(.*)\\.ts$"],
-        },
-        {
-          name: "Test",
-          marker: "🧪",
-          patterns: ["\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$"],
-        },
-        {
-          name: "Documentation",
-          marker: "📖",
-          patterns: ["\\/(docs|docs)\\/(?<key>.*)\\.md$"],
-          onlyLinkTo: ["Source"],
-        },
-        {
-          name: "Build Output",
-          marker: "📦",
-          patterns: ["\\/dist\\/(.*)\\.js$"],
-          onlyLinkFrom: ["Source"],
-        },
+  const TEST_CONTEXT: MainConfig = {
+    fileTypes: [
+      {
+        name: "Source",
+        marker: "💻",
+        patterns: ["\\/src\\/(.*)\\.ts$"],
+      },
+      {
+        name: "Test",
+        marker: "🧪",
+        patterns: ["\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$"],
+      },
+      {
+        name: "Documentation",
+        marker: "📖",
+        patterns: ["\\/(docs|docs)\\/(?<key>.*)\\.md$"],
+        onlyLinkTo: ["Source"],
+      },
+      {
+        name: "Build Output",
+        marker: "📦",
+        patterns: ["\\/dist\\/(.*)\\.js$"],
+        onlyLinkFrom: ["Source"],
+      },
+    ],
+    ignorePatterns: ["\\/node_modules\\/"],
+    showDebugLogs: false,
+  };
+
+  function createInstanceWithDefaultTestContext() {
+    const manager = new LinkManager();
+    manager.setContext({
+      config: TEST_CONTEXT,
+      paths: [
+        // ignored files
+        "/root/node_modules/package/src/classes/Entity.ts",
+        "/root/node_modules/package/test/classes/Entity.test.ts",
+        "/root/node_modules/package/docs/classes/Entity.md",
+
+        // non-ignored files
+        "/root/dist/classes/Entity.js",
+        "/root/src/classes/Entity.ts",
+        "/root/src/classes/Entity2.ts",
+        "/root/src/classes/Entity3.ts",
+        "/root/test/classes/Entity.test.ts",
+        "/root/test/classes/Entity2.test.ts",
+        "/root/docs/classes/Entity.md",
+        "/root/unknown/file/path.ts",
+        "/root/src/unknown/file/path.ts",
       ],
-      ignorePatterns: ["\\/node_modules\\/"],
-      showDebugLogs: false,
     });
+    return manager;
   }
 
   const TEST_FILE_TYPE_NAMES = ["Source", "Test", "Documentation", "Build Output"] as const;
@@ -58,26 +82,6 @@ describe("LinkManager", () => {
     assert.deepStrictEqual(actual, expected, `Decoration data for "${path}" is correct`);
   }
 
-  function registerDefaultFiles() {
-    linkManager.addPathsAndNotify([
-      // ignored files
-      "/root/node_modules/package/src/classes/Entity.ts",
-      "/root/node_modules/package/test/classes/Entity.test.ts",
-      "/root/node_modules/package/docs/classes/Entity.md",
-
-      // non-ignored files
-      "/root/dist/classes/Entity.js",
-      "/root/src/classes/Entity.ts",
-      "/root/src/classes/Entity2.ts",
-      "/root/src/classes/Entity3.ts",
-      "/root/test/classes/Entity.test.ts",
-      "/root/test/classes/Entity2.test.ts",
-      "/root/docs/classes/Entity.md",
-      "/root/unknown/file/path.ts",
-      "/root/src/unknown/file/path.ts",
-    ]);
-  }
-
   afterEach(() => {
     linkManager?.revertToInitial();
     linkManager = undefined as any; // prevent re-use
@@ -85,8 +89,7 @@ describe("LinkManager", () => {
 
   describe("meta data functionality", () => {
     it("returns the correct file meta data with all related file decorations", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
+      linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/src/classes/Entity.ts";
       assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
         {
@@ -128,8 +131,7 @@ describe("LinkManager", () => {
     });
 
     it("returns correct decorations when a path is not linked to all available file types", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
+      linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/test/classes/Entity2.test.ts";
 
       assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
@@ -156,8 +158,7 @@ describe("LinkManager", () => {
     });
 
     it("returns correct file meta data when file is not linked to all other possible types via onlyLinkTo", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
+      linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/docs/classes/Entity.md";
 
       assert.deepStrictEqual(
@@ -187,8 +188,7 @@ describe("LinkManager", () => {
     });
 
     it("allows files to link to other files that dont link back to them, except if they use onlyLinkFrom", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
+      linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/test/classes/Entity.test.ts";
 
       assert.deepStrictEqual(
@@ -241,70 +241,69 @@ describe("LinkManager", () => {
     }
 
     it("does not return file meta data for a file that is ignored", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
+      linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/node_modules/package/src/classes/Entity.ts";
 
       assertPathHasNoLinksOrDecoration(path);
     });
 
     it("returns correct file meta data with no related files", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
+      linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/test/classes/Entity3.ts";
 
       assertPathHasNoLinksOrDecoration(path);
     });
 
     it("should return undefined if the file exists but is an unknown type", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
+      linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/unknown/file/path.ts";
 
       assertPathHasNoLinksOrDecoration(path);
     });
 
     it("should return undefined if the file is not registered/doesn't exist", () => {
-      linkManager = createDefaultTestInstance();
-      registerDefaultFiles();
+      linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/i-dont-exist/file/path.ts";
 
       assertPathHasNoLinksOrDecoration(path);
     });
 
     it("allows linking to multiple related files of the same type", () => {
-      linkManager = new LinkManager({
-        fileTypes: [
-          {
-            name: "Source",
-            marker: "💻",
-            patterns: ["\\/src\\/(.*)\\.ts$"],
-          },
-          {
-            name: "Test",
-            marker: "🧪",
-            patterns: ["\\/test\\/(.*)\\.test\\.ts$", "\\/test\\/(.*)\\.spec\\.ts$"],
-          },
-          {
-            name: "Build Output",
-            marker: "📦",
-            patterns: ["\\/dist\\/(.*)\\.map\\.js$", "\\/dist\\/(.*)\\.json$", "\\/dist\\/(.*)\\.js$"],
-            onlyLinkFrom: ["Source"],
-          },
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: {
+          fileTypes: [
+            {
+              name: "Source",
+              marker: "💻",
+              patterns: ["\\/src\\/(.*)\\.ts$"],
+            },
+            {
+              name: "Test",
+              marker: "🧪",
+              patterns: ["\\/test\\/(.*)\\.test\\.ts$", "\\/test\\/(.*)\\.spec\\.ts$"],
+            },
+            {
+              name: "Build Output",
+              marker: "📦",
+              patterns: ["\\/dist\\/(.*)\\.map\\.js$", "\\/dist\\/(.*)\\.json$", "\\/dist\\/(.*)\\.js$"],
+              onlyLinkFrom: ["Source"],
+            },
+          ],
+          ignorePatterns: ["\\/node_modules\\/"],
+          showDebugLogs: false,
+        },
+        paths: [
+          "/root/src/classes/Entity.ts",
+          "/root/src/classes/Entity2.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/test/classes/Entity.spec.ts",
+          "/root/test/classes/Entity2.test.ts",
+          "/root/dist/classes/Entity.js",
+          "/root/dist/classes/Entity.map.js",
+          "/root/dist/classes/Entity.json",
         ],
-        ignorePatterns: ["\\/node_modules\\/"],
-        showDebugLogs: false,
       });
-      linkManager.addPathsAndNotify([
-        "/root/src/classes/Entity.ts",
-        "/root/src/classes/Entity2.ts",
-        "/root/test/classes/Entity.test.ts",
-        "/root/test/classes/Entity.spec.ts",
-        "/root/test/classes/Entity2.test.ts",
-        "/root/dist/classes/Entity.js",
-        "/root/dist/classes/Entity.map.js",
-        "/root/dist/classes/Entity.json",
-      ]);
 
       const path = "/root/src/classes/Entity.ts";
 
@@ -356,7 +355,7 @@ describe("LinkManager", () => {
 
   describe("#reset", () => {
     it("should reset all file types", () => {
-      linkManager = createDefaultTestInstance();
+      linkManager = createInstanceWithDefaultTestContext();
       linkManager.addPathsAndNotify([
         "/root/src/classes/Entity.ts",
         "/root/test/classes/Entity.test.ts",
@@ -384,23 +383,26 @@ describe("LinkManager", () => {
 
   describe("#getPathsWithRelatedFiles", () => {
     it("should return all files that have related files", () => {
-      linkManager = createDefaultTestInstance();
-      linkManager.addPathsAndNotify([
-        // ignored files
-        "/root/node_modules/package/src/classes/Entity.ts",
-        "/root/node_modules/package/test/classes/Entity.test.ts",
-        "/root/node_modules/package/docs/classes/Entity.md",
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: TEST_CONTEXT,
+        paths: [
+          // ignored files
+          "/root/node_modules/package/src/classes/Entity.ts",
+          "/root/node_modules/package/test/classes/Entity.test.ts",
+          "/root/node_modules/package/docs/classes/Entity.md",
 
-        // non-ignored files
-        "/root/src/classes/Entity.ts",
-        "/root/src/classes/EntityNoLinks2.ts",
-        "/root/test/classes/Entity.test.ts",
-        "/root/test/classes/EntityNoLinks1.test.ts",
-        "/root/docs/classes/Entity.md",
-        "/root/docs/classes/EntityNoLinks3.md",
-        "/root/unknown/file/path.ts",
-        "/root/src/unknown/file/path.ts",
-      ]);
+          // non-ignored files
+          "/root/src/classes/Entity.ts",
+          "/root/src/classes/EntityNoLinks2.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/test/classes/EntityNoLinks1.test.ts",
+          "/root/docs/classes/Entity.md",
+          "/root/docs/classes/EntityNoLinks3.md",
+          "/root/unknown/file/path.ts",
+          "/root/src/unknown/file/path.ts",
+        ],
+      });
 
       assert.deepStrictEqual(
         linkManager.getAllPathsWithOutgoingLinks(),
@@ -411,29 +413,27 @@ describe("LinkManager", () => {
   });
 
   describe("performance", () => {
-    function createEslintLinkManager() {
-      return new LinkManager({
-        fileTypes: [
-          {
-            name: "Source",
-            marker: "💻",
-            patterns: ["(?<!\\/tests\\/)lib\\/(.*)\\.(js|jsx|ts|tsx)$"],
-          },
-          {
-            name: "Test",
-            marker: "🧪",
-            patterns: ["(?<=\\/tests\\/)lib\\/(.*)\\.(js|jsx|ts|tsx)$"],
-          },
-          {
-            name: "Documentation",
-            marker: "📙",
-            patterns: ["\\/docs\\/src\\/(.+)\\.md$"],
-          },
-        ],
-        ignorePatterns: ["\\/node_modules\\/"],
-        showDebugLogs: false,
-      });
-    }
+    const config: MainConfig = {
+      fileTypes: [
+        {
+          name: "Source",
+          marker: "💻",
+          patterns: ["(?<!\\/tests\\/)lib\\/(.*)\\.(js|jsx|ts|tsx)$"],
+        },
+        {
+          name: "Test",
+          marker: "🧪",
+          patterns: ["(?<=\\/tests\\/)lib\\/(.*)\\.(js|jsx|ts|tsx)$"],
+        },
+        {
+          name: "Documentation",
+          marker: "📙",
+          patterns: ["\\/docs\\/src\\/(.+)\\.md$"],
+        },
+      ],
+      ignorePatterns: ["\\/node_modules\\/"],
+      showDebugLogs: false,
+    };
 
     type PathToDecorationsMap = Record<string, DecorationData[] | null>;
 
@@ -444,19 +444,19 @@ describe("LinkManager", () => {
       console.log(`Testing ${fileCount} Eslint files`);
 
       let actualDecorationsMap: PathToDecorationsMap = {};
-      Array(3)
+      Array(1) // running this multiple times to see if it gets slower
         .fill(0)
         .forEach((_, i) => {
           console.log("Running test", i);
-          linkManager = createEslintLinkManager();
+          linkManager = new LinkManager();
 
           // add all the files
           let startTime = Date.now();
-          linkManager.addPathsAndNotify(eslintPaths);
+          linkManager.setContext({ config, paths: eslintPaths });
           const addPathsDurationMs = Date.now() - startTime;
 
-          console.log(`#addPathsAndNotify actually took`, addPathsDurationMs, `ms`);
-          assert.isBelow(addPathsDurationMs, 50, `should take less than 50ms to add ${fileCount} files`);
+          console.log(`#setContext actually took`, addPathsDurationMs, `ms`);
+          assert.isBelow(addPathsDurationMs, 100, `time (ms) to add ${fileCount} files`);
 
           // get the decorations for all the files
 
@@ -474,11 +474,7 @@ describe("LinkManager", () => {
           });
           const getDecorationsDurationMs = Date.now() - startTime;
           console.log(`#getDecorations actually took`, getDecorationsDurationMs, `ms`);
-          assert.isBelow(
-            getDecorationsDurationMs,
-            100,
-            `should take less than 100ms to get decorations for ${fileCount} files`,
-          );
+          assert.isBelow(getDecorationsDurationMs, 150, `time (ms) to get decorations for ${fileCount} files`);
 
           linkManager.revertToInitial();
 

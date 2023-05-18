@@ -71,7 +71,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   Logger.info("Extension activated with valid config:", mainConfig);
 
-  const linkManager = new LinkManager(mainConfig);
+  const linkManager = new LinkManager();
 
   const decorationProviderManager = new DecorationProviderManager({
     getDecorationData: (config) => linkManager.getFileTypeDecoratorData(config),
@@ -93,9 +93,11 @@ export async function activate(context: vscode.ExtensionContext) {
     decorationProviderManager.notifyFileDecorationsChanged(affectedPaths);
   });
 
-  const allPaths = await getAllWorkspacePaths();
-  Logger.info("allPaths", allPaths);
-  linkManager.addPathsAndNotify(allPaths); // should happen after setting the file links updated handler so initial setup is handled
+  // should trigger notification after setting the file links updated handler so initial setup is handled
+  linkManager.setContext({
+    config: mainConfig,
+    paths: await getAllWorkspacePaths(),
+  });
 
   // should happen after the linkManager is setup with files,
   // because the providers get used as soon as they are registered and need to be able to get the file links
@@ -173,7 +175,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return;
         }
 
-        linkManager.setConfig({
+        linkManager.setContext({
           config: newMainConfig,
           paths: await getAllWorkspacePaths(),
         });
