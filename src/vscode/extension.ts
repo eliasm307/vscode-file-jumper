@@ -10,7 +10,6 @@
 // good example: https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight
 
 // todo
-// - detect and handle configuration changes
 // - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
 
 import * as vscode from "vscode";
