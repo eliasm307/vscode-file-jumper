@@ -9,7 +9,7 @@ describe("FileType", () => {
     fileType = new FileType({
       name: "test",
       marker: "🧪",
-      patterns: ["\\/test\\/(?<topic>.*)\\.test\\.ts"],
+      patterns: ["\\/test\\/(?<topic>.+)\\.test\\.ts"],
     });
     fileType.addPaths(["/test/file0.test.ts", "/test/dir1/file1.test.ts", "/test/dir1/dir2/file2.test.ts"]);
     return fileType;

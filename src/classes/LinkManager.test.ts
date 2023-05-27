@@ -15,23 +15,23 @@ describe("LinkManager", () => {
       {
         name: "Source",
         marker: "💻",
-        patterns: ["\\/src\\/(?<topic>.*)\\.ts$"],
+        patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
       },
       {
         name: "Test",
         marker: "🧪",
-        patterns: ["\\/(test|tests)\\/(?<topic>.*)\\.test\\.ts$"],
+        patterns: ["\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"],
       },
       {
         name: "Documentation",
         marker: "📖",
-        patterns: ["\\/(docs|docs)\\/(?<topic>.*)\\.md$"],
+        patterns: ["\\/(docs|docs)\\/(?<topic>.+)\\.md$"],
         onlyLinkTo: ["Source"],
       },
       {
         name: "Build Output",
         marker: "📦",
-        patterns: ["\\/dist\\/(?<topic>.*)\\.js$"],
+        patterns: ["\\/dist\\/(?<topic>.+)\\.js$"],
         onlyLinkFrom: ["Source"],
       },
     ],
@@ -277,20 +277,20 @@ describe("LinkManager", () => {
             {
               name: "Source",
               marker: "💻",
-              patterns: ["\\/src\\/(?<topic>.*)\\.ts$"],
+              patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
             },
             {
               name: "Test",
               marker: "🧪",
-              patterns: ["\\/test\\/(?<topic>.*)\\.test\\.ts$", "\\/test\\/(?<topic>.*)\\.spec\\.ts$"],
+              patterns: ["\\/test\\/(?<topic>.+)\\.test\\.ts$", "\\/test\\/(?<topic>.+)\\.spec\\.ts$"],
             },
             {
               name: "Build Output",
               marker: "📦",
               patterns: [
-                "\\/dist\\/(?<topic>.*)\\.map\\.js$",
-                "\\/dist\\/(?<topic>.*)\\.json$",
-                "\\/dist\\/(?<topic>.*)\\.js$",
+                "\\/dist\\/(?<topic>.+)\\.map\\.js$",
+                "\\/dist\\/(?<topic>.+)\\.json$",
+                "\\/dist\\/(?<topic>.+)\\.js$",
               ],
               onlyLinkFrom: ["Source"],
             },
@@ -748,18 +748,18 @@ describe("LinkManager", () => {
             {
               name: "Source",
               marker: "💻",
-              patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.*)\\.ts$"],
+              patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.+)\\.ts$"],
             },
             {
               name: "Test",
               marker: "🧪",
-              patterns: ["(?<prefix>.*)\\/(test|tests)\\/(?<topic>.*)\\.test\\.ts$"],
+              patterns: ["(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"],
             },
             // add new type
             {
               name: "Other",
               marker: "🆕",
-              patterns: ["(?<prefix>.*)\\/other\\/(?<topic>.*)\\.ts$"],
+              patterns: ["(?<prefix>.*)\\/other\\/(?<topic>.+)\\.ts$"],
             },
           ],
           ignorePatterns: [], // includes node_modules
@@ -902,12 +902,12 @@ describe("LinkManager", () => {
         {
           name: "Source",
           marker: "💻",
-          patterns: ["(?<!\\/tests\\/)lib\\/(?<topic>.*)\\.(js|jsx|ts|tsx)$"],
+          patterns: ["(?<!\\/tests\\/)lib\\/(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
         },
         {
           name: "Test",
           marker: "🧪",
-          patterns: ["(?<=\\/tests\\/)lib\\/(?<topic>.*)\\.(js|jsx|ts|tsx)$"],
+          patterns: ["(?<=\\/tests\\/)lib\\/(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
         },
         {
           name: "Documentation",
@@ -1014,12 +1014,12 @@ describe("LinkManager", () => {
           {
             name: "Source",
             marker: "💻",
-            patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.*)\\.ts$"],
+            patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.+)\\.ts$"],
           },
           {
             name: "Test",
             marker: "🧪",
-            patterns: ["(?<prefix>.*)\\/(test|tests)\\/(?<topic>.*)\\.test\\.ts$"],
+            patterns: ["(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"],
           },
         ],
         ignorePatterns: [],
