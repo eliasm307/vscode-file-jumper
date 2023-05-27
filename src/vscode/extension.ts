@@ -11,26 +11,24 @@
 
 // todo
 // - detect and handle configuration changes
-// - make context menu only show on files with known related files
 // - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
-// - add context menu for tab item
-// - use object for file types config instead of array, to prevent duplicates
-// - support onlyLinkFrom
 
 import * as vscode from "vscode";
-import type { MainConfig } from "./utils/config";
-import { getIssuesWithMainConfig } from "./utils/config";
-import LinkManager from "./classes/LinkManager";
+import type { MainConfig } from "../utils/config";
+import { getIssuesWithMainConfig } from "../utils/config";
+import LinkManager from "../classes/LinkManager";
 import {
   createUri,
   getAllWorkspacePaths,
   getMainConfig,
+  getWorkspaceFolderChildPaths,
   getWorkspaceRelativePath,
   openFileInNewTab,
-} from "./vscode/utils";
-import Logger, { EXTENSION_KEY } from "./classes/Logger";
-import { shortenPath } from "./utils";
-import DecorationProviderManager from "./vscode/DecorationProviderManager";
+  uriToPath,
+} from "./utils";
+import Logger, { EXTENSION_KEY } from "../classes/Logger";
+import { shortenPath } from "../utils";
+import DecorationProviderManager from "./DecorationProviderManager";
 
 async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
   for (const issue of issues) {
@@ -88,7 +86,6 @@ export async function activate(context: vscode.ExtensionContext) {
     void vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
 
     // notify decorators of changes
-    // todo debug this getting more paths that it needs
     Logger.info("onFileLinksUpdated handler called with affectedPaths:", affectedPaths);
     decorationProviderManager.notifyFileDecorationsChanged(affectedPaths);
   });
@@ -115,7 +112,21 @@ export async function activate(context: vscode.ExtensionContext) {
       try {
         const oldPaths = e.files.map((file) => file.oldUri.path);
         const newPaths = e.files.map((file) => file.newUri.path);
-        linkManager.renameFilesAndNotify({ oldPaths, newPaths });
+        linkManager.modifyFilesAndNotify({ removePaths: oldPaths, addPaths: newPaths });
+
+        // show user error before throwing it internally
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling renamed files: ${message}`);
+        throw error;
+      }
+    }),
+
+    vscode.workspace.onDidChangeWorkspaceFolders(async (e) => {
+      try {
+        const removePaths = await getWorkspaceFolderChildPaths(e.removed);
+        const addPaths = await getWorkspaceFolderChildPaths(e.added);
+        linkManager.modifyFilesAndNotify({ removePaths, addPaths });
 
         // show user error before throwing it internally
       } catch (error) {
@@ -129,7 +140,9 @@ export async function activate(context: vscode.ExtensionContext) {
      */
     vscode.workspace.onDidCreateFiles(async (e) => {
       try {
-        linkManager.addPathsAndNotify(e.files.map((file) => file.path));
+        linkManager.modifyFilesAndNotify({
+          addPaths: e.files.map(uriToPath),
+        });
 
         // show user error before throwing it internally
       } catch (error) {
@@ -146,7 +159,9 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidDeleteFiles(async (e) => {
       try {
         Logger.warn("onDidDeleteFiles", e);
-        linkManager.removePathsAndNotify(e.files.map((file) => file.path));
+        linkManager.modifyFilesAndNotify({
+          removePaths: e.files.map(uriToPath),
+        });
 
         // show user error before throwing it internally
       } catch (error) {
@@ -154,11 +169,6 @@ export async function activate(context: vscode.ExtensionContext) {
         await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling deleted files: ${message}`);
         throw error;
       }
-    }),
-    vscode.workspace.onDidChangeWorkspaceFolders((e) => {
-      // todo handle workspace folder change
-      Logger.warn("onDidChangeWorkspaceFolders", e);
-      // ? could use this to handle workspace folder change?
     }),
     vscode.workspace.onDidChangeConfiguration(async (e) => {
       try {

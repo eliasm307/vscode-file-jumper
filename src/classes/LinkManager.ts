@@ -49,27 +49,25 @@ export default class LinkManager {
     return pathsModified.flatMap((path) => this.getLinkedFilesFromPath(path)).map((file) => file.fullPath);
   }
 
-  /**
-   * Add paths to the existing known paths, and notify the handler of any changes
-   */
-  addPathsAndNotify(paths: string[]): void {
-    Logger.info("#addFiles", paths);
-    const endTimerAndLog = Logger.startTimer(`#addFiles(${paths.length})`);
+  modifyFilesAndNotify({ removePaths = [], addPaths = [] }: { removePaths?: string[]; addPaths?: string[] }) {
+    const endTimerAndLog = Logger.startTimer(`#modifyFilesAndNotify(\nadd=[${addPaths}],\nremove=[${removePaths}]\n)`);
     try {
-      const relevantPathsAdded = paths.filter((path) => this.pathIsRelevant(path));
-      if (!relevantPathsAdded.length) {
-        return; // nothing to do
+      const relevantPathsRemoved = removePaths.filter((path) => this.pathIsRelevant(path));
+      const relevantPathsAdded = addPaths.filter((path) => this.pathIsRelevant(path));
+      const relevantFilesAffected = relevantPathsRemoved.length || relevantPathsAdded.length;
+      if (!relevantFilesAffected) {
+        return; // no known file types were affected so no need to update
       }
+
+      this.applyPathRemovals(relevantPathsRemoved);
       this.applyPathAdditions(relevantPathsAdded);
 
-      const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths(relevantPathsAdded);
+      const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths([...relevantPathsAdded, ...relevantPathsRemoved]);
       const affectedPaths = [...relevantPathsAdded, ...indirectlyAffectedPaths];
 
-      Logger.info("#addFiles", { relevantPathsAdded, indirectlyAffectedPaths, affectedPaths });
+      Logger.info("#renameFilesAndNotify", { removePaths, addPaths, indirectlyAffectedPaths, affectedPaths });
 
       this.notifyFileLinksUpdated(affectedPaths);
-
-      // log timing
     } finally {
       endTimerAndLog();
     }
@@ -80,40 +78,9 @@ export default class LinkManager {
     this.fileTypes.forEach((fileType) => fileType.addPaths(paths));
   }
 
-  removePathsAndNotify(paths: string[]) {
-    const relevantPathsRemoved = paths.filter((path) => this.pathIsRelevant(path));
-    if (relevantPathsRemoved.length) {
-      this.applyPathRemovals(relevantPathsRemoved);
-      const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths(relevantPathsRemoved);
-
-      Logger.info("#removeFiles", { relevantPathsRemoved, indirectlyAffectedPaths });
-
-      this.notifyFileLinksUpdated(indirectlyAffectedPaths);
-    }
-  }
-
   private applyPathRemovals(paths: string[]) {
     paths.forEach((path) => this.#pathsWithKnownType.delete(path));
     this.fileTypes.forEach((fileType) => fileType.removePaths(paths));
-  }
-
-  renameFilesAndNotify({ oldPaths, newPaths }: { oldPaths: string[]; newPaths: string[] }) {
-    const relevantPathsRemoved = oldPaths.filter((path) => this.pathIsRelevant(path));
-    const relevantPathsAdded = newPaths.filter((path) => this.pathIsRelevant(path));
-    const relevantFilesAffected = relevantPathsRemoved.length || relevantPathsAdded.length;
-    if (!relevantFilesAffected) {
-      return; // no known file types were affected so no need to update
-    }
-
-    this.applyPathRemovals(relevantPathsRemoved);
-    this.applyPathAdditions(relevantPathsAdded);
-
-    const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths([...relevantPathsAdded, ...relevantPathsRemoved]);
-    const affectedPaths = [...relevantPathsAdded, ...indirectlyAffectedPaths];
-
-    Logger.info("#renameFilesAndNotify", { oldPaths, newPaths, indirectlyAffectedPaths, affectedPaths });
-
-    this.notifyFileLinksUpdated(affectedPaths);
   }
 
   private notifyFileLinksUpdated(affectedPaths: string[] | null) {

@@ -47,7 +47,6 @@ function stringify(value: unknown): string {
   if (typeof value === "string") {
     return value;
   }
-  // todo use locally scoped replacer
   return JSON.stringify(value, normaliseReplacer, 2);
 }
 

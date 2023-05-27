@@ -361,14 +361,16 @@ describe("LinkManager", () => {
   describe("#reset", () => {
     it("should reset all file types", () => {
       linkManager = createInstanceWithDefaultTestContext();
-      linkManager.addPathsAndNotify([
-        "/root/src/classes/Entity.ts",
-        "/root/test/classes/Entity.test.ts",
-        "/root/test/classes/Entity2.test.ts",
-        "/root/docs/classes/Entity.md",
-        "/root/unknown/file/path.ts",
-        "/root/src/unknown/file/path.ts",
-      ]);
+      linkManager.modifyFilesAndNotify({
+        addPaths: [
+          "/root/src/classes/Entity.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/test/classes/Entity2.test.ts",
+          "/root/docs/classes/Entity.md",
+          "/root/unknown/file/path.ts",
+          "/root/src/unknown/file/path.ts",
+        ],
+      });
 
       const sourcePath = "/root/src/classes/Entity.ts";
 
@@ -452,7 +454,9 @@ describe("LinkManager", () => {
 
       const linksUpdatedHandler = vitest.fn<[string[] | null]>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
-      linkManager.addPathsAndNotify(["/root/src/classes/Entity.ts", "/root/dist/classes/Entity.js"]);
+      linkManager.modifyFilesAndNotify({
+        addPaths: ["/root/src/classes/Entity.ts", "/root/dist/classes/Entity.js"],
+      });
 
       assertFileLinks(
         {
@@ -533,7 +537,10 @@ describe("LinkManager", () => {
 
       const linksUpdatedHandler = vitest.fn<[string[] | null]>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
-      linkManager.removePathsAndNotify(["/root/src/classes/Entity.ts"]);
+      linkManager.modifyFilesAndNotify({
+        removePaths: ["/root/src/classes/Entity.ts"],
+        addPaths: [],
+      });
 
       assertFileLinks(
         {
@@ -599,9 +606,9 @@ describe("LinkManager", () => {
 
       const linksUpdatedHandler = vitest.fn<[string[] | null]>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
-      linkManager.renameFilesAndNotify({
-        oldPaths: ["/root/src/classes/Entity.ts", "/root/dist/classes/Entity.js"],
-        newPaths: ["/root/src/classes/Entity2.ts", "/root/dist/classes/Entity2.js"],
+      linkManager.modifyFilesAndNotify({
+        removePaths: ["/root/src/classes/Entity.ts", "/root/dist/classes/Entity.js"],
+        addPaths: ["/root/src/classes/Entity2.ts", "/root/dist/classes/Entity2.js"],
       });
 
       assertFileLinks(
@@ -682,11 +689,9 @@ describe("LinkManager", () => {
       const linksUpdatedHandler = vitest.fn<[string[] | null]>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
 
-      linkManager.removePathsAndNotify(["/root/unknown/file/path.ts"]);
-      linkManager.addPathsAndNotify(["/root/unknown/file/path.ts"]);
-      linkManager.renameFilesAndNotify({
-        oldPaths: ["/root/unknown/file/path.ts"],
-        newPaths: ["/root/unknown/file/path2.ts"],
+      linkManager.modifyFilesAndNotify({
+        removePaths: ["/root/unknown/file/path.ts"],
+        addPaths: ["/root/unknown/file/path2.ts"],
       });
 
       assertFileLinks(initialFileLinks, "linked files unchanged");

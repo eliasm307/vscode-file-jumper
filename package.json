@@ -17,7 +17,7 @@
   "activationEvents": [
     "onStartupFinished"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/vscode/extension.js",
   "scripts": {
     "vscode:package": "echo 'Packaging...' && vsce package",
     "vscode:prepublish": "npm run lint && npm run test && npm run compile",
