@@ -928,7 +928,7 @@ describe("LinkManager", () => {
       console.log(`Testing ${fileCount} Eslint files`);
 
       let actualDecorationsMap: PathToDecorationsMap = {};
-      Array(1) // running this multiple times to see if it gets slower
+      Array(3) // running this multiple times to see if it gets slower
         .fill(0)
         .forEach((_, i) => {
           console.log("Running test", i);

@@ -1,6 +1,11 @@
 import { assert, describe, it } from "vitest";
 import type { MainConfig } from "./config";
-import { getIssuesWithMainConfig, formatRawIgnorePatternsConfig, formatRawFileTypesConfig, mainConfigsAreEqual } from "./config";
+import {
+  getIssuesWithMainConfig,
+  formatRawIgnorePatternsConfig,
+  formatRawFileTypesConfig,
+  mainConfigsAreEqual,
+} from "./config";
 
 describe("config utils", () => {
   describe("#formatRawFileTypesConfig", () => {
@@ -49,12 +54,12 @@ describe("config utils", () => {
         {
           name: "Source",
           marker: "💻",
-          patterns: ["\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"],
+          patterns: ["(?<prefix>.+)\\/src\\/(?!\\.test\\.|\\.spec\\.)(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
         },
         {
           name: "Test",
           marker: "🧪",
-          patterns: ["\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"],
+          patterns: ["(?<prefix>.+)\\/test\\/(?<topic>.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"],
         },
       ];
       assert.deepStrictEqual(actual, expectedDefault, "returns the defaults when config is not defined");
@@ -179,7 +184,11 @@ describe("config utils", () => {
         ignorePatterns: ["\\/node_modules\\/"],
         showDebugLogs: false,
       });
-      assert.deepStrictEqual(actual, ["There must be at least 2 file types defined"], "returns an array of issues when config is invalid");
+      assert.deepStrictEqual(
+        actual,
+        ["There must be at least 2 file types defined"],
+        "returns an array of issues when config is invalid",
+      );
     });
   });
 });
