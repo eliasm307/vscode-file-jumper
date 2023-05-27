@@ -1,7 +1,7 @@
 import type * as vscode from "vscode";
 
 /* eslint-disable no-console */
-export const EXTENSION_KEY = "[co-locate]";
+export const EXTENSION_KEY = "[file-jumper]";
 
 function normaliseReplacer(inputKey: string, inputValue: unknown): unknown {
   if (inputValue === undefined) {

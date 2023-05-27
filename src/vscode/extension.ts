@@ -1,17 +1,3 @@
-// for adding configuration options: https://code.visualstudio.com/api/references/contribution-points#contributes.configuration
-// overall structure: https://code.visualstudio.com/api/get-started/extension-anatomy
-// full api reference: https://code.visualstudio.com/api/references/vscode-api
-// sorting of context menu items: https://code.visualstudio.com/api/references/contribution-points#Sorting-of-groups
-// see built in commands: https://code.visualstudio.com/api/references/commands
-// can use built in icons in some cases: https://code.visualstudio.com/api/references/icons-in-labels
-// inspecting context keys of items in the editor, e.g. explorer tree items: https://code.visualstudio.com/api/references/when-clause-contexts#inspect-context-keys-utility
-// integration testing: https://code.visualstudio.com/api/working-with-extensions/testing-extension
-// manage extensions at: https://marketplace.visualstudio.com/manage
-// good example: https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight
-
-// todo
-// - customise marketplace look https://code.visualstudio.com/api/working-with-extensions/publishing-extension#advanced-usage
-
 import * as vscode from "vscode";
 import type { MainConfig } from "../utils/config";
 import { getIssuesWithMainConfig } from "../utils/config";
@@ -48,7 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   if (mainConfig.showDebugLogs) {
-    const outputChannel = vscode.window.createOutputChannel("Co-Locate", {
+    const outputChannel = vscode.window.createOutputChannel("file-jumper", {
       log: true,
     });
     context.subscriptions.push(outputChannel); // add this early incase we return early
@@ -80,7 +66,7 @@ export async function activate(context: vscode.ExtensionContext) {
       .getAllPathsWithOutgoingLinks()
       .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-    const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "coLocate.filePathsWithLinks";
+    const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "fileJumper.filePathsWithLinks";
     // this is used to show the context menu item conditionally on files we know have links
     void vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
 
@@ -208,7 +194,7 @@ export async function activate(context: vscode.ExtensionContext) {
 function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
-  const disposable = vscode.commands.registerCommand("coLocate.navigateCommand", async (uri: vscode.Uri) => {
+  const disposable = vscode.commands.registerCommand("fileJumper.navigateCommand", async (uri: vscode.Uri) => {
     const quickPickItems = linkManager.getLinkedFilesFromPath(uri.path).map((linkedFile) => {
       return {
         label: `${linkedFile.marker} ${linkedFile.typeName}`,

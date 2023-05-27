@@ -1,6 +1,11 @@
 {
-  "name": "co-locate",
-  "displayName": "Co-Locate",
+  "name": "file-jumper",
+  "displayName": "File Jumper",
+  "icon": "src/assets/kangaroo_emoji_u1f998.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eliasm307/co-locate.git"
+  },
   "publisher": "ecm",
   "description": "A VS Code extension to define links and navigate easily between files in your project.",
   "version": "0.23.0",
@@ -11,6 +16,7 @@
     "dependencies": true,
     "yarn": false
   },
+  "preview": true,
   "categories": [
     "Other"
   ],
@@ -57,31 +63,31 @@
   "contributes": {
     "commands": [
       {
-        "command": "coLocate.navigateCommand",
+        "command": "fileJumper.navigateCommand",
         "title": "Jump to..."
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "command": "coLocate.navigateCommand",
-          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in coLocate.filePathsWithLinks",
+          "command": "fileJumper.navigateCommand",
+          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithLinks",
           "group": "navigation@1"
         }
       ],
       "editor/title/context": [
         {
-          "command": "coLocate.navigateCommand",
-          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in coLocate.filePathsWithLinks",
+          "command": "fileJumper.navigateCommand",
+          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithLinks",
           "group": "1_close@1"
         }
       ]
     },
     "configuration": {
       "type": "object",
-      "title": "Co-Locate",
+      "title": "File ",
       "properties": {
-        "coLocate.fileTypes": {
+        "fileJumper.fileTypes": {
           "markdownDescription": "Defines the file types in a project that will be evaluated for co-location linking.\n\n**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI",
           "scope": "window",
           "type": "object",
@@ -132,7 +138,7 @@
           },
           "additionalProperties": false
         },
-        "coLocate.ignorePatterns": {
+        "fileJumper.ignorePatterns": {
           "description": "Defines the RegEx patterns of files to ignore when determining file links",
           "scope": "window",
           "type": "array",
@@ -144,7 +150,7 @@
           },
           "additionalProperties": false
         },
-        "coLocate.showDebugLogs": {
+        "fileJumper.showDebugLogs": {
           "description": "Whether to show logs in the output channel",
           "scope": "window",
           "type": "boolean",

@@ -29,7 +29,7 @@ export async function getWorkspaceFolderChildPaths(folders: readonly vscode.Work
 }
 
 export function getMainConfig(): MainConfig {
-  const extensionConfig = vscode.workspace.getConfiguration("coLocate");
+  const extensionConfig = vscode.workspace.getConfiguration("fileJumper");
 
   return {
     fileTypes: formatRawFileTypesConfig(extensionConfig.get("fileTypes")),

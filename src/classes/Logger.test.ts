@@ -153,7 +153,7 @@ describe("Logger", () => {
       Logger[level]("test", "test2", 1, true);
       assert.deepStrictEqual(
         consoleStubs[level].mock.calls,
-        [["[co-locate]", "test", "test2", "1", "true"]],
+        [["[file-jumper]", "test", "test2", "1", "true"]],
         `console.${level} should not be called`,
       );
     });
@@ -166,7 +166,7 @@ describe("Logger", () => {
 
       assert.deepStrictEqual(
         outputChannel[level].mock.calls,
-        [["[co-locate]", "test", "test2", "1", "true", "\n"]],
+        [["[file-jumper]", "test", "test2", "1", "true", "\n"]],
         `outputChannel.${level} should be called`,
       );
     });
@@ -178,12 +178,12 @@ describe("Logger", () => {
       Logger[level](createExoticObject());
       assert.deepStrictEqual(
         consoleStubs[level].mock.calls,
-        [["[co-locate]", EXPECTED_SERIALIZED_EXOTIC_OBJECT]],
+        [["[file-jumper]", EXPECTED_SERIALIZED_EXOTIC_OBJECT]],
         `console.${level} should not be called`,
       );
       assert.deepStrictEqual(
         outputChannelStubs[level].mock.calls,
-        [["[co-locate]", EXPECTED_SERIALIZED_EXOTIC_OBJECT, "\n"]],
+        [["[file-jumper]", EXPECTED_SERIALIZED_EXOTIC_OBJECT, "\n"]],
         `outputChannel.${level} should be called`,
       );
     });
@@ -205,7 +205,11 @@ describe("Logger", () => {
       assert.isFunction(output, "output should be a function");
       clock.advanceTimersByTime(3);
       output();
-      assert.deepStrictEqual(consoleStubs.info.mock.calls, [["[co-locate]", "⏱️ test took 3ms"]], "console.log should be called");
+      assert.deepStrictEqual(
+        consoleStubs.info.mock.calls,
+        [["[file-jumper]", "⏱️ test took 3ms"]],
+        "console.log should be called",
+      );
     });
   });
 });

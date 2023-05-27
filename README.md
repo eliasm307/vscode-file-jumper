@@ -19,9 +19,9 @@ Try File Jumper today and experience a smoother, more connected file navigation 
 
 # Configuration
 
-Customize Co-Locate's behavior by modifying the following settings in your VSCode `settings.json`.
+Customize the extension's behavior by modifying the following settings in your VSCode `settings.json`.
 
-## coLocate.fileTypes
+## fileJumper.fileTypes
 
 An object that defines the file types in a project that will be evaluated for automatic linking.
 
@@ -48,7 +48,7 @@ The extension will automatically link all files of different types that resolve 
 ### **Example configuration**:
 
 ```json
-"coLocate.fileTypes": {
+"fileJumper.fileTypes": {
   "Test": {
     "marker": "🧪",
     "patterns": [
@@ -64,7 +64,7 @@ The extension will automatically link all files of different types that resolve 
 }
 ```
 
-## coLocate.ignorePatterns
+## fileJumper.ignorePatterns
 
 Defines the RegEx patterns of files to ignore when determining file links.
 
@@ -73,7 +73,7 @@ Defines the RegEx patterns of files to ignore when determining file links.
 Example configuration:
 
 ```json
-"coLocate.ignorePatterns": [
+"fileJumper.ignorePatterns": [
   "\\/node_modules\\/",
   "\\/dist\\/"
 ]
@@ -97,7 +97,7 @@ Here is an example configuration for the Eslint project:
 
 ```json
 {
-  "coLocate.fileTypes": {
+  "fileJumper.fileTypes": {
     "Source Code": {
       "marker": "💻",
       "patterns": ["(?<!\\/tests\\/)lib\\/(?<topic>.+)\\.(js|jsx|ts|tsx)$"]
@@ -111,8 +111,8 @@ Here is an example configuration for the Eslint project:
       "patterns": ["\\/docs\\/src\\/(?<topic>.+)\\.md$"]
     }
   },
-  "coLocate.ignorePatterns": ["\\/node_modules\\/"],
-  "coLocate.showDebugLogs": true
+  "fileJumper.ignorePatterns": ["\\/node_modules\\/"],
+  "fileJumper.showDebugLogs": true
 }
 ```
 
