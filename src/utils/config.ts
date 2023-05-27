@@ -43,12 +43,12 @@ export function formatRawFileTypesConfig(rawConfig: RawFileTypesConfig | undefin
       {
         name: "Source",
         marker: "💻",
-        patterns: ["\\/src\\/(?!\\.test\\.|\\.spec\\.)(.+)\\.(js|jsx|ts|tsx)$"],
+        patterns: ["(?<prefix>.+)\\/src\\/(?!\\.test\\.|\\.spec\\.)(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
       },
       {
         name: "Test",
         marker: "🧪",
-        patterns: ["\\/test\\/(.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"],
+        patterns: ["(?<prefix>.+)\\/test\\/(?<topic>.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"],
       },
     ];
   }
