@@ -1,7 +1,7 @@
 {
   "name": "file-jumper",
   "displayName": "File Jumper",
-  "icon": "./src/assets/kangaroo_emoji_u1f998.png",
+  "icon": "src/assets/kangaroo_emoji_u1f998.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/eliasm307/co-locate.git"
