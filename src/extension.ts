@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import type { MainConfig } from "../utils/config";
-import { getIssuesWithMainConfig } from "../utils/config";
-import LinkManager from "../classes/LinkManager";
+import type { MainConfig } from "./utils/config";
+import { getIssuesWithMainConfig } from "./utils/config";
+import LinkManager from "./classes/LinkManager";
 import {
   createUri,
   getAllWorkspacePaths,
@@ -10,10 +10,10 @@ import {
   getWorkspaceRelativePath,
   openFileInNewTab,
   uriToPath,
-} from "./utils";
-import Logger, { EXTENSION_KEY } from "../classes/Logger";
-import { shortenPath } from "../utils";
-import DecorationProviderManager from "./DecorationProviderManager";
+} from "./vscode/utils";
+import Logger, { EXTENSION_KEY } from "./classes/Logger";
+import { shortenPath } from "./utils";
+import DecorationProviderManager from "./vscode/DecorationProviderManager";
 
 async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
   for (const issue of issues) {
