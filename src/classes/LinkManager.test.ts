@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
 
-import { describe, it, assert, afterEach } from "vitest";
+import { describe, it, assert, afterEach, vitest } from "vitest";
 import fs from "fs";
 import pathModule from "path";
 import LinkManager from "./LinkManager";
-import type { DecorationData } from "../types";
+import type { DecorationData, LinkedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
 
 describe("LinkManager", () => {
   let linkManager: LinkManager;
 
-  const TEST_CONTEXT: MainConfig = {
+  const TEST_MAIN_CONFIG: MainConfig = {
     fileTypes: [
       {
         name: "Source",
@@ -42,7 +42,7 @@ describe("LinkManager", () => {
   function createInstanceWithDefaultTestContext() {
     const manager = new LinkManager();
     manager.setContext({
-      config: TEST_CONTEXT,
+      config: TEST_MAIN_CONFIG,
       paths: [
         // ignored files
         "/root/node_modules/package/src/classes/Entity.ts",
@@ -385,7 +385,7 @@ describe("LinkManager", () => {
     it("should return all files that have related files", () => {
       linkManager = new LinkManager();
       linkManager.setContext({
-        config: TEST_CONTEXT,
+        config: TEST_MAIN_CONFIG,
         paths: [
           // ignored files
           "/root/node_modules/package/src/classes/Entity.ts",
@@ -408,6 +408,414 @@ describe("LinkManager", () => {
         linkManager.getAllPathsWithOutgoingLinks(),
         ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md"],
         "correct files found",
+      );
+    });
+  });
+
+  function assertFileLinks(expected: { [path: string]: LinkedFileData[] }, message: string) {
+    const actual = Object.fromEntries(
+      linkManager.getAllPathsWithOutgoingLinks().map((path) => [path, linkManager.getLinkedFilesFromPath(path)]),
+    );
+
+    assert.deepStrictEqual(actual, expected, message);
+  }
+
+  describe("file updates", () => {
+    it("can add paths and notify", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: TEST_MAIN_CONFIG,
+        paths: [
+          // "/root/src/classes/Entity.ts", // not added
+          "/root/test/classes/Entity.test.ts",
+          "/root/test/classes/Entity2.test.ts",
+          "/root/docs/classes/Entity.md",
+          // "/root/dist/classes/Entity.js", // not added
+          "/root/unknown/file/path.ts",
+          "/root/src/unknown/file/path.ts",
+        ],
+      });
+
+      assertFileLinks(
+        {
+          "/root/test/classes/Entity.test.ts": [
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+        },
+        "linked files found",
+      );
+
+      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
+      linkManager.addPathsAndNotify(["/root/src/classes/Entity.ts", "/root/dist/classes/Entity.js"]);
+
+      assertFileLinks(
+        {
+          "/root/dist/classes/Entity.js": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+          "/root/docs/classes/Entity.md": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          ],
+          "/root/src/classes/Entity.ts": [
+            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+          ],
+          "/root/test/classes/Entity.test.ts": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+        },
+        "added files linked",
+      );
+
+      assert.deepStrictEqual(
+        linksUpdatedHandler.mock.calls,
+        [
+          [
+            [
+              "/root/src/classes/Entity.ts",
+              "/root/dist/classes/Entity.js",
+              "/root/test/classes/Entity.test.ts",
+              "/root/docs/classes/Entity.md",
+            ],
+          ],
+        ],
+        "linksUpdatedHandler called with correct paths",
+      );
+    });
+
+    it("can remove paths and notify", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: TEST_MAIN_CONFIG,
+        paths: [
+          "/root/src/classes/Entity.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/test/classes/Entity2.test.ts",
+          "/root/docs/classes/Entity.md",
+          "/root/dist/classes/Entity.js",
+          "/root/unknown/file/path.ts",
+          "/root/src/unknown/file/path.ts",
+        ],
+      });
+
+      assertFileLinks(
+        {
+          "/root/dist/classes/Entity.js": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+          "/root/docs/classes/Entity.md": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          ],
+          "/root/src/classes/Entity.ts": [
+            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+          ],
+          "/root/test/classes/Entity.test.ts": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+        },
+        "linked files found",
+      );
+
+      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
+      linkManager.removePathsAndNotify(["/root/src/classes/Entity.ts"]);
+
+      assertFileLinks(
+        {
+          "/root/dist/classes/Entity.js": [
+            // asserts source file link was removed
+            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+          // asserts documentation file has no links after source file removal
+          // asserts source file not listed as having links
+          "/root/test/classes/Entity.test.ts": [
+            // asserts source file link was removed
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+        },
+        "linked files after removal",
+      );
+
+      assert.deepStrictEqual(
+        linksUpdatedHandler.mock.calls,
+        [[["/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md", "/root/dist/classes/Entity.js"]]],
+        "linksUpdatedHandler called with correct paths",
+      );
+    });
+
+    it("can rename paths and notify", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: TEST_MAIN_CONFIG,
+        paths: [
+          "/root/src/classes/Entity.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/test/classes/Entity2.test.ts",
+          "/root/docs/classes/Entity.md",
+          "/root/dist/classes/Entity.js",
+          "/root/unknown/file/path.ts",
+          "/root/src/unknown/file/path.ts",
+        ],
+      });
+
+      assertFileLinks(
+        {
+          "/root/dist/classes/Entity.js": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+          "/root/docs/classes/Entity.md": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          ],
+          "/root/src/classes/Entity.ts": [
+            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+          ],
+          "/root/test/classes/Entity.test.ts": [
+            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+        },
+        "linked files found",
+      );
+
+      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
+      linkManager.renameFilesAndNotify({
+        oldPaths: ["/root/src/classes/Entity.ts", "/root/dist/classes/Entity.js"],
+        newPaths: ["/root/src/classes/Entity2.ts", "/root/dist/classes/Entity2.js"],
+      });
+
+      assertFileLinks(
+        {
+          // asserts renamed build output file was linked to renamed source file and existing test file
+          "/root/dist/classes/Entity2.js": [
+            { fullPath: "/root/src/classes/Entity2.ts", marker: "💻", typeName: "Source" },
+            { fullPath: "/root/test/classes/Entity2.test.ts", marker: "🧪", typeName: "Test" },
+          ],
+          // asserts renamed source file was linked to renamed build output file and existing test file
+          "/root/src/classes/Entity2.ts": [
+            { fullPath: "/root/test/classes/Entity2.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/dist/classes/Entity2.js", marker: "📦", typeName: "Build Output" },
+          ],
+          "/root/test/classes/Entity.test.ts": [
+            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          ],
+          // asserts existing test file was linked to renamed source file
+          "/root/test/classes/Entity2.test.ts": [
+            { fullPath: "/root/src/classes/Entity2.ts", marker: "💻", typeName: "Source" },
+          ],
+        },
+        "renamed files linked",
+      );
+
+      assert.deepStrictEqual(
+        linksUpdatedHandler.mock.calls,
+        [
+          [
+            [
+              "/root/src/classes/Entity2.ts",
+              "/root/dist/classes/Entity2.js",
+              "/root/test/classes/Entity2.test.ts",
+              "/root/test/classes/Entity.test.ts",
+              "/root/docs/classes/Entity.md",
+            ],
+          ],
+        ],
+        "linksUpdatedHandler called with correct paths",
+      );
+    });
+
+    it("does nothing if files with unknown types are added, removed, or renamed", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: TEST_MAIN_CONFIG,
+        paths: [
+          "/root/src/classes/Entity.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/test/classes/Entity2.test.ts",
+          "/root/docs/classes/Entity.md",
+          "/root/dist/classes/Entity.js",
+          "/root/unknown/file/path.ts",
+          "/root/src/unknown/file/path.ts",
+        ],
+      });
+
+      const initialFileLinks = {
+        "/root/dist/classes/Entity.js": [
+          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+        ],
+        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" }],
+        "/root/src/classes/Entity.ts": [
+          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+        ],
+        "/root/test/classes/Entity.test.ts": [
+          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+        ],
+      };
+
+      assertFileLinks(initialFileLinks, "linked files found");
+
+      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
+
+      linkManager.removePathsAndNotify(["/root/unknown/file/path.ts"]);
+      linkManager.addPathsAndNotify(["/root/unknown/file/path.ts"]);
+      linkManager.renameFilesAndNotify({
+        oldPaths: ["/root/unknown/file/path.ts"],
+        newPaths: ["/root/unknown/file/path2.ts"],
+      });
+
+      assertFileLinks(initialFileLinks, "linked files unchanged");
+      assert.deepStrictEqual(linksUpdatedHandler.mock.calls, [], "linksUpdatedHandler not called");
+    });
+
+    it("can update context", () => {
+      linkManager = new LinkManager();
+
+      const paths = [
+        "/root/node_modules/package/src/classes/Entity.ts",
+        "/root/node_modules/package/test/classes/Entity.test.ts",
+        "/root/src/classes/Entity.ts",
+        "/root/test/classes/Entity.test.ts",
+        "/root/test/classes/Entity2.test.ts",
+        "/root/docs/classes/Entity.md",
+        "/root/dist/classes/Entity.js",
+        "/root/other/classes/Entity.ts",
+        "/root/unknown/file/path.ts",
+        "/root/unknown/dir/file/path.ts",
+      ];
+
+      linkManager.setContext({
+        config: TEST_MAIN_CONFIG,
+        paths,
+      });
+
+      const initialFileLinks = {
+        "/root/dist/classes/Entity.js": [
+          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+        ],
+        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" }],
+        "/root/src/classes/Entity.ts": [
+          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+        ],
+        "/root/test/classes/Entity.test.ts": [
+          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+        ],
+      };
+
+      assertFileLinks(initialFileLinks, "initial linked files found");
+
+      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
+
+      linkManager.setContext({
+        config: {
+          fileTypes: [
+            {
+              name: "Source",
+              marker: "💻",
+              patterns: ["(?<start>.*)\\/src\\/(.*)\\.ts$"],
+            },
+            {
+              name: "Test",
+              marker: "🧪",
+              patterns: ["(?<start>.*)\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$"],
+            },
+            // add new type
+            {
+              name: "Other",
+              marker: "🆕",
+              patterns: ["(?<start>.*)\\/other\\/(.*)\\.ts$"],
+            },
+          ],
+          ignorePatterns: [], // includes node_modules
+          showDebugLogs: false,
+        },
+        paths,
+      });
+
+      assertFileLinks(
+        {
+          // previously ignored file is now linked
+          "/root/node_modules/package/src/classes/Entity.ts": [
+            {
+              fullPath: "/root/node_modules/package/test/classes/Entity.test.ts",
+              marker: "🧪",
+              typeName: "Test",
+            },
+          ],
+          // previously ignored file is now linked
+          "/root/node_modules/package/test/classes/Entity.test.ts": [
+            {
+              fullPath: "/root/node_modules/package/src/classes/Entity.ts",
+              marker: "💻",
+              typeName: "Source",
+            },
+          ],
+          // new files dont affect existing links
+          "/root/other/classes/Entity.ts": [
+            {
+              fullPath: "/root/src/classes/Entity.ts",
+              marker: "💻",
+              typeName: "Source",
+            },
+            {
+              fullPath: "/root/test/classes/Entity.test.ts",
+              marker: "🧪",
+              typeName: "Test",
+            },
+            // new type added
+            {
+              fullPath: "/root/other/classes/Entity.ts",
+              marker: "🆕",
+              typeName: "Other",
+            },
+          ],
+        },
+
+        "file links updated after context change",
+      );
+      assert.deepStrictEqual(
+        linksUpdatedHandler.mock.calls,
+        [[paths]],
+        "linksUpdatedHandler called with all paths after context change",
+      );
+
+      // Revert context change
+      linkManager.setContext({
+        config: TEST_MAIN_CONFIG,
+        paths,
+      });
+
+      assertFileLinks(initialFileLinks, "file links updated after context reverted");
+      assert.deepStrictEqual(
+        linksUpdatedHandler.mock.calls,
+        [[paths]],
+        "linksUpdatedHandler called with all paths after context reverted",
       );
     });
   });
