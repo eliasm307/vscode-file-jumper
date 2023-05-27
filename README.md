@@ -123,3 +123,7 @@ This configuration and the Eslint project were used to create the demos above.
 This project is still in its early stages and any contributions are welcome!
 
 Contribution guide TBC
+
+# References
+
+- Icon made by Google Fonts, see [Noto Emoji](https://github.com/googlefonts/noto-emoji) ([image](https://github.com/googlefonts/noto-emoji/blob/main/png/512/emoji_u1f998.png))
