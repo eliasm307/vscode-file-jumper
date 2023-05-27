@@ -912,7 +912,7 @@ describe("LinkManager", () => {
         {
           name: "Documentation",
           marker: "📙",
-          patterns: ["\\/docs\\/src\\/(.+)\\.md$"],
+          patterns: ["\\/docs\\/src\\/(?<topic>.+)\\.md$"],
         },
       ],
       ignorePatterns: ["\\/node_modules\\/"],

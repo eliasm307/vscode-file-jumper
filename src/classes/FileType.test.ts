@@ -58,7 +58,10 @@ describe("FileType", () => {
       fileType = new FileType({
         name: "Source",
         marker: "💻",
-        patterns: ["\\/src\\/(.*)\\.mjs$", "\\/src\\/(.*)\\.(service\\.js|types\\.d\\.ts|styles\\.css)$"],
+        patterns: [
+          "\\/src\\/(?<topic>.+)\\.mjs$",
+          "\\/src\\/(?<topic>.+)\\.(service\\.js|types\\.d\\.ts|styles\\.css)$",
+        ],
       });
       fileType.addPaths([
         "/src/file0.ts",
@@ -223,13 +226,13 @@ describe("FileType", () => {
     const srcFileType = new FileType({
       name: "src",
       marker: "📁",
-      patterns: ["\\/src\\/(.*)\\.ts"],
+      patterns: ["\\/src\\/(?<topic>.+)\\.ts"],
     });
 
     const testFileType = new FileType({
       name: "test",
       marker: "🧪",
-      patterns: ["\\/test\\/(.*)\\.test\\.ts"],
+      patterns: ["\\/test\\/(?<topic>.+)\\.test\\.ts"],
     });
 
     it("should relate to all file types if no onlyLinkTo is specified", () => {

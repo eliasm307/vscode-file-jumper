@@ -106,7 +106,7 @@ export default class FileType {
     }
     for (const regex of this.patterns) {
       const regexMatch = path.match(regex);
-      const pathTopic = regexMatch?.groups?.topic || regexMatch?.[1];
+      const pathTopic = regexMatch?.groups?.topic;
       if (pathTopic) {
         const pathKey = this.createPathKey({ topic: pathTopic, prefix: regexMatch?.groups?.prefix });
         this.fullPathToPathKeyCache.set(path, pathKey);
