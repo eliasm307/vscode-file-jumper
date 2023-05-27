@@ -1,10 +1,10 @@
 {
-  "name": "file-jumper",
+  "name": "vscode-file-jumper",
   "displayName": "File Jumper",
   "icon": "images/kangaroo_emoji_u1f998.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/eliasm307/co-locate.git"
+    "url": "https://github.com/eliasm307/vscode-file-jumper.git"
   },
   "publisher": "ecm",
   "description": "A VS Code extension to define links and navigate easily between files in your project.",
