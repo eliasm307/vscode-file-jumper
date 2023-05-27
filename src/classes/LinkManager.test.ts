@@ -15,23 +15,23 @@ describe("LinkManager", () => {
       {
         name: "Source",
         marker: "💻",
-        patterns: ["\\/src\\/(.*)\\.ts$"],
+        patterns: ["\\/src\\/(?<topic>.*)\\.ts$"],
       },
       {
         name: "Test",
         marker: "🧪",
-        patterns: ["\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$"],
+        patterns: ["\\/(test|tests)\\/(?<topic>.*)\\.test\\.ts$"],
       },
       {
         name: "Documentation",
         marker: "📖",
-        patterns: ["\\/(docs|docs)\\/(?<key>.*)\\.md$"],
+        patterns: ["\\/(docs|docs)\\/(?<topic>.*)\\.md$"],
         onlyLinkTo: ["Source"],
       },
       {
         name: "Build Output",
         marker: "📦",
-        patterns: ["\\/dist\\/(.*)\\.js$"],
+        patterns: ["\\/dist\\/(?<topic>.*)\\.js$"],
         onlyLinkFrom: ["Source"],
       },
     ],
@@ -84,7 +84,8 @@ describe("LinkManager", () => {
 
   afterEach(() => {
     linkManager?.revertToInitial();
-    linkManager = undefined as any; // prevent re-use
+    // @ts-expect-error [allowed on after each to prevent re-use]
+    linkManager = undefined;
   });
 
   describe("meta data functionality", () => {
@@ -276,17 +277,21 @@ describe("LinkManager", () => {
             {
               name: "Source",
               marker: "💻",
-              patterns: ["\\/src\\/(.*)\\.ts$"],
+              patterns: ["\\/src\\/(?<topic>.*)\\.ts$"],
             },
             {
               name: "Test",
               marker: "🧪",
-              patterns: ["\\/test\\/(.*)\\.test\\.ts$", "\\/test\\/(.*)\\.spec\\.ts$"],
+              patterns: ["\\/test\\/(?<topic>.*)\\.test\\.ts$", "\\/test\\/(?<topic>.*)\\.spec\\.ts$"],
             },
             {
               name: "Build Output",
               marker: "📦",
-              patterns: ["\\/dist\\/(.*)\\.map\\.js$", "\\/dist\\/(.*)\\.json$", "\\/dist\\/(.*)\\.js$"],
+              patterns: [
+                "\\/dist\\/(?<topic>.*)\\.map\\.js$",
+                "\\/dist\\/(?<topic>.*)\\.json$",
+                "\\/dist\\/(?<topic>.*)\\.js$",
+              ],
               onlyLinkFrom: ["Source"],
             },
           ],
@@ -420,7 +425,7 @@ describe("LinkManager", () => {
     assert.deepStrictEqual(actual, expected, message);
   }
 
-  describe("file updates", () => {
+  describe("context update handling", () => {
     it("can add paths and notify", () => {
       linkManager = new LinkManager();
       linkManager.setContext({
@@ -738,18 +743,18 @@ describe("LinkManager", () => {
             {
               name: "Source",
               marker: "💻",
-              patterns: ["(?<start>.*)\\/src\\/(.*)\\.ts$"],
+              patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.*)\\.ts$"],
             },
             {
               name: "Test",
               marker: "🧪",
-              patterns: ["(?<start>.*)\\/(test|tests)\\/(?<key>.*)\\.test\\.ts$"],
+              patterns: ["(?<prefix>.*)\\/(test|tests)\\/(?<topic>.*)\\.test\\.ts$"],
             },
             // add new type
             {
               name: "Other",
               marker: "🆕",
-              patterns: ["(?<start>.*)\\/other\\/(.*)\\.ts$"],
+              patterns: ["(?<prefix>.*)\\/other\\/(?<topic>.*)\\.ts$"],
             },
           ],
           ignorePatterns: [], // includes node_modules
@@ -776,7 +781,7 @@ describe("LinkManager", () => {
               typeName: "Source",
             },
           ],
-          // new files dont affect existing links
+          // new file type files have links
           "/root/other/classes/Entity.ts": [
             {
               fullPath: "/root/src/classes/Entity.ts",
@@ -788,7 +793,27 @@ describe("LinkManager", () => {
               marker: "🧪",
               typeName: "Test",
             },
-            // new type added
+          ],
+          "/root/src/classes/Entity.ts": [
+            {
+              fullPath: "/root/test/classes/Entity.test.ts",
+              marker: "🧪",
+              typeName: "Test",
+            },
+            // new file type added
+            {
+              fullPath: "/root/other/classes/Entity.ts",
+              marker: "🆕",
+              typeName: "Other",
+            },
+          ],
+          "/root/test/classes/Entity.test.ts": [
+            {
+              fullPath: "/root/src/classes/Entity.ts",
+              marker: "💻",
+              typeName: "Source",
+            },
+            // new file type added
             {
               fullPath: "/root/other/classes/Entity.ts",
               marker: "🆕",
@@ -796,14 +821,14 @@ describe("LinkManager", () => {
             },
           ],
         },
-
         "file links updated after context change",
       );
       assert.deepStrictEqual(
         linksUpdatedHandler.mock.calls,
-        [[paths]],
-        "linksUpdatedHandler called with all paths after context change",
+        [[null]],
+        "linksUpdatedHandler called to update all paths after context change",
       );
+      linksUpdatedHandler.mockClear();
 
       // Revert context change
       linkManager.setContext({
@@ -814,9 +839,55 @@ describe("LinkManager", () => {
       assertFileLinks(initialFileLinks, "file links updated after context reverted");
       assert.deepStrictEqual(
         linksUpdatedHandler.mock.calls,
-        [[paths]],
-        "linksUpdatedHandler called with all paths after context reverted",
+        [[null]],
+        "linksUpdatedHandler called to update all paths after context reverted",
       );
+    });
+
+    it("does nothing if context is unchanged", async () => {
+      const paths = [
+        "/root/node_modules/package/src/classes/Entity.ts",
+        "/root/node_modules/package/test/classes/Entity.test.ts",
+        "/root/src/classes/Entity.ts",
+        "/root/test/classes/Entity.test.ts",
+        "/root/test/classes/Entity2.test.ts",
+        "/root/docs/classes/Entity.md",
+        "/root/dist/classes/Entity.js",
+        "/root/other/classes/Entity.ts",
+        "/root/unknown/file/path.ts",
+        "/root/unknown/dir/file/path.ts",
+      ];
+
+      const initialFileLinks = {
+        "/root/dist/classes/Entity.js": [
+          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+        ],
+        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" }],
+        "/root/src/classes/Entity.ts": [
+          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+        ],
+        "/root/test/classes/Entity.test.ts": [
+          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
+          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+        ],
+      };
+
+      linkManager = new LinkManager();
+      linkManager.setContext({ config: TEST_MAIN_CONFIG, paths });
+
+      assertFileLinks(initialFileLinks, "initial linked files found");
+
+      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
+
+      linkManager.setContext({ config: TEST_MAIN_CONFIG, paths });
+
+      assertFileLinks(initialFileLinks, "file links unchanged");
+      assert.deepStrictEqual(linksUpdatedHandler.mock.calls, [], "linksUpdatedHandler not called");
     });
   });
 
@@ -826,12 +897,12 @@ describe("LinkManager", () => {
         {
           name: "Source",
           marker: "💻",
-          patterns: ["(?<!\\/tests\\/)lib\\/(.*)\\.(js|jsx|ts|tsx)$"],
+          patterns: ["(?<!\\/tests\\/)lib\\/(?<topic>.*)\\.(js|jsx|ts|tsx)$"],
         },
         {
           name: "Test",
           marker: "🧪",
-          patterns: ["(?<=\\/tests\\/)lib\\/(.*)\\.(js|jsx|ts|tsx)$"],
+          patterns: ["(?<=\\/tests\\/)lib\\/(?<topic>.*)\\.(js|jsx|ts|tsx)$"],
         },
         {
           name: "Documentation",
@@ -928,5 +999,83 @@ describe("LinkManager", () => {
         assert.fail("eslint decorations snapshot file created");
       }
     });
+  });
+
+  it("supports matching with a common prefix", () => {
+    linkManager = new LinkManager();
+    linkManager.setContext({
+      config: {
+        fileTypes: [
+          {
+            name: "Source",
+            marker: "💻",
+            patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.*)\\.ts$"],
+          },
+          {
+            name: "Test",
+            marker: "🧪",
+            patterns: ["(?<prefix>.*)\\/(test|tests)\\/(?<topic>.*)\\.test\\.ts$"],
+          },
+        ],
+        ignorePatterns: [],
+        showDebugLogs: false,
+      },
+      paths: [
+        // app 1 files
+        "/root/app1/src/classes/Entity.ts",
+        "/root/app1/test/classes/Entity.test.ts",
+        "/root/app1/test/classes/Entity2.test.ts",
+        "/root/app1/docs/classes/Entity.md",
+        "/root/app1/dist/classes/Entity.js",
+
+        // app 2 files (same structure)
+        "/root/app2/src/classes/Entity.ts",
+        "/root/app2/test/classes/Entity.test.ts",
+        "/root/app2/test/classes/Entity2.test.ts",
+        "/root/app2/docs/classes/Entity.md",
+        "/root/app2/dist/classes/Entity.js",
+
+        // unknown files
+        "/root/unknown/file/path.ts",
+        "/root/src/unknown/file/path.ts",
+      ],
+    });
+
+    assertFileLinks(
+      {
+        // asserts app1 files linked to app1 files only
+        "/root/app1/src/classes/Entity.ts": [
+          {
+            fullPath: "/root/app1/test/classes/Entity.test.ts",
+            marker: "🧪",
+            typeName: "Test",
+          },
+        ],
+        "/root/app1/test/classes/Entity.test.ts": [
+          {
+            fullPath: "/root/app1/src/classes/Entity.ts",
+            marker: "💻",
+            typeName: "Source",
+          },
+        ],
+
+        // asserts app2 files linked to app2 files only
+        "/root/app2/src/classes/Entity.ts": [
+          {
+            fullPath: "/root/app2/test/classes/Entity.test.ts",
+            marker: "🧪",
+            typeName: "Test",
+          },
+        ],
+        "/root/app2/test/classes/Entity.test.ts": [
+          {
+            fullPath: "/root/app2/src/classes/Entity.ts",
+            marker: "💻",
+            typeName: "Source",
+          },
+        ],
+      },
+      "linked files found",
+    );
   });
 });

@@ -1,6 +1,9 @@
-import type { DecorationData, KeyPath, LinkedFileData } from "../types";
+import type { DecorationData, LinkedFileData } from "../types";
 import type { FileTypeConfig } from "../utils/config";
 import Logger from "./Logger";
+
+// ! this should only be created from this file so it can be changed without affecting the rest of the code
+export type PathKey = string & { __brand: "pathKey" };
 
 export default class FileType {
   readonly name: string;
@@ -14,15 +17,15 @@ export default class FileType {
   /**
    * @remark this does affect behaviour, so it is cleared on reset
    */
-  private readonly keyPathToFullPathsMap: Map<string, Set<string>> = new Map();
+  private readonly pathKeyToFullPathsMap: Map<string, Set<string>> = new Map();
 
   /**
    * @key full file path
    *
    * @remark cache not cleared on reset as its not context specific and doesn't affect behaviour
-   * @remark `null` means this was executed and no keypath found
+   * @remark `null` means this was executed and no path key found
    */
-  private readonly fullPathToKeyPathCache: Map<string, KeyPath | null> = new Map();
+  private readonly fullPathToPathKeyCache: Map<string, PathKey | null> = new Map();
 
   constructor(private readonly config: FileTypeConfig) {
     this.patterns = config.patterns.map((pattern) => new RegExp(pattern));
@@ -40,8 +43,8 @@ export default class FileType {
     return this.patterns.some((regex) => regex.test(path));
   }
 
-  getLinkedFilesFromKeyPath(keyPath: KeyPath): LinkedFileData[] {
-    const fullPathsSet = this.keyPathToFullPathsMap.get(keyPath);
+  getFilesMatching(pathKey: PathKey): LinkedFileData[] {
+    const fullPathsSet = this.pathKeyToFullPathsMap.get(pathKey);
     const fullPathsArray = fullPathsSet ? [...fullPathsSet] : [];
     return fullPathsArray.map((fullPath) => ({
       typeName: this.name,
@@ -52,31 +55,31 @@ export default class FileType {
 
   addPaths(paths: Set<string> | string[]): void {
     paths.forEach((fullPath) => {
-      const keyPath = this.getKeyPath(fullPath);
-      if (!keyPath) {
+      const pathKey = this.getPathKeyFromPath(fullPath);
+      if (!pathKey) {
         return; // not a valid path for this file type
       }
-      Logger.info(`Registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`);
-      const fullPathsSet = this.keyPathToFullPathsMap.get(keyPath) || new Set();
+      Logger.info(`Registering path key "${pathKey}" for file type "${this.name}", from "${fullPath}"`);
+      const fullPathsSet = this.pathKeyToFullPathsMap.get(pathKey) || new Set();
       fullPathsSet.add(fullPath);
-      this.keyPathToFullPathsMap.set(keyPath, fullPathsSet);
+      this.pathKeyToFullPathsMap.set(pathKey, fullPathsSet);
     });
   }
 
   removePaths(paths: string[]) {
     paths.forEach((fullPath) => {
-      const keyPath = this.getKeyPath(fullPath);
-      if (!keyPath) {
+      const pathKey = this.getPathKeyFromPath(fullPath);
+      if (!pathKey) {
         return;
       }
-      Logger.info(`De-registering keypath "${keyPath}" for file type "${this.name}", from "${fullPath}"`);
-      const existingFullPathsSet = this.keyPathToFullPathsMap.get(keyPath);
+      Logger.info(`Removing path key "${pathKey}" for file type "${this.name}", from "${fullPath}"`);
+      const existingFullPathsSet = this.pathKeyToFullPathsMap.get(pathKey);
       if (!existingFullPathsSet) {
         return;
       }
       existingFullPathsSet.delete(fullPath);
       if (!existingFullPathsSet.size) {
-        this.keyPathToFullPathsMap.delete(keyPath);
+        this.pathKeyToFullPathsMap.delete(pathKey);
       }
     });
   }
@@ -96,25 +99,33 @@ export default class FileType {
    * This was measured to be a performance bottleneck, ie it gets called hundreds of times with the same paths
    * and the caching makes a difference
    */
-  getKeyPath(path: string): KeyPath | null | undefined {
-    const cachedKeyPath = this.fullPathToKeyPathCache.get(path);
-    if (typeof cachedKeyPath !== "undefined") {
-      return cachedKeyPath;
+  getPathKeyFromPath(path: string): PathKey | null | undefined {
+    const cachedPathKey = this.fullPathToPathKeyCache.get(path);
+    if (typeof cachedPathKey !== "undefined") {
+      return cachedPathKey;
     }
     for (const regex of this.patterns) {
       const regexMatch = path.match(regex);
-      const keyPath = (regexMatch?.groups?.key || regexMatch?.[1]) as KeyPath | undefined;
-      if (keyPath) {
-        this.fullPathToKeyPathCache.set(path, keyPath);
-        return keyPath;
+      const pathTopic = regexMatch?.groups?.topic || regexMatch?.[1];
+      if (pathTopic) {
+        const pathKey = this.createPathKey({ topic: pathTopic, prefix: regexMatch?.groups?.prefix });
+        this.fullPathToPathKeyCache.set(path, pathKey);
+        return pathKey;
       }
     }
-    this.fullPathToKeyPathCache.set(path, null);
+    this.fullPathToPathKeyCache.set(path, null);
+  }
+
+  private createPathKey({ topic, prefix }: { prefix?: string; topic: string }): PathKey {
+    if (!prefix) {
+      return topic as PathKey;
+    }
+    return `${prefix}|${topic}` as PathKey;
   }
 
   dispose() {
-    this.keyPathToFullPathsMap.clear();
-    this.fullPathToKeyPathCache.clear();
+    this.pathKeyToFullPathsMap.clear();
+    this.fullPathToPathKeyCache.clear();
   }
 
   getDecorationData(): DecorationData {

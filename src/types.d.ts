@@ -11,8 +11,6 @@ export type LinkedFileData = {
   fullPath: string;
 };
 
-export type KeyPath = string & { __brand: "keyPath" };
-
 export type DecorationData = {
   /**
    * @remark this can only be 2 characters long or it will cause the decoration to be ignored

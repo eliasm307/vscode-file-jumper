@@ -1,12 +1,13 @@
+import type { PathKey } from "./FileType";
 import FileType from "./FileType";
-import type { DecorationData, KeyPath, LinkedFileData } from "../types";
+import type { DecorationData, LinkedFileData } from "../types";
 import type { MainConfig } from "../utils/config";
 import { mainConfigsAreEqual } from "../utils/config";
 import Logger from "./Logger";
 
 type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => void;
 
-type FileInfo = { keyPath: KeyPath; type: FileType };
+type FileInfo = { pathKey: PathKey; type: FileType };
 
 type PathData = {
   file: FileInfo;
@@ -21,8 +22,7 @@ export default class LinkManager {
   /**
    * This represents all the relevant paths the link manager is aware of that are of a known type
    */
-
-  #allKnownRelevantPaths: Set<string> = new Set();
+  #pathsWithKnownType: Set<string> = new Set();
 
   readonly #pathDataCache: Map<string, PathData | null> = new Map();
 
@@ -38,6 +38,9 @@ export default class LinkManager {
     this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
   }
 
+  /**
+   * @remark Replaces the previous handler if one was set
+   */
   setOnFileLinksUpdatedHandler(handler: OnFileLinksUpdatedHandler): void {
     this.onFileLinksUpdatedHandler = handler;
   }
@@ -73,7 +76,7 @@ export default class LinkManager {
   }
 
   private applyPathAdditions(paths: Set<string> | string[]) {
-    paths.forEach((path) => this.#allKnownRelevantPaths.add(path));
+    paths.forEach((path) => this.#pathsWithKnownType.add(path));
     this.fileTypes.forEach((fileType) => fileType.addPaths(paths));
   }
 
@@ -90,7 +93,7 @@ export default class LinkManager {
   }
 
   private applyPathRemovals(paths: string[]) {
-    paths.forEach((path) => this.#allKnownRelevantPaths.delete(path));
+    paths.forEach((path) => this.#pathsWithKnownType.delete(path));
     this.fileTypes.forEach((fileType) => fileType.removePaths(paths));
   }
 
@@ -114,23 +117,10 @@ export default class LinkManager {
   }
 
   private notifyFileLinksUpdated(affectedPaths: string[] | null) {
+    if (affectedPaths?.length) {
+      affectedPaths = [...new Set(affectedPaths)]; // remove duplicates
+    }
     this.onFileLinksUpdatedHandler?.(affectedPaths);
-  }
-
-  /**
-   * @remark This used to be cached however there weren't any significant performance gains
-   * so decided to simplify until there is a need for it
-   */
-  private getFileInfo(path: string): FileInfo | undefined {
-    if (!this.#allKnownRelevantPaths.has(path)) {
-      return; // we don't know about this path so we can't get any file info
-    }
-    for (const type of this.fileTypes) {
-      const keyPath = type.getKeyPath(path);
-      if (keyPath) {
-        return { type, keyPath };
-      }
-    }
   }
 
   /**
@@ -161,7 +151,7 @@ export default class LinkManager {
         (linkedFileType) => linkedFileType.name === fileTypeName,
       );
 
-      const outgoingLinksToDecorate = linkedDecoratorFileType?.getLinkedFilesFromKeyPath(pathData.file.keyPath);
+      const outgoingLinksToDecorate = linkedDecoratorFileType?.getFilesMatching(pathData.file.pathKey);
       if (outgoingLinksToDecorate?.length) {
         return linkedDecoratorFileType?.getDecorationData(); // only apply allowed file type decoration if there are linked files of that type
       }
@@ -169,6 +159,22 @@ export default class LinkManager {
       // log timing
     } finally {
       endTimer();
+    }
+  }
+
+  /**
+   * @remark This used to be cached however there weren't any significant performance gains
+   * so decided to simplify until there is a need for it
+   */
+  private getFileInfo(path: string): FileInfo | undefined {
+    if (!this.#pathsWithKnownType.has(path)) {
+      return; // we don't know about this path so we can't get any file info
+    }
+    for (const type of this.fileTypes) {
+      const pathKey = type.getPathKeyFromPath(path);
+      if (pathKey) {
+        return { type, pathKey };
+      }
     }
   }
 
@@ -187,11 +193,11 @@ export default class LinkManager {
     }
 
     const allowedFileTypesForOutgoingLinks = this.fileTypes
-      .filter((fileType) => fileType.name !== targetFile.type.name) // prevent a file from being related to itself
+      .filter((fileType) => fileType.name !== targetFile.type.name) // prevent a file type from being related to itself
       .filter((fileType) => targetFile.type.allowsLinksTo(fileType))
       .filter((fileType) => fileType.allowsLinksFrom(targetFile.type));
 
-    const metaData = { file: targetFile, allowedFileTypesForOutgoingLinks };
+    const metaData: PathData = { file: targetFile, allowedFileTypesForOutgoingLinks };
     this.#pathDataCache.set(path, metaData);
     return metaData;
   }
@@ -207,7 +213,7 @@ export default class LinkManager {
         return [];
       }
       return pathData.allowedFileTypesForOutgoingLinks.flatMap((fileType) => {
-        return fileType.getLinkedFilesFromKeyPath(pathData.file.keyPath);
+        return fileType.getFilesMatching(pathData.file.pathKey);
       });
 
       // log timing
@@ -218,7 +224,7 @@ export default class LinkManager {
 
   getAllPathsWithOutgoingLinks(): string[] {
     const stopTimer = Logger.startTimer("LinkManager#getAllPathsWithOutgoingLinks");
-    const paths = [...this.#allKnownRelevantPaths].filter((path) => this.getLinkedFilesFromPath(path).length);
+    const paths = [...this.#pathsWithKnownType].filter((path) => this.getLinkedFilesFromPath(path).length);
     stopTimer();
     return paths;
   }
@@ -227,7 +233,7 @@ export default class LinkManager {
   revertToInitial() {
     this.fileTypes.forEach((fileType) => fileType.dispose());
     this.fileTypes = [];
-    this.#allKnownRelevantPaths.clear();
+    this.#pathsWithKnownType.clear();
     this.#pathDataCache.clear();
   }
 
