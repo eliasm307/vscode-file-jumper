@@ -2,7 +2,7 @@
 
 File Jumper is a handy VSCode extension that simplifies navigation between related files in your workspace. It detects and helps you quickly jump to associated files, based on your own rules, making your workflow more efficient.
 
-![Example usage of File Jumper](src/assets/Code_6CBir18A1i.gif)
+![Example usage of File Jumper](images/Code_6CBir18A1i.gif)
 
 ## Key features:
 
