@@ -9,7 +9,7 @@ File Jumper is a handy VSCode extension that simplifies navigation between relat
 - 🚀 Dynamically detects related files based on user configuration.
 - 👁️ Visualizes related files with customizable icons.
 - 🔄 Updates file links when workspace folders, files, or configurations change.
-- 🎨 Uses customizable RegEx patterns for more powerful matching to accommodate different file types and relations.
+- 🎨 Uses customizable RegEx patterns to accommodate complex folder structures and relations.
 
 Try File Jumper today and experience a smoother, more connected file navigation experience in VSCode! 🚀
 
