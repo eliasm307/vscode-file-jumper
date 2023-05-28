@@ -96,8 +96,8 @@
             ".+": {
               "type": "object",
               "properties": {
-                "marker": {
-                  "description": "A marker (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
+                "icon": {
+                  "description": "An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
                   "type": "string",
                   "default": "",
                   "maxLength": 1
@@ -131,7 +131,7 @@
                 }
               },
               "required": [
-                "marker",
+                "icon",
                 "patterns"
               ]
             }

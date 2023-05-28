@@ -48,7 +48,7 @@ export default class FileType {
     const fullPathsArray = fullPathsSet ? [...fullPathsSet] : [];
     return fullPathsArray.map((fullPath) => ({
       typeName: this.name,
-      marker: this.config.marker,
+      icon: this.config.icon,
       fullPath,
     }));
   }
@@ -130,8 +130,8 @@ export default class FileType {
 
   getDecorationData(): DecorationData {
     return {
-      badgeText: this.config.marker,
-      tooltip: `${this.config.marker} ${this.name}`,
+      badgeText: this.config.icon,
+      tooltip: `${this.config.icon} ${this.name}`,
     };
   }
 }

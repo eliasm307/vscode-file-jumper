@@ -1,6 +1,6 @@
 export type FileTypeConfig = {
   name: string;
-  marker: string;
+  icon: string;
   patterns: string[];
   /**
    * The names of other file types that this file type can produces links to
@@ -42,12 +42,12 @@ export function formatRawFileTypesConfig(rawConfig: RawFileTypesConfig | undefin
     return [
       {
         name: "Source",
-        marker: "💻",
+        icon: "💻",
         patterns: ["(?<prefix>.+)\\/src\\/(?!\\.test\\.|\\.spec\\.)(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
       },
       {
         name: "Test",
-        marker: "🧪",
+        icon: "🧪",
         patterns: ["(?<prefix>.+)\\/test\\/(?<topic>.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"],
       },
     ];

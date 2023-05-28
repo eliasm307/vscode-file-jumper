@@ -197,7 +197,7 @@ function registerNavigateCommand(linkManager: LinkManager) {
   const disposable = vscode.commands.registerCommand("fileJumper.navigateCommand", async (uri: vscode.Uri) => {
     const quickPickItems = linkManager.getLinkedFilesFromPath(uri.path).map((linkedFile) => {
       return {
-        label: `${linkedFile.marker} ${linkedFile.typeName}`,
+        label: `${linkedFile.icon} ${linkedFile.typeName}`,
         // if this overflows the end of the path is hidden and we want to prioritise the end of the path so we shorten it
         detail: shortenPath(getWorkspaceRelativePath(linkedFile.fullPath)),
         path: linkedFile.fullPath,

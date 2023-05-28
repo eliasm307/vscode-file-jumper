@@ -7,7 +7,7 @@ export type FileMetaData = {
 
 export type LinkedFileData = {
   typeName: string;
-  marker: string;
+  icon: string;
   fullPath: string;
 };
 

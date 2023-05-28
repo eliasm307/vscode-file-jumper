@@ -12,15 +12,15 @@ describe("config utils", () => {
     it("formats the raw config correctly", () => {
       const actual = formatRawFileTypesConfig({
         Source: {
-          marker: "💻",
+          icon: "💻",
           patterns: ["sourcePattern1", "sourcePattern2", "sourcePattern3"],
         },
         Test: {
-          marker: "🧪",
+          icon: "🧪",
           patterns: ["testPattern1"],
         },
         Documentation: {
-          marker: "📖",
+          icon: "📖",
           patterns: ["docsPattern1", "docsPattern2"],
           onlyLinkTo: ["Source"],
         },
@@ -29,17 +29,17 @@ describe("config utils", () => {
       const expected = [
         {
           name: "Source",
-          marker: "💻",
+          icon: "💻",
           patterns: ["sourcePattern1", "sourcePattern2", "sourcePattern3"],
         },
         {
           name: "Test",
-          marker: "🧪",
+          icon: "🧪",
           patterns: ["testPattern1"],
         },
         {
           name: "Documentation",
-          marker: "📖",
+          icon: "📖",
           patterns: ["docsPattern1", "docsPattern2"],
           onlyLinkTo: ["Source"],
         },
@@ -53,12 +53,12 @@ describe("config utils", () => {
       const expectedDefault = [
         {
           name: "Source",
-          marker: "💻",
+          icon: "💻",
           patterns: ["(?<prefix>.+)\\/src\\/(?!\\.test\\.|\\.spec\\.)(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
         },
         {
           name: "Test",
-          marker: "🧪",
+          icon: "🧪",
           patterns: ["(?<prefix>.+)\\/test\\/(?<topic>.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"],
         },
       ];
@@ -86,12 +86,12 @@ describe("config utils", () => {
         fileTypes: [
           {
             name: "Source",
-            marker: "💻",
+            icon: "💻",
             patterns: ["sourcePattern1", "sourcePattern2"],
           },
           {
             name: "Test",
-            marker: "🧪",
+            icon: "🧪",
             patterns: ["testPattern1", "testPattern2"],
           },
         ],
@@ -102,12 +102,12 @@ describe("config utils", () => {
         fileTypes: [
           {
             name: "Source",
-            marker: "💻",
+            icon: "💻",
             patterns: ["sourcePattern1", "sourcePattern2"],
           },
           {
             name: "Test",
-            marker: "🧪",
+            icon: "🧪",
             patterns: ["testPattern1", "testPattern2"],
           },
         ],
@@ -122,12 +122,12 @@ describe("config utils", () => {
         fileTypes: [
           {
             name: "Source",
-            marker: "💻",
+            icon: "💻",
             patterns: ["sourcePattern1", "sourcePattern2"],
           },
           {
             name: "Test",
-            marker: "🧪",
+            icon: "🧪",
             patterns: ["testPattern1", "testPattern2"],
           },
         ],
@@ -138,7 +138,7 @@ describe("config utils", () => {
         fileTypes: [
           {
             name: "Source",
-            marker: "💻",
+            icon: "💻",
             patterns: ["sourcePattern1", "sourcePattern2"],
           },
           // missing Test file type
@@ -156,12 +156,12 @@ describe("config utils", () => {
         fileTypes: [
           {
             name: "Source",
-            marker: "💻",
+            icon: "💻",
             patterns: ["sourcePattern1", "sourcePattern2"],
           },
           {
             name: "Test",
-            marker: "🧪",
+            icon: "🧪",
             patterns: ["testPattern1", "testPattern2"],
             onlyLinkTo: ["Source"],
           },
@@ -177,7 +177,7 @@ describe("config utils", () => {
         fileTypes: [
           {
             name: "Source",
-            marker: "💻",
+            icon: "💻",
             patterns: ["sourcePattern1", "sourcePattern2"],
           },
         ],

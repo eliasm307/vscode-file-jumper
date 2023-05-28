@@ -8,7 +8,7 @@ describe("FileType", () => {
   function createFileTypeWithRegisteredFiles(): FileType {
     fileType = new FileType({
       name: "test",
-      marker: "🧪",
+      icon: "🧪",
       patterns: ["\\/test\\/(?<topic>.+)\\.test\\.ts"],
     });
     fileType.addPaths(["/test/file0.test.ts", "/test/dir1/file1.test.ts", "/test/dir1/dir2/file2.test.ts"]);
@@ -28,7 +28,7 @@ describe("FileType", () => {
         [
           {
             typeName: "test",
-            marker: "🧪",
+            icon: "🧪",
             fullPath: "/test/dir1/file1.test.ts",
           },
         ],
@@ -40,7 +40,7 @@ describe("FileType", () => {
         [
           {
             typeName: "test",
-            marker: "🧪",
+            icon: "🧪",
             fullPath: "/test/dir1/dir2/file2.test.ts",
           },
         ],
@@ -57,7 +57,7 @@ describe("FileType", () => {
     it("allows matching to multiple files", () => {
       fileType = new FileType({
         name: "Source",
-        marker: "💻",
+        icon: "💻",
         patterns: [
           "\\/src\\/(?<topic>.+)\\.mjs$",
           "\\/src\\/(?<topic>.+)\\.(service\\.js|types\\.d\\.ts|styles\\.css)$",
@@ -78,22 +78,22 @@ describe("FileType", () => {
         [
           {
             typeName: "Source",
-            marker: "💻",
+            icon: "💻",
             fullPath: "/src/dir1/file0.mjs",
           },
           {
             typeName: "Source",
-            marker: "💻",
+            icon: "💻",
             fullPath: "/src/dir1/file0.service.js",
           },
           {
             typeName: "Source",
-            marker: "💻",
+            icon: "💻",
             fullPath: "/src/dir1/file0.types.d.ts",
           },
           {
             typeName: "Source",
-            marker: "💻",
+            icon: "💻",
             fullPath: "/src/dir1/file0.styles.css",
           },
         ],
@@ -122,7 +122,7 @@ describe("FileType", () => {
 
       assert.deepStrictEqual(
         fileType.getFilesMatching(validKeyPath),
-        [{ typeName: "test", marker: "🧪", fullPath: "/test/dir1/file1.test.ts" }],
+        [{ typeName: "test", icon: "🧪", fullPath: "/test/dir1/file1.test.ts" }],
         "linked file should be found",
       );
 
@@ -144,7 +144,7 @@ describe("FileType", () => {
       if (expectRegistered) {
         assert.deepStrictEqual(
           fileType.getFilesMatching(validKeyPath0),
-          [{ typeName: "test", marker: "🧪", fullPath: fullPath0 }],
+          [{ typeName: "test", icon: "🧪", fullPath: fullPath0 }],
           "linked file0 should be found",
         );
       } else {
@@ -156,7 +156,7 @@ describe("FileType", () => {
       if (expectRegistered) {
         assert.deepStrictEqual(
           fileType.getFilesMatching(validKeyPath1),
-          [{ typeName: "test", marker: "🧪", fullPath: fullPath1 }],
+          [{ typeName: "test", icon: "🧪", fullPath: fullPath1 }],
           "linked file1 should be found",
         );
       } else {
@@ -168,7 +168,7 @@ describe("FileType", () => {
       if (expectRegistered) {
         assert.deepStrictEqual(
           fileType.getFilesMatching(validKeyPath2),
-          [{ typeName: "test", marker: "🧪", fullPath: fullPath2 }],
+          [{ typeName: "test", icon: "🧪", fullPath: fullPath2 }],
           "linked file2 should be found",
         );
       } else {
@@ -225,20 +225,20 @@ describe("FileType", () => {
   describe("#canRelateTo", () => {
     const srcFileType = new FileType({
       name: "src",
-      marker: "📁",
+      icon: "📁",
       patterns: ["\\/src\\/(?<topic>.+)\\.ts"],
     });
 
     const testFileType = new FileType({
       name: "test",
-      marker: "🧪",
+      icon: "🧪",
       patterns: ["\\/test\\/(?<topic>.+)\\.test\\.ts"],
     });
 
     it("should relate to all file types if no onlyLinkTo is specified", () => {
       fileType = new FileType({
         name: "other",
-        marker: "🧪",
+        icon: "🧪",
         patterns: ["other"],
       });
       assert.isTrue(fileType.allowsLinksTo(srcFileType), "relates to src file type");
@@ -248,7 +248,7 @@ describe("FileType", () => {
     it("should only return true if the file type matches the defined only link to constraint", () => {
       fileType = new FileType({
         name: "other",
-        marker: "🧪",
+        icon: "🧪",
         patterns: ["other"],
         onlyLinkTo: ["src"],
       });
@@ -259,7 +259,7 @@ describe("FileType", () => {
     it("does not relate to any file type if the onlyLinkTo constraint is an empty array", () => {
       fileType = new FileType({
         name: "other",
-        marker: "🧪",
+        icon: "🧪",
         patterns: ["other"],
         onlyLinkTo: [],
       });

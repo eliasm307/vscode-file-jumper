@@ -14,23 +14,23 @@ describe("LinkManager", () => {
     fileTypes: [
       {
         name: "Source",
-        marker: "💻",
+        icon: "💻",
         patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
       },
       {
         name: "Test",
-        marker: "🧪",
+        icon: "🧪",
         patterns: ["\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"],
       },
       {
         name: "Documentation",
-        marker: "📖",
+        icon: "📖",
         patterns: ["\\/(docs|docs)\\/(?<topic>.+)\\.md$"],
         onlyLinkTo: ["Source"],
       },
       {
         name: "Build Output",
-        marker: "📦",
+        icon: "📦",
         patterns: ["\\/dist\\/(?<topic>.+)\\.js$"],
         onlyLinkFrom: ["Source"],
       },
@@ -95,17 +95,17 @@ describe("LinkManager", () => {
       assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
         {
           typeName: "Test",
-          marker: "🧪",
+          icon: "🧪",
           fullPath: "/root/test/classes/Entity.test.ts",
         },
         {
           typeName: "Documentation",
-          marker: "📖",
+          icon: "📖",
           fullPath: "/root/docs/classes/Entity.md",
         },
         {
           typeName: "Build Output",
-          marker: "📦",
+          icon: "📦",
           fullPath: "/root/dist/classes/Entity.js",
         },
       ]);
@@ -138,7 +138,7 @@ describe("LinkManager", () => {
       assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
         {
           typeName: "Source",
-          marker: "💻",
+          icon: "💻",
           fullPath: "/root/src/classes/Entity2.ts",
         },
         // no Documentation or Build Output
@@ -167,7 +167,7 @@ describe("LinkManager", () => {
         [
           {
             typeName: "Source",
-            marker: "💻",
+            icon: "💻",
             fullPath: "/root/src/classes/Entity.ts",
           },
         ],
@@ -197,12 +197,12 @@ describe("LinkManager", () => {
         [
           {
             typeName: "Source",
-            marker: "💻",
+            icon: "💻",
             fullPath: "/root/src/classes/Entity.ts",
           },
           {
             typeName: "Documentation", // docs dont link to tests but tests link to docs due to onlyLinkFrom
-            marker: "📖",
+            icon: "📖",
             fullPath: "/root/docs/classes/Entity.md",
           },
           // no Build Output as it is only linked from source
@@ -276,17 +276,17 @@ describe("LinkManager", () => {
           fileTypes: [
             {
               name: "Source",
-              marker: "💻",
+              icon: "💻",
               patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
             },
             {
               name: "Test",
-              marker: "🧪",
+              icon: "🧪",
               patterns: ["\\/test\\/(?<topic>.+)\\.test\\.ts$", "\\/test\\/(?<topic>.+)\\.spec\\.ts$"],
             },
             {
               name: "Build Output",
-              marker: "📦",
+              icon: "📦",
               patterns: [
                 "\\/dist\\/(?<topic>.+)\\.map\\.js$",
                 "\\/dist\\/(?<topic>.+)\\.json$",
@@ -315,27 +315,27 @@ describe("LinkManager", () => {
       assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
         {
           typeName: "Test",
-          marker: "🧪",
+          icon: "🧪",
           fullPath: "/root/test/classes/Entity.test.ts",
         },
         {
           typeName: "Test",
-          marker: "🧪",
+          icon: "🧪",
           fullPath: "/root/test/classes/Entity.spec.ts",
         },
         {
           typeName: "Build Output",
-          marker: "📦",
+          icon: "📦",
           fullPath: "/root/dist/classes/Entity.js",
         },
         {
           typeName: "Build Output",
-          marker: "📦",
+          icon: "📦",
           fullPath: "/root/dist/classes/Entity.map.js",
         },
         {
           typeName: "Build Output",
-          marker: "📦",
+          icon: "📦",
           fullPath: "/root/dist/classes/Entity.json",
         },
       ]);
@@ -446,7 +446,7 @@ describe("LinkManager", () => {
       assertFileLinks(
         {
           "/root/test/classes/Entity.test.ts": [
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
         },
         "linked files found",
@@ -461,21 +461,19 @@ describe("LinkManager", () => {
       assertFileLinks(
         {
           "/root/dist/classes/Entity.js": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+            { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
-          "/root/docs/classes/Entity.md": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          ],
+          "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
           "/root/src/classes/Entity.ts": [
-            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
-            { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+            { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
+            { fullPath: "/root/dist/classes/Entity.js", icon: "📦", typeName: "Build Output" },
           ],
           "/root/test/classes/Entity.test.ts": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
         },
         "added files linked",
@@ -515,21 +513,19 @@ describe("LinkManager", () => {
       assertFileLinks(
         {
           "/root/dist/classes/Entity.js": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+            { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
-          "/root/docs/classes/Entity.md": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          ],
+          "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
           "/root/src/classes/Entity.ts": [
-            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
-            { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+            { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
+            { fullPath: "/root/dist/classes/Entity.js", icon: "📦", typeName: "Build Output" },
           ],
           "/root/test/classes/Entity.test.ts": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
         },
         "linked files found",
@@ -546,14 +542,14 @@ describe("LinkManager", () => {
         {
           "/root/dist/classes/Entity.js": [
             // asserts source file link was removed
-            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
           // asserts documentation file has no links after source file removal
           // asserts source file not listed as having links
           "/root/test/classes/Entity.test.ts": [
             // asserts source file link was removed
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
         },
         "linked files after removal",
@@ -584,21 +580,19 @@ describe("LinkManager", () => {
       assertFileLinks(
         {
           "/root/dist/classes/Entity.js": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+            { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
-          "/root/docs/classes/Entity.md": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          ],
+          "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
           "/root/src/classes/Entity.ts": [
-            { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
-            { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+            { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
+            { fullPath: "/root/dist/classes/Entity.js", icon: "📦", typeName: "Build Output" },
           ],
           "/root/test/classes/Entity.test.ts": [
-            { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
         },
         "linked files found",
@@ -615,20 +609,20 @@ describe("LinkManager", () => {
         {
           // asserts renamed build output file was linked to renamed source file and existing test file
           "/root/dist/classes/Entity2.js": [
-            { fullPath: "/root/src/classes/Entity2.ts", marker: "💻", typeName: "Source" },
-            { fullPath: "/root/test/classes/Entity2.test.ts", marker: "🧪", typeName: "Test" },
+            { fullPath: "/root/src/classes/Entity2.ts", icon: "💻", typeName: "Source" },
+            { fullPath: "/root/test/classes/Entity2.test.ts", icon: "🧪", typeName: "Test" },
           ],
           // asserts renamed source file was linked to renamed build output file and existing test file
           "/root/src/classes/Entity2.ts": [
-            { fullPath: "/root/test/classes/Entity2.test.ts", marker: "🧪", typeName: "Test" },
-            { fullPath: "/root/dist/classes/Entity2.js", marker: "📦", typeName: "Build Output" },
+            { fullPath: "/root/test/classes/Entity2.test.ts", icon: "🧪", typeName: "Test" },
+            { fullPath: "/root/dist/classes/Entity2.js", icon: "📦", typeName: "Build Output" },
           ],
           "/root/test/classes/Entity.test.ts": [
-            { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+            { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
           ],
           // asserts existing test file was linked to renamed source file
           "/root/test/classes/Entity2.test.ts": [
-            { fullPath: "/root/src/classes/Entity2.ts", marker: "💻", typeName: "Source" },
+            { fullPath: "/root/src/classes/Entity2.ts", icon: "💻", typeName: "Source" },
           ],
         },
         "renamed files linked",
@@ -668,19 +662,19 @@ describe("LinkManager", () => {
 
       const initialFileLinks = {
         "/root/dist/classes/Entity.js": [
-          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+          { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
-        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" }],
+        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
         "/root/src/classes/Entity.ts": [
-          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
-          { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+          { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
+          { fullPath: "/root/dist/classes/Entity.js", icon: "📦", typeName: "Build Output" },
         ],
         "/root/test/classes/Entity.test.ts": [
-          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
       };
 
@@ -721,19 +715,19 @@ describe("LinkManager", () => {
 
       const initialFileLinks = {
         "/root/dist/classes/Entity.js": [
-          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+          { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
-        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" }],
+        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
         "/root/src/classes/Entity.ts": [
-          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
-          { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+          { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
+          { fullPath: "/root/dist/classes/Entity.js", icon: "📦", typeName: "Build Output" },
         ],
         "/root/test/classes/Entity.test.ts": [
-          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
       };
 
@@ -747,18 +741,18 @@ describe("LinkManager", () => {
           fileTypes: [
             {
               name: "Source",
-              marker: "💻",
+              icon: "💻",
               patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.+)\\.ts$"],
             },
             {
               name: "Test",
-              marker: "🧪",
+              icon: "🧪",
               patterns: ["(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"],
             },
             // add new type
             {
               name: "Other",
-              marker: "🆕",
+              icon: "🆕",
               patterns: ["(?<prefix>.*)\\/other\\/(?<topic>.+)\\.ts$"],
             },
           ],
@@ -774,7 +768,7 @@ describe("LinkManager", () => {
           "/root/node_modules/package/src/classes/Entity.ts": [
             {
               fullPath: "/root/node_modules/package/test/classes/Entity.test.ts",
-              marker: "🧪",
+              icon: "🧪",
               typeName: "Test",
             },
           ],
@@ -782,7 +776,7 @@ describe("LinkManager", () => {
           "/root/node_modules/package/test/classes/Entity.test.ts": [
             {
               fullPath: "/root/node_modules/package/src/classes/Entity.ts",
-              marker: "💻",
+              icon: "💻",
               typeName: "Source",
             },
           ],
@@ -790,38 +784,38 @@ describe("LinkManager", () => {
           "/root/other/classes/Entity.ts": [
             {
               fullPath: "/root/src/classes/Entity.ts",
-              marker: "💻",
+              icon: "💻",
               typeName: "Source",
             },
             {
               fullPath: "/root/test/classes/Entity.test.ts",
-              marker: "🧪",
+              icon: "🧪",
               typeName: "Test",
             },
           ],
           "/root/src/classes/Entity.ts": [
             {
               fullPath: "/root/test/classes/Entity.test.ts",
-              marker: "🧪",
+              icon: "🧪",
               typeName: "Test",
             },
             // new file type added
             {
               fullPath: "/root/other/classes/Entity.ts",
-              marker: "🆕",
+              icon: "🆕",
               typeName: "Other",
             },
           ],
           "/root/test/classes/Entity.test.ts": [
             {
               fullPath: "/root/src/classes/Entity.ts",
-              marker: "💻",
+              icon: "💻",
               typeName: "Source",
             },
             // new file type added
             {
               fullPath: "/root/other/classes/Entity.ts",
-              marker: "🆕",
+              icon: "🆕",
               typeName: "Other",
             },
           ],
@@ -865,19 +859,19 @@ describe("LinkManager", () => {
 
       const initialFileLinks = {
         "/root/dist/classes/Entity.js": [
-          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+          { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
-        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" }],
+        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
         "/root/src/classes/Entity.ts": [
-          { fullPath: "/root/test/classes/Entity.test.ts", marker: "🧪", typeName: "Test" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
-          { fullPath: "/root/dist/classes/Entity.js", marker: "📦", typeName: "Build Output" },
+          { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
+          { fullPath: "/root/dist/classes/Entity.js", icon: "📦", typeName: "Build Output" },
         ],
         "/root/test/classes/Entity.test.ts": [
-          { fullPath: "/root/src/classes/Entity.ts", marker: "💻", typeName: "Source" },
-          { fullPath: "/root/docs/classes/Entity.md", marker: "📖", typeName: "Documentation" },
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+          { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
       };
 
@@ -901,17 +895,17 @@ describe("LinkManager", () => {
       fileTypes: [
         {
           name: "Source",
-          marker: "💻",
+          icon: "💻",
           patterns: ["(?<!\\/tests\\/)lib\\/(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
         },
         {
           name: "Test",
-          marker: "🧪",
+          icon: "🧪",
           patterns: ["(?<=\\/tests\\/)lib\\/(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
         },
         {
           name: "Documentation",
-          marker: "📙",
+          icon: "📙",
           patterns: ["\\/docs\\/src\\/(?<topic>.+)\\.md$"],
         },
       ],
@@ -1013,12 +1007,12 @@ describe("LinkManager", () => {
         fileTypes: [
           {
             name: "Source",
-            marker: "💻",
+            icon: "💻",
             patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.+)\\.ts$"],
           },
           {
             name: "Test",
-            marker: "🧪",
+            icon: "🧪",
             patterns: ["(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"],
           },
         ],
@@ -1052,14 +1046,14 @@ describe("LinkManager", () => {
         "/root/app1/src/classes/Entity.ts": [
           {
             fullPath: "/root/app1/test/classes/Entity.test.ts",
-            marker: "🧪",
+            icon: "🧪",
             typeName: "Test",
           },
         ],
         "/root/app1/test/classes/Entity.test.ts": [
           {
             fullPath: "/root/app1/src/classes/Entity.ts",
-            marker: "💻",
+            icon: "💻",
             typeName: "Source",
           },
         ],
@@ -1068,14 +1062,14 @@ describe("LinkManager", () => {
         "/root/app2/src/classes/Entity.ts": [
           {
             fullPath: "/root/app2/test/classes/Entity.test.ts",
-            marker: "🧪",
+            icon: "🧪",
             typeName: "Test",
           },
         ],
         "/root/app2/test/classes/Entity.test.ts": [
           {
             fullPath: "/root/app2/src/classes/Entity.ts",
-            marker: "💻",
+            icon: "💻",
             typeName: "Source",
           },
         ],

@@ -27,7 +27,7 @@ An object that defines the file types in a project that will be evaluated for au
 
 The object keys represent the file type names. The values are objects that define the file type's behavior. The following properties are supported:
 
-- `marker`: A marker (e.g., an emoji) displayed as a badge in the file explorer on files related to this file type.
+- `icon`: A icon (e.g., an emoji) displayed as a badge in the file explorer on files related to this file type.
 - `patterns`: An array of RegEx patterns to match relevant files and capture the topic and/or a prefix. More detail below.
 - `onlyLinkTo`: (**OPTIONAL**) Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types.
 - `onlyLinkFrom`: (**OPTIONAL**) Array of other file types that can link to this file type. By default, all file types can be linked to all other file types.
@@ -50,13 +50,13 @@ The extension will automatically link all files of different types that resolve 
 ```json
 "fileJumper.fileTypes": {
   "Test": {
-    "marker": "🧪",
+    "icon": "🧪",
     "patterns": [
       "(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"
     ]
   },
   "Source": {
-    "marker": "📄",
+    "icon": "📄",
     "patterns": [
       "(?<prefix>.+)\\/(src)\\/(?<topic>.+)\\.ts$"
     ]
@@ -99,15 +99,15 @@ Here is an example configuration for the Eslint project:
 {
   "fileJumper.fileTypes": {
     "Source Code": {
-      "marker": "💻",
+      "icon": "💻",
       "patterns": ["(?<!\\/tests\\/)lib\\/(?<topic>.+)\\.(js|jsx|ts|tsx)$"]
     },
     "Test Code": {
-      "marker": "🧪",
+      "icon": "🧪",
       "patterns": ["(?<=\\/tests\\/)lib\\/(?<topic>.+)\\.(js|jsx|ts|tsx)$"]
     },
     "Documentation": {
-      "marker": "📃",
+      "icon": "📃",
       "patterns": ["\\/docs\\/src\\/(?<topic>.+)\\.md$"]
     }
   },
