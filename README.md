@@ -93,7 +93,7 @@ The [Eslint](https://github.com/eslint/eslint) project has the perfect structure
 
 Where the file structure in those root folders are the same, except for the prefix, which makes it easy to define patterns for linking those files together.
 
-Here is an example configuration for the Eslint project:
+Here is an example configuration for the Eslint project (note: the prefix capture group isn't required here as the file structure isn't nested):
 
 ```json
 {
@@ -111,8 +111,7 @@ Here is an example configuration for the Eslint project:
       "patterns": ["\\/docs\\/src\\/(?<topic>.+)\\.md$"]
     }
   },
-  "fileJumper.ignorePatterns": ["\\/node_modules\\/"],
-  "fileJumper.showDebugLogs": true
+  "fileJumper.ignorePatterns": ["\\/node_modules\\/"]
 }
 ```
 
