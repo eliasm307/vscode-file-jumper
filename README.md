@@ -21,18 +21,22 @@ Try File Jumper today and experience a smoother, more connected file navigation 
 
 Customize the extension's behavior by modifying the following settings in your VSCode `settings.json`.
 
+The extension will automatically detect changes to the configuration and update the file links accordingly.
+
+![Example of extension reacting to configuration updates](images/Code_vnZxRMrpTg.gif)
+
 ## fileJumper.fileTypes
 
 An object that defines the file types in a project that will be evaluated for automatic linking.
 
 The object keys represent the file type names. The values are objects that define the file type's behavior. The following properties are supported:
 
-- `icon`: A icon (e.g., an emoji) displayed as a badge in the file explorer on files related to this file type.
+- `icon`: An icon character (e.g. an emoji) displayed as a badge in the file explorer on files related to this file type.
 - `patterns`: An array of RegEx patterns to match relevant files and capture the topic and/or a prefix. More detail below.
 - `onlyLinkTo`: (**OPTIONAL**) Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types.
 - `onlyLinkFrom`: (**OPTIONAL**) Array of other file types that can link to this file type. By default, all file types can be linked to all other file types.
 
-**NOTE** A Minimum of 2 properties is required to show links between files.
+**NOTE** A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
 
 ### **Patterns and Links**
 
@@ -125,4 +129,4 @@ Contribution guide TBC
 
 # References
 
-- Icon made by Google Fonts, see [Noto Emoji](https://github.com/googlefonts/noto-emoji) ([image](https://github.com/googlefonts/noto-emoji/blob/main/png/512/emoji_u1f998.png))
+- Extension icon made by Google Fonts, see [Noto Emoji](https://github.com/googlefonts/noto-emoji) ([image](https://github.com/googlefonts/noto-emoji/blob/main/png/512/emoji_u1f998.png))
