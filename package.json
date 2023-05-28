@@ -8,7 +8,7 @@
   },
   "publisher": "ecm",
   "description": "A VS Code extension to define links and navigate easily between files in your project.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.78.0"
   },
