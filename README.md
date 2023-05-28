@@ -2,18 +2,14 @@
 
 File Jumper is a handy VSCode extension that simplifies navigation between related files in your workspace. It detects and helps you quickly jump to associated files, based on your own rules, making your workflow more efficient.
 
-![Example usage of File Jumper](images/Code_6CBir18A1i.gif)
+![Example usages of File Jumper from file explorer and tab title](images/Code_OE6e7ystam.gif)
 
 ## Key features:
 
 - 🚀 Dynamically detects related files based on user configuration.
 - 👁️ Visualizes related files with customizable icons.
-- 🖱️ Displays a context menu showing all linked files for easy access.
-- 🔄 Updates file links when workspace folders or configurations change.
-- 🤝 Handles file renames, creations, and deletions seamlessly.
-- 🎨 Flexible and customizable to accommodate different file types and relations.
-- 📝 Supports RegEx patterns for more powerful matching.
-- 📦 Supports mono-repos and multi-root workspaces.
+- 🔄 Updates file links when workspace folders, files, or configurations change.
+- 🎨 Uses customizable RegEx patterns for more powerful matching to accommodate different file types and relations.
 
 Try File Jumper today and experience a smoother, more connected file navigation experience in VSCode! 🚀
 
@@ -24,6 +20,8 @@ Customize the extension's behavior by modifying the following settings in your V
 The extension will automatically detect changes to the configuration and update the file links accordingly.
 
 ![Example of extension reacting to configuration updates](images/Code_vnZxRMrpTg.gif)
+
+---
 
 ## fileJumper.fileTypes
 
@@ -36,7 +34,11 @@ The object keys represent the file type names. The values are objects that defin
 - `onlyLinkTo`: (**OPTIONAL**) Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types.
 - `onlyLinkFrom`: (**OPTIONAL**) Array of other file types that can link to this file type. By default, all file types can be linked to all other file types.
 
-**NOTE** A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
+**NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
+
+**NOTE**: Due to a [limitation with VS Code](https://github.com/microsoft/vscode/issues/80243) settings either need to be defined as local settings for each workspace or in globally in the user settings, not both. This is because VS Code does not allow the user settings to be overridden by workspace settings and instead deep merges workspace settings into the user settings, which might cause unexpected behavior.
+
+If you want to use custom settings for this extension in each workspace, you will need to remove the the user settings.
 
 ### **Patterns and Links**
 
@@ -56,25 +58,27 @@ The extension will automatically link all files of different types that resolve 
   "Test": {
     "icon": "🧪",
     "patterns": [
-      "(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"
+      "(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.(test|spec)\\.ts$"
     ]
   },
   "Source": {
     "icon": "📄",
     "patterns": [
-      "(?<prefix>.+)\\/(src)\\/(?<topic>.+)\\.ts$"
+      "(?<prefix>.+)\\/src\\/(?<topic>.+)\\.ts$"
     ]
   }
 }
 ```
 
+---
+
 ## fileJumper.ignorePatterns
 
 Defines the RegEx patterns of files to ignore when determining file links.
 
-**Default**: `["/node_modules/"]`
+**Default**: `["\\/node_modules\\/"]`
 
-Example configuration:
+### **Example configuration**:
 
 ```json
 "fileJumper.ignorePatterns": [
@@ -85,7 +89,9 @@ Example configuration:
 
 # Usage
 
-To use File Jumper, simply right-click on a file in the file explorer panel or on a file tab and select "Jump to...". You'll be presented with a list of related files, which you can quickly filter and select. The chosen file will open in a new tab.
+To use File Jumper, simply right-click on a file in the file explorer panel or on a file tab which has one of the icons from your configuration (which shows it has links to other files) and select "Jump to...".
+
+You'll be presented with a list of related files, which you can quickly filter and select. The chosen file will open in a new tab.
 
 # Realistic Example - Eslint
 
@@ -120,6 +126,10 @@ Here is an example configuration for the Eslint project (note: the prefix captur
 ```
 
 This configuration and the Eslint project were used to create the demos above.
+
+This creates links between files which are visualised with icons in the file explorer as below (which also makes it easier to identify removed rules without source code or tests):
+
+![Example links for Eslint project](images/Code_R92Q8aQ94C.gif)
 
 # Contributing
 
