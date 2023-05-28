@@ -21,8 +21,6 @@ The extension will automatically detect changes to the configuration and update 
 
 ![Example of extension reacting to configuration updates](images/Code_vnZxRMrpTg.gif)
 
----
-
 ## fileJumper.fileTypes
 
 An object that defines the file types in a project that will be evaluated for automatic linking.
@@ -71,8 +69,6 @@ The extension will automatically link all files of different types that resolve 
   }
 }
 ```
-
----
 
 ## fileJumper.ignorePatterns
 
