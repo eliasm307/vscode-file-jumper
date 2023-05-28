@@ -49,6 +49,8 @@ The extension requires defined RegEx patterns to capture specific named groups f
 - `topic`: This represents the part of the file path that is repeated for related files. For example, a file `src/components/Button.ts`, the topic could be `components/Button` which could be used to match a test file `test/components/Button.test.ts`. The example configuration below shows example file type definitions that can achieve this link.
 - `prefix`: (**OPTIONAL**) This represents the the root path and can be used to differentiate between files with a similar structure but from different root folders (e.g. a mono-repo) e.g. `packages/PackageA/src/components/Button.ts` and `packages/PackageB/test/components/Button.test.ts` would have a link if a prefix capture group is not defined. If your project does not have this structure, you can omit this capture group.
 
+Multiple patterns can be defined and these are evaluated in the given order, where the first match is used. This allows for more complex folder structures and exceptions to rules to be supported. This means more specific patterns should be defined first so they can match their specific cases before more general patterns are evaluated.
+
 The extension will automatically link all files of different types that resolve to the same topic and prefix (if defined). You can customise which files can link to/from other files by using the `onlyLinkTo` and `onlyLinkFrom` properties.
 
 ### **Example configuration**:
@@ -93,9 +95,11 @@ To use File Jumper, simply right-click on a file in the file explorer panel or o
 
 You'll be presented with a list of related files, which you can quickly filter and select. The chosen file will open in a new tab.
 
-# Realistic Example - Eslint
+# Realistic Examples
 
-The [Eslint](https://github.com/eslint/eslint) project has the perfect structure to demonstrate the power of File Jumper. It is very organised with:
+## Eslint
+
+The [Eslint](https://github.com/eslint/eslint) project has the perfect structure to demonstrate the power of File Jumper. It is very organised and consistently named with:
 
 - a `lib` folder containing the source code
 - a `tests` folder containing the tests
@@ -120,8 +124,7 @@ Here is an example configuration for the Eslint project (note: the prefix captur
       "icon": "📃",
       "patterns": ["\\/docs\\/src\\/(?<topic>.+)\\.md$"]
     }
-  },
-  "fileJumper.ignorePatterns": ["\\/node_modules\\/"]
+  }
 }
 ```
 
@@ -129,7 +132,35 @@ This configuration and the Eslint project were used to create the demos above.
 
 This creates links between files which are visualised with icons in the file explorer as below (which also makes it easier to identify removed rules without source code or tests):
 
-![Example links for Eslint project](images/Code_R92Q8aQ94C.gif)
+![Example links for the Eslint project](images/Code_R92Q8aQ94C.gif)
+
+## Rxjs
+
+The [Rxjs](https://github.com/reactivex/rxjs) project is another good example, however in this case there are some naming inconsistencies e.g. there are spec files in `spec/observables/` however the related code for these files are in `src/internal/observable/` (ie the folder goes from a plural to a singular), same issue for the `spec/schedulers/` folder also. However its not an issue and we can still create links between these files by taking advantage of the flexibility of RegEx.
+
+Here is an example configuration for the Rxjs project (note: the prefix capture group isn't required here as the file structure isn't nested):
+
+```json
+{
+  "fileJumper.fileTypes": {
+    "Source Code": {
+      "icon": "💻",
+      "patterns": [
+        "\\/src\\/internal\\/(observable|scheduler)s?\\/(?<topic>.+)\\.ts$",
+        "\\/src\\/internal\\/(?<topic>.+)\\.ts$"
+      ]
+    },
+    "Spec": {
+      "icon": "🧪",
+      "patterns": ["\\/spec\\/(observable|scheduler)s?\\/(?<topic>.+)-spec\\.ts$", "\\/spec\\/(?<topic>.+)-spec\\.ts$"]
+    }
+  }
+}
+```
+
+In this case we need to define multiple patterns, ie one to match the exceptions first then a fall back pattern for the normal case, which links the files as follows:
+
+![Example links for the Rxjs project](images/Code_ueY1udfzzn.gif)
 
 # Contributing
 
