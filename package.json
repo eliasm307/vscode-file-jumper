@@ -1,7 +1,7 @@
 {
   "name": "file-jumper",
   "displayName": "File Jumper",
-  "icon": "images/kangaroo_emoji_u1f998.png",
+  "icon": "images/kangaroo_emoji_u1f998_mirrored.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/eliasm307/vscode-file-jumper.git"
