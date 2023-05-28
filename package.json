@@ -16,7 +16,6 @@
     "dependencies": true,
     "yarn": false
   },
-  "preview": true,
   "categories": [
     "Other"
   ],
@@ -27,9 +26,9 @@
   "scripts": {
     "vscode:package": "echo 'Packaging...' && vsce package",
     "vscode:prepublish": "npm run lint && npm run test && npm run compile",
-    "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --allow-missing-repository --pre-release",
-    "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --allow-missing-repository --pre-release",
-    "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --allow-missing-repository --pre-release",
+    "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --allow-missing-repository",
+    "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --allow-missing-repository",
+    "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --allow-missing-repository",
     "vscode:login": "vsce login ecm",
     "vscode:help": "vsce help",
     "vscode:list-files": "vsce ls",
