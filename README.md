@@ -13,6 +13,10 @@ File Jumper is a handy VSCode extension that simplifies navigation between relat
 
 Try File Jumper today and experience a smoother, more connected file navigation experience in VSCode! 🚀
 
+# Installation
+
+Install the extension from the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=ecm.file-jumper) or by searching for "File Jumper" in the VSCode extensions panel.
+
 # Configuration
 
 Customize the extension's behavior by modifying the following settings in your VSCode `settings.json`.
@@ -52,6 +56,8 @@ Multiple patterns can be defined and these are evaluated in the given order, whe
 The extension will automatically link all files of different types that resolve to the same topic and prefix (if defined). You can customise which files can link to/from other files by using the `onlyLinkTo` and `onlyLinkFrom` properties.
 
 **NOTE**: Path comparisons are case-insensitive.
+
+**NOTE**: For building Regex patterns easily try [RegExr](https://regexr.com/) which has a handy cheat sheet, live evaluation, and lets you test your patterns against multiple strings (paths) at the same time.
 
 ### **Example configuration**:
 
