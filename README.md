@@ -38,7 +38,7 @@ The object keys represent the file type names. The values are objects that defin
 
 **NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
 
-**NOTE**: Due to a [limitation with VS Code](https://github.com/microsoft/vscode/issues/80243) settings either need to be defined as local settings for each workspace or in globally in the user settings, not both. This is because VS Code does not allow the user settings to be overridden by workspace settings and instead deep merges workspace settings into the user settings, which might cause unexpected behavior.
+**NOTE**: Due to a [limitation with VS Code](https://github.com/microsoft/vscode/issues/80243) settings either need to be defined as local settings for each workspace or globally in the user settings for all workspaces, not both. This is because VS Code does not allow the user settings to be overridden by workspace settings and instead deep merges workspace settings into the user settings, which might cause unexpected behavior.
 
 If you want to use custom settings for this extension in each workspace, you will need to remove the the user settings.
 
