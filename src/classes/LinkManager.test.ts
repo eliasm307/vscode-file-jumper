@@ -398,6 +398,53 @@ describe("LinkManager", () => {
         },
       });
     });
+
+    it("limits icons to 1 character", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: {
+          fileTypes: [
+            {
+              name: "Source",
+              icon: "💻💻",
+              patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
+            },
+            {
+              name: "Test",
+              icon: "🧪🧪🧪",
+              patterns: ["\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"],
+            },
+          ],
+          ignorePatterns: ["\\/node_modules\\/"],
+          showDebugLogs: false,
+        },
+        paths: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"],
+      });
+
+      assert.deepStrictEqual(
+        linkManager.getLinkedFilesFromPath("/root/src/classes/Entity.ts"),
+        [
+          {
+            typeName: "Test",
+            icon: "🧪",
+            fullPath: "/root/test/classes/Entity.test.ts",
+          },
+        ],
+        "should only use the first character of the test icon",
+      );
+
+      assert.deepStrictEqual(
+        linkManager.getLinkedFilesFromPath("/root/test/classes/Entity.test.ts"),
+        [
+          {
+            typeName: "Source",
+            icon: "💻",
+            fullPath: "/root/src/classes/Entity.ts",
+          },
+        ],
+        "should only use the first character of the source icon",
+      );
+    });
   });
 
   describe("#reset", () => {

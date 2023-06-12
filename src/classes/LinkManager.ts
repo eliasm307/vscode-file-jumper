@@ -33,12 +33,24 @@ export default class LinkManager {
 
   private config: MainConfig | undefined;
 
+  private formatConfig(config: MainConfig): MainConfig {
+    return {
+      ...config,
+      fileTypes: config.fileTypes.map((fileTypeConfig) => ({
+        ...fileTypeConfig,
+        // limit to 1 icon so VS code decorations dont throw (max is 2 chars)
+        // need to use Array.from to handle special characters like emoji properly (str[0] doesn't work)
+        icon: Array.from(fileTypeConfig.icon)[0],
+      })),
+    };
+  }
+
   private applyConfig(config: MainConfig): void {
     Logger.info("#applyConfig", config);
-    this.config = config;
+    this.config = this.formatConfig(config);
     this.fileTypes.forEach((fileType) => fileType.dispose());
-    this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
-    this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern, "i"));
+    this.fileTypes = this.config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
+    this.ignorePatterns = this.config.ignorePatterns.map((pattern) => new RegExp(pattern, "i"));
   }
 
   /**
