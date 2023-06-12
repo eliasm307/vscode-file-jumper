@@ -95,6 +95,8 @@ export async function activate(context: vscode.ExtensionContext) {
      */
     vscode.workspace.onDidRenameFiles(async (e) => {
       try {
+        Logger.warn("onDidRenameFiles", e);
+
         const oldPaths = e.files.map((file) => file.oldUri.path);
         const newPaths = e.files.map((file) => file.newUri.path);
         linkManager.modifyFilesAndNotify({ removePaths: oldPaths, addPaths: newPaths });
@@ -109,6 +111,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     vscode.workspace.onDidChangeWorkspaceFolders(async (e) => {
       try {
+        Logger.warn("onDidChangeWorkspaceFolders", e);
+
         const removePaths = await getWorkspaceFolderChildPaths(e.removed);
         const addPaths = await getWorkspaceFolderChildPaths(e.added);
         linkManager.modifyFilesAndNotify({ removePaths, addPaths });
@@ -125,6 +129,8 @@ export async function activate(context: vscode.ExtensionContext) {
      */
     vscode.workspace.onDidCreateFiles(async (e) => {
       try {
+        Logger.warn("onDidCreateFiles", e);
+
         linkManager.modifyFilesAndNotify({
           addPaths: e.files.map(uriToPath),
         });
@@ -195,7 +201,15 @@ function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
   const disposable = vscode.commands.registerCommand("fileJumper.navigateCommand", async (uri: vscode.Uri) => {
-    const quickPickItems = linkManager.getLinkedFilesFromPath(uri.path).map((linkedFile) => {
+    Logger.info("navigateCommand called with uri:", uri.path);
+
+    const linkedFilesFromPath = linkManager.getLinkedFilesFromPath(uri.path);
+    const allFilesWithLinks = linkManager.getAllPathsWithOutgoingLinks();
+
+    Logger.info("linkedFilesFromPath", uri.path, linkedFilesFromPath);
+    Logger.info("allFilesWithLinks", allFilesWithLinks);
+
+    const quickPickItems = linkedFilesFromPath.map((linkedFile) => {
       return {
         label: `${linkedFile.icon} ${linkedFile.typeName}`,
         // if this overflows the end of the path is hidden and we want to prioritise the end of the path so we shorten it
@@ -203,6 +217,8 @@ function registerNavigateCommand(linkManager: LinkManager) {
         path: linkedFile.fullPath,
       } satisfies vscode.QuickPickItem & { path: string };
     });
+
+    Logger.info("quickPickItems", uri.path, quickPickItems);
 
     // see https://github.com/microsoft/vscode-extension-samples/blob/main/quickinput-sample/src/extension.ts
     const selectedItem = await vscode.window.showQuickPick(quickPickItems, {

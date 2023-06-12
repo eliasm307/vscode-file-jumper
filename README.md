@@ -28,7 +28,7 @@ An object that defines the file types in a project that will be evaluated for au
 The object keys represent the file type names. The values are objects that define the file type's behavior. The following properties are supported:
 
 - `icon`: An icon character (e.g. an emoji) displayed as a badge in the file explorer on files related to this file type.
-- `patterns`: An array of RegEx patterns to match relevant files and capture the topic and/or a prefix. More detail below.
+- `patterns`: An array of RegEx patterns (case insensitive) to match relevant files and capture the topic and/or a prefix. More detail below.
 - `onlyLinkTo`: (**OPTIONAL**) Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types.
 - `onlyLinkFrom`: (**OPTIONAL**) Array of other file types that can link to this file type. By default, all file types can be linked to all other file types.
 
@@ -50,6 +50,8 @@ The extension requires defined RegEx patterns to capture specific named groups f
 Multiple patterns can be defined and these are evaluated in the given order, where the first match is used. This allows for more complex folder structures and exceptions to rules to be supported. This means more specific patterns should be defined first so they can match their specific cases before more general patterns are evaluated.
 
 The extension will automatically link all files of different types that resolve to the same topic and prefix (if defined). You can customise which files can link to/from other files by using the `onlyLinkTo` and `onlyLinkFrom` properties.
+
+**NOTE**: Path comparisons are case-insensitive.
 
 ### **Example configuration**:
 

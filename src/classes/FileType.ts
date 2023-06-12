@@ -1,4 +1,5 @@
-import type { DecorationData, LinkedFileData } from "../types";
+import type { DecorationData, LinkedFileData, NormalisedPath } from "../types";
+import { normalisePath } from "../utils";
 import type { FileTypeConfig } from "../utils/config";
 import Logger from "./Logger";
 
@@ -25,10 +26,10 @@ export default class FileType {
    * @remark cache not cleared on reset as its not context specific and doesn't affect behaviour
    * @remark `null` means this was executed and no path key found
    */
-  private readonly fullPathToPathKeyCache: Map<string, PathKey | null> = new Map();
+  private readonly fullPathToPathKeyCache: Map<NormalisedPath, PathKey | null> = new Map();
 
   constructor(private readonly config: FileTypeConfig) {
-    this.patterns = config.patterns.map((pattern) => new RegExp(pattern));
+    this.patterns = config.patterns.map((pattern) => new RegExp(pattern, "i"));
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
     this.onlyLinkFromTypeNamesSet = config.onlyLinkFrom && new Set(config.onlyLinkFrom);
 
@@ -54,30 +55,30 @@ export default class FileType {
   }
 
   addPaths(paths: Set<string> | string[]): void {
-    paths.forEach((fullPath) => {
-      const pathKey = this.getPathKeyFromPath(fullPath);
+    paths.forEach((path) => {
+      const pathKey = this.getPathKeyFromPath(normalisePath(path));
       if (!pathKey) {
         return; // not a valid path for this file type
       }
-      Logger.info(`Registering path key "${pathKey}" for file type "${this.name}", from "${fullPath}"`);
+      Logger.info(`Registering path key "${pathKey}" for file type "${this.name}", from "${path}"`);
       const fullPathsSet = this.pathKeyToFullPathsMap.get(pathKey) || new Set();
-      fullPathsSet.add(fullPath);
+      fullPathsSet.add(path);
       this.pathKeyToFullPathsMap.set(pathKey, fullPathsSet);
     });
   }
 
   removePaths(paths: string[]) {
-    paths.forEach((fullPath) => {
-      const pathKey = this.getPathKeyFromPath(fullPath);
+    paths.forEach((path) => {
+      const pathKey = this.getPathKeyFromPath(normalisePath(path));
       if (!pathKey) {
         return;
       }
-      Logger.info(`Removing path key "${pathKey}" for file type "${this.name}", from "${fullPath}"`);
+      Logger.info(`Removing path key "${pathKey}" for file type "${this.name}", from "${path}"`);
       const existingFullPathsSet = this.pathKeyToFullPathsMap.get(pathKey);
       if (!existingFullPathsSet) {
         return;
       }
-      existingFullPathsSet.delete(fullPath);
+      existingFullPathsSet.delete(path);
       if (!existingFullPathsSet.size) {
         this.pathKeyToFullPathsMap.delete(pathKey);
       }
@@ -100,7 +101,8 @@ export default class FileType {
    * and the caching makes a difference
    */
   getPathKeyFromPath(path: string): PathKey | null | undefined {
-    const cachedPathKey = this.fullPathToPathKeyCache.get(path);
+    const normalisedPath = normalisePath(path);
+    const cachedPathKey = this.fullPathToPathKeyCache.get(normalisedPath);
     if (typeof cachedPathKey !== "undefined") {
       return cachedPathKey;
     }
@@ -109,11 +111,11 @@ export default class FileType {
       const pathTopic = regexMatch?.groups?.topic;
       if (pathTopic) {
         const pathKey = this.createPathKey({ topic: pathTopic, prefix: regexMatch?.groups?.prefix });
-        this.fullPathToPathKeyCache.set(path, pathKey);
+        this.fullPathToPathKeyCache.set(normalisedPath, pathKey);
         return pathKey;
       }
     }
-    this.fullPathToPathKeyCache.set(path, null);
+    this.fullPathToPathKeyCache.set(normalisedPath, null);
   }
 
   private createPathKey({ topic, prefix }: { prefix?: string; topic: string }): PathKey {

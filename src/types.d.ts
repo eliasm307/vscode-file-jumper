@@ -21,3 +21,9 @@ export type DecorationData = {
   badgeText: string;
   tooltip: string;
 };
+
+/**
+ * VS Code seems to provide paths with varying cases for the root C directory (e.g. "C:\...", "c:\...")
+ * so we need to make sure to normalise them in some cases to make sure they match
+ */
+export type NormalisedPath = string & { __normalisedPath: never };

@@ -131,6 +131,48 @@ describe("LinkManager", () => {
       });
     });
 
+    it("returns the correct file meta data with all related file decorations and is not case sensitive", () => {
+      linkManager = createInstanceWithDefaultTestContext();
+      const path = "/ROOT/src/classes/Entity.ts";
+      assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [
+        {
+          typeName: "Test",
+          icon: "🧪",
+          fullPath: "/root/test/classes/Entity.test.ts",
+        },
+        {
+          typeName: "Documentation",
+          icon: "📖",
+          fullPath: "/root/docs/classes/Entity.md",
+        },
+        {
+          typeName: "Build Output",
+          icon: "📦",
+          fullPath: "/root/dist/classes/Entity.js",
+        },
+      ]);
+
+      assertDecorationDataForPath({
+        path,
+        expected: {
+          Source: undefined, // no decoration for own file type
+          Test: {
+            badgeText: "🧪",
+            tooltip: "🧪 Test",
+          },
+          Documentation: {
+            badgeText: "📖",
+            tooltip: "📖 Documentation",
+          },
+
+          "Build Output": {
+            badgeText: "📦",
+            tooltip: "📦 Build Output",
+          },
+        },
+      });
+    });
+
     it("returns correct decorations when a path is not linked to all available file types", () => {
       linkManager = createInstanceWithDefaultTestContext();
       const path = "/root/test/classes/Entity2.test.ts";

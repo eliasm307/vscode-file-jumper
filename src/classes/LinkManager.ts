@@ -1,9 +1,10 @@
 import type { PathKey } from "./FileType";
 import FileType from "./FileType";
-import type { DecorationData, LinkedFileData } from "../types";
+import type { DecorationData, LinkedFileData, NormalisedPath } from "../types";
 import type { MainConfig } from "../utils/config";
 import { mainConfigsAreEqual } from "../utils/config";
 import Logger from "./Logger";
+import { normalisePath } from "../utils";
 
 type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => void;
 
@@ -21,10 +22,12 @@ export default class LinkManager {
 
   /**
    * This represents all the relevant paths the link manager is aware of that are of a known type
+   *
+   * @value is the original un-normalised path
    */
-  #pathsWithKnownType: Set<string> = new Set();
+  #pathsWithKnownTypeMap: Map<NormalisedPath, string> = new Map();
 
-  readonly #pathDataCache: Map<string, PathData | null> = new Map();
+  readonly #pathDataCache: Map<NormalisedPath, PathData | null> = new Map();
 
   private onFileLinksUpdatedHandler: OnFileLinksUpdatedHandler | undefined;
 
@@ -35,7 +38,7 @@ export default class LinkManager {
     this.config = config;
     this.fileTypes.forEach((fileType) => fileType.dispose());
     this.fileTypes = config.fileTypes.map((fileTypeConfig) => new FileType(fileTypeConfig));
-    this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern));
+    this.ignorePatterns = config.ignorePatterns.map((pattern) => new RegExp(pattern, "i"));
   }
 
   /**
@@ -74,12 +77,12 @@ export default class LinkManager {
   }
 
   private applyPathAdditions(paths: Set<string> | string[]) {
-    paths.forEach((path) => this.#pathsWithKnownType.add(path));
+    paths.forEach((path) => this.#pathsWithKnownTypeMap.set(normalisePath(path), path));
     this.fileTypes.forEach((fileType) => fileType.addPaths(paths));
   }
 
   private applyPathRemovals(paths: string[]) {
-    paths.forEach((path) => this.#pathsWithKnownType.delete(path));
+    paths.forEach((path) => this.#pathsWithKnownTypeMap.delete(normalisePath(path)));
     this.fileTypes.forEach((fileType) => fileType.removePaths(paths));
   }
 
@@ -133,8 +136,8 @@ export default class LinkManager {
    * @remark This used to be cached however there weren't any significant performance gains
    * so decided to simplify until there is a need for it
    */
-  private getFileInfo(path: string): FileInfo | undefined {
-    if (!this.#pathsWithKnownType.has(path)) {
+  private getFileInfo(path: NormalisedPath): FileInfo | undefined {
+    if (!this.#pathsWithKnownTypeMap.has(path)) {
       return; // we don't know about this path so we can't get any file info
     }
     for (const type of this.fileTypes) {
@@ -148,14 +151,15 @@ export default class LinkManager {
   private getPathData(path: string): PathData | null | undefined {
     // this gets called multiple times for the same file for different file type decorators so caching makes sense
     // also means we minimise delay showing quick pick options
-    const cached = this.#pathDataCache.get(path);
+    const normalisedPath = normalisePath(path);
+    const cached = this.#pathDataCache.get(normalisedPath);
     if (typeof cached !== "undefined") {
       return cached;
     }
 
-    const targetFile = this.getFileInfo(path);
+    const targetFile = this.getFileInfo(normalisedPath);
     if (!targetFile) {
-      this.#pathDataCache.set(path, null);
+      this.#pathDataCache.set(normalisedPath, null);
       return; // file is not of a known type
     }
 
@@ -165,7 +169,7 @@ export default class LinkManager {
       .filter((fileType) => fileType.allowsLinksFrom(targetFile.type));
 
     const metaData: PathData = { file: targetFile, allowedFileTypesForOutgoingLinks };
-    this.#pathDataCache.set(path, metaData);
+    this.#pathDataCache.set(normalisedPath, metaData);
     return metaData;
   }
 
@@ -191,7 +195,7 @@ export default class LinkManager {
 
   getAllPathsWithOutgoingLinks(): string[] {
     const stopTimer = Logger.startTimer("LinkManager#getAllPathsWithOutgoingLinks");
-    const paths = [...this.#pathsWithKnownType].filter((path) => this.getLinkedFilesFromPath(path).length);
+    const paths = [...this.#pathsWithKnownTypeMap.values()].filter((path) => this.getLinkedFilesFromPath(path).length);
     stopTimer();
     return paths;
   }
@@ -200,7 +204,7 @@ export default class LinkManager {
   revertToInitial() {
     this.fileTypes.forEach((fileType) => fileType.dispose());
     this.fileTypes = [];
-    this.#pathsWithKnownType.clear();
+    this.#pathsWithKnownTypeMap.clear();
     this.#pathDataCache.clear();
   }
 
