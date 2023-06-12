@@ -80,7 +80,14 @@ export default class LinkManager {
       const indirectlyAffectedPaths = this.getIndirectlyAffectedPaths([...relevantPathsAdded, ...relevantPathsRemoved]);
       const affectedPaths = [...relevantPathsAdded, ...indirectlyAffectedPaths];
 
-      Logger.info("#renameFilesAndNotify", { removePaths, addPaths, indirectlyAffectedPaths, affectedPaths });
+      Logger.info("#renameFilesAndNotify", {
+        removePaths,
+        relevantPathsRemoved,
+        addPaths,
+        relevantPathsAdded,
+        indirectlyAffectedPaths,
+        affectedPaths,
+      });
 
       this.notifyFileLinksUpdated(affectedPaths);
     } finally {
