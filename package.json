@@ -10,7 +10,7 @@
   "description": "A VS Code extension to define links and navigate easily between files in your project.",
   "version": "1.1.1",
   "engines": {
-    "vscode": "^1.78.0"
+    "vscode": "^1.79.0"
   },
   "vsce": {
     "dependencies": true,
