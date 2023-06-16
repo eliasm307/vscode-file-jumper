@@ -38,7 +38,6 @@ describe("LinkManager", () => {
       },
     ],
     ignorePatterns: ["\\/node_modules\\/"],
-    showDebugLogs: false,
   };
 
   function createInstanceWithDefaultTestContext() {
@@ -336,7 +335,6 @@ describe("LinkManager", () => {
             },
           ],
           ignorePatterns: ["\\/node_modules\\/"],
-          showDebugLogs: false,
         },
         paths: [
           "/root/src/classes/Entity.ts",
@@ -414,7 +412,6 @@ describe("LinkManager", () => {
             },
           ],
           ignorePatterns: ["\\/node_modules\\/"],
-          showDebugLogs: false,
         },
         paths: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"],
       });
@@ -900,7 +897,6 @@ describe("LinkManager", () => {
             },
           ],
           ignorePatterns: [], // includes node_modules
-          showDebugLogs: false,
         },
         paths,
       });
@@ -1053,7 +1049,6 @@ describe("LinkManager", () => {
         },
       ],
       ignorePatterns: ["\\/node_modules\\/"],
-      showDebugLogs: false,
     };
 
     type PathToDecorationsMap = Record<string, DecorationData[] | null>;
@@ -1148,7 +1143,6 @@ describe("LinkManager", () => {
           },
         ],
         ignorePatterns: [],
-        showDebugLogs: false,
       },
       paths: [
         // app 1 files

@@ -23,8 +23,8 @@ export type FileTypeConfig = {
 export type MainConfig = {
   fileTypes: FileTypeConfig[];
   ignorePatterns: string[];
-  showDebugLogs: boolean;
-  autoJump: boolean;
+  showDebugLogs?: boolean;
+  autoJump?: boolean;
 };
 
 /**
