@@ -738,7 +738,7 @@ describe("LinkManager", () => {
       });
     });
 
-    it.only("can handle folder removal and notifies of changed paths", () => {
+    it("can handle folder removal and notifies of changed paths", () => {
       linkManager = new LinkManager();
       linkManager.setContext({
         config: TEST_MAIN_CONFIG,
