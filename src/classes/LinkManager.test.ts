@@ -601,7 +601,7 @@ describe("LinkManager", () => {
           },
           pathsEmitted: [
             "/root/src/classes/Entity.ts",
-            // "/root/dist/classes/Entity.js",
+            "/root/dist/classes/Entity.js",
             "/root/test/classes/Entity.test.ts",
             "/root/docs/classes/Entity.md",
           ],
@@ -872,6 +872,7 @@ describe("LinkManager", () => {
       };
 
       assertFileLinks(initialFileLinks, "initial linked files found");
+      assert.isFalse(linkManager.autoJumpEnabled, "autoJumpEnabled is false");
 
       const linksUpdatedHandler = vitest.fn<[string[] | null]>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
@@ -897,6 +898,7 @@ describe("LinkManager", () => {
             },
           ],
           ignorePatterns: [], // includes node_modules
+          autoJump: true,
         },
         paths,
       });
@@ -966,6 +968,7 @@ describe("LinkManager", () => {
         [[null]],
         "linksUpdatedHandler called to update all paths after context change",
       );
+      assert.isTrue(linkManager.autoJumpEnabled, "autoJumpEnabled is true");
       linksUpdatedHandler.mockClear();
 
       // Revert context change
@@ -980,6 +983,7 @@ describe("LinkManager", () => {
         [[null]],
         "linksUpdatedHandler called to update all paths after context reverted",
       );
+      assert.isFalse(linkManager.autoJumpEnabled, "autoJumpEnabled is false");
     });
 
     it("does nothing if context is unchanged", async () => {
