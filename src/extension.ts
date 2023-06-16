@@ -1,19 +1,22 @@
 import * as vscode from "vscode";
-import type { MainConfig } from "./utils/config";
-import { getIssuesWithMainConfig } from "./utils/config";
+
 import LinkManager from "./classes/LinkManager";
+import Logger, { EXTENSION_KEY } from "./classes/Logger";
+import { shortenPath } from "./utils";
+import { getIssuesWithMainConfig } from "./utils/config";
+import DecorationProviderManager from "./vscode/DecorationProviderManager";
 import {
   createUri,
   getAllWorkspacePaths,
   getMainConfig,
-  getWorkspaceFolderChildPaths,
+  getWorkspaceFoldersChildPaths,
   getWorkspaceRelativePath,
   openFileInNewTab,
+  resolvePathsFromUris,
   uriToPath,
 } from "./vscode/utils";
-import Logger, { EXTENSION_KEY } from "./classes/Logger";
-import { shortenPath } from "./utils";
-import DecorationProviderManager from "./vscode/DecorationProviderManager";
+
+import type { MainConfig } from "./utils/config";
 
 async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
   for (const issue of issues) {
@@ -62,9 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   linkManager.setOnFileLinksUpdatedHandler((affectedPaths) => {
     // need to use FS paths for context key so they work with menu items conditions (they dont have an option to use the normalised path)
-    const fsPathsWithLinks = linkManager
-      .getAllPathsWithOutgoingLinks()
-      .map((normalisedPath) => createUri(normalisedPath).fsPath);
+    const fsPathsWithLinks = linkManager.getAllPathsWithOutgoingLinks().map((normalisedPath) => createUri(normalisedPath).fsPath);
 
     const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "fileJumper.filePathsWithLinks";
     // this is used to show the context menu item conditionally on files we know have links
@@ -97,9 +98,13 @@ export async function activate(context: vscode.ExtensionContext) {
       try {
         Logger.warn("onDidRenameFiles", e);
 
-        const oldPaths = e.files.map((file) => file.oldUri.path);
-        const newPaths = e.files.map((file) => file.newUri.path);
-        linkManager.modifyFilesAndNotify({ removePaths: oldPaths, addPaths: newPaths });
+        const removePaths = e.files.map((file) => uriToPath(file.oldUri));
+        const addedUris = e.files.map((file) => file.newUri);
+        linkManager.modifyFilesAndNotify({
+          // could be folders deleted here, but cant resolve them to paths because they dont exist anymore
+          removePaths,
+          addPaths: await resolvePathsFromUris(addedUris),
+        });
 
         // show user error before throwing it internally
       } catch (error) {
@@ -113,8 +118,8 @@ export async function activate(context: vscode.ExtensionContext) {
       try {
         Logger.warn("onDidChangeWorkspaceFolders", e);
 
-        const removePaths = await getWorkspaceFolderChildPaths(e.removed);
-        const addPaths = await getWorkspaceFolderChildPaths(e.added);
+        const removePaths = await getWorkspaceFoldersChildPaths(e.removed);
+        const addPaths = await getWorkspaceFoldersChildPaths(e.added);
         linkManager.modifyFilesAndNotify({ removePaths, addPaths });
 
         // show user error before throwing it internally
@@ -129,10 +134,10 @@ export async function activate(context: vscode.ExtensionContext) {
      */
     vscode.workspace.onDidCreateFiles(async (e) => {
       try {
-        Logger.warn("onDidCreateFiles", e);
+        Logger.info("onDidCreateFiles", e);
 
         linkManager.modifyFilesAndNotify({
-          addPaths: e.files.map(uriToPath),
+          addPaths: await resolvePathsFromUris(e.files),
         });
 
         // show user error before throwing it internally
@@ -151,6 +156,7 @@ export async function activate(context: vscode.ExtensionContext) {
       try {
         Logger.warn("onDidDeleteFiles", e);
         linkManager.modifyFilesAndNotify({
+          // could be folders deleted here, but cant resolve them to paths because they dont exist anymore
           removePaths: e.files.map(uriToPath),
         });
 

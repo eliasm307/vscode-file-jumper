@@ -525,8 +525,8 @@ describe("LinkManager", () => {
       };
       expect: {
         links: FileLinksExpectationMap;
-        pathsEmitted: string[];
-        pathsEmittedAfterUndo: string[];
+        pathsEmitted: string[] | null;
+        pathsEmittedAfterUndo: string[] | null;
       };
     }): void {
       linkManager = new LinkManager();
@@ -565,7 +565,7 @@ describe("LinkManager", () => {
       );
     }
 
-    it("can add multiple paths and notify", () => {
+    it("can add multiple paths and notifies of changed paths", () => {
       assertFileModification({
         initial: {
           paths: [
@@ -613,7 +613,7 @@ describe("LinkManager", () => {
       });
     });
 
-    it("can remove paths and notify", () => {
+    it("can remove paths and notifies of changed paths", () => {
       assertFileModification({
         initial: {
           paths: [
@@ -671,7 +671,7 @@ describe("LinkManager", () => {
       });
     });
 
-    it("can rename paths from having no links to some links and notify", () => {
+    it("can rename paths from having no links to some links and notifies of changed paths", () => {
       assertFileModification({
         initial: {
           paths: ["/root/src/classes/Entity2.ts", "/root/test/classes/Entity.test.ts"],
@@ -692,7 +692,7 @@ describe("LinkManager", () => {
       });
     });
 
-    it("can rename paths from having some links to no links and notify", () => {
+    it("can rename paths from having some links to no links and notifies of changed paths", () => {
       assertFileModification({
         initial: {
           paths: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"],
@@ -713,7 +713,7 @@ describe("LinkManager", () => {
       });
     });
 
-    it("can rename paths to change links and notify", () => {
+    it("can rename paths to change links and notifies of changed paths", () => {
       assertFileModification({
         initial: {
           paths: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/test/classes/Entity2.test.ts"],
@@ -739,6 +739,53 @@ describe("LinkManager", () => {
           ],
         },
       });
+    });
+
+    it.only("can handle folder removal and notifies of changed paths", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: TEST_MAIN_CONFIG,
+        paths: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"],
+      });
+
+      assertFileLinks(
+        {
+          "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
+          "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+        },
+        "initial linked files",
+      );
+
+      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
+      linkManager.modifyFilesAndNotify({ removePaths: ["/root/src/classes"] }); // will delete source file
+
+      assertFileLinks({}, "linked files after modifications");
+
+      assert.deepStrictEqual(
+        linksUpdatedHandler.mock.calls,
+        [[["/root/test/classes/Entity.test.ts"]]],
+        "linksUpdatedHandler called with correct paths",
+      );
+      linksUpdatedHandler.mockClear();
+
+      // re-add file
+      linkManager.modifyFilesAndNotify({ addPaths: ["/root/src/classes/Entity.ts"] });
+
+      assertFileLinks(
+        {
+          "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
+          "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+        },
+        "linked files after re-adding file",
+      );
+
+      // this is to check the test file was not deleted and can still be linked if the source file is re-added
+      assert.deepStrictEqual(
+        linksUpdatedHandler.mock.calls,
+        [[["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"]]],
+        "linksUpdatedHandler called with correct paths",
+      );
     });
 
     it("does nothing if files with unknown types are added, removed, or renamed", () => {

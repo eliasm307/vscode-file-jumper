@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
-import type { MainConfig } from "../utils/config";
+
 import { formatRawFileTypesConfig, formatRawIgnorePatternsConfig } from "../utils/config";
+
+import type { MainConfig } from "../utils/config";
 
 export async function openFileInNewTab(path: string) {
   const doc = await vscode.workspace.openTextDocument(createUri(path));
@@ -19,7 +21,7 @@ export function uriToPath(uri: vscode.Uri) {
   return uri.path;
 }
 
-export async function getWorkspaceFolderChildPaths(folders: readonly vscode.WorkspaceFolder[]) {
+export async function getWorkspaceFoldersChildPaths(folders: readonly vscode.WorkspaceFolder[]) {
   const paths: string[] = [];
   for (const removedFolder of folders) {
     const removedUris = await vscode.workspace.findFiles(new vscode.RelativePattern(removedFolder.uri, "**"));
@@ -41,4 +43,21 @@ export function getMainConfig(): MainConfig {
 export async function getAllWorkspacePaths(): Promise<string[]> {
   const allUris = (await vscode.workspace.findFiles("**")) || [];
   return allUris.map((uri) => uri.path);
+}
+
+/**
+ * For modification events a folder is given as a single uri and this function recursively resolves
+ * all the child paths of folders to produce the actual list of paths that were affected
+ */
+export async function resolvePathsFromUris(uris: readonly vscode.Uri[]): Promise<string[]> {
+  const resolvedUris = await Promise.all(
+    uris.map(async (uri) => {
+      const stat = await vscode.workspace.fs.stat(uri);
+      if (stat.type === vscode.FileType.Directory) {
+        return vscode.workspace.findFiles(new vscode.RelativePattern(uri, "**"));
+      }
+      return uri;
+    }),
+  );
+  return resolvedUris.flat().map(uriToPath);
 }
