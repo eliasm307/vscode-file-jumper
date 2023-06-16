@@ -24,6 +24,7 @@ export type MainConfig = {
   fileTypes: FileTypeConfig[];
   ignorePatterns: string[];
   showDebugLogs: boolean;
+  autoJump: boolean;
 };
 
 /**

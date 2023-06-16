@@ -34,6 +34,10 @@ export default class LinkManager {
 
   private onFileLinksUpdatedHandler: OnFileLinksUpdatedHandler | undefined;
 
+  get autoJumpEnabled(): boolean {
+    return !!this.config?.autoJump;
+  }
+
   getAllPathsWithOutgoingLinks(): string[] {
     const stopTimer = Logger.startTimer("LinkManager#getAllPathsWithOutgoingLinks");
     const paths = [...this.#pathsWithKnownTypeMap.values()].filter((path) => this.getLinkedFilesFromPath(path).length);

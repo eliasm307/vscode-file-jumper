@@ -137,6 +137,12 @@
           },
           "additionalProperties": false
         },
+        "fileJumper.autoJump": {
+          "description": "Whether to automatically jump to the file when there is only one match",
+          "scope": "window",
+          "type": "boolean",
+          "default": true
+        },
         "fileJumper.ignorePatterns": {
           "description": "Defines the RegEx patterns of files to ignore when determining file links",
           "scope": "window",

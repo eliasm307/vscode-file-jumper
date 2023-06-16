@@ -4,7 +4,7 @@ File Jumper is a handy VSCode extension that simplifies navigation between relat
 
 ![Example usages of File Jumper from file explorer and tab title](images/Code_OE6e7ystam.gif)
 
-## Key features:
+## Key features
 
 - 🚀 Dynamically detects related files based on user configuration.
 - 👁️ Visualizes related files with customizable icons.
@@ -93,6 +93,12 @@ Defines the RegEx patterns of files to ignore when determining file links.
 ]
 ```
 
+## fileJumper.autoJump
+
+Defines whether the extension should automatically jump to the related file when only one file is found.
+
+**Default**: `true`
+
 # Usage
 
 To use File Jumper, simply right-click on a file in the file explorer panel or on a file tab which has one of the icons from your configuration (which shows it has links to other files) and select "Jump to...".
@@ -149,10 +155,7 @@ Here is an example configuration for the Rxjs project (note: the prefix capture 
   "fileJumper.fileTypes": {
     "Source Code": {
       "icon": "💻",
-      "patterns": [
-        "\\/src\\/internal\\/(observable|scheduler)s?\\/(?<topic>.+)\\.ts$",
-        "\\/src\\/internal\\/(?<topic>.+)\\.ts$"
-      ]
+      "patterns": ["\\/src\\/internal\\/(observable|scheduler)s?\\/(?<topic>.+)\\.ts$", "\\/src\\/internal\\/(?<topic>.+)\\.ts$"]
     },
     "Spec": {
       "icon": "🧪",
