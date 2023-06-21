@@ -7,7 +7,7 @@ import Logger from "./Logger";
 import type { DecorationData, LinkedFileData, NormalisedPath } from "../types";
 import type { MainConfig } from "../utils/config";
 
-type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => void;
+type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => Promise<void>;
 
 type FileInfo = { pathKey: PathKey; type: FileType };
 
@@ -242,7 +242,7 @@ export default class LinkManager {
     if (affectedPaths?.length) {
       affectedPaths = [...new Set(affectedPaths)]; // remove duplicates
     }
-    this.onFileLinksUpdatedHandler?.(affectedPaths);
+    void this.onFileLinksUpdatedHandler?.(affectedPaths);
   }
 
   /**

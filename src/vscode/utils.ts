@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { formatRawFileTypesConfig, formatRawIgnorePatternsConfig } from "../utils/config";
 
 import type { MainConfig } from "../utils/config";
+import Logger, { EXTENSION_KEY } from "../classes/Logger";
 
 export async function openFileInNewTab(path: string) {
   const doc = await vscode.workspace.openTextDocument(createUri(path));
@@ -61,4 +62,11 @@ export async function resolvePathsFromUris(uris: readonly vscode.Uri[]): Promise
     }),
   );
   return resolvedUris.flat().map(uriToPath);
+}
+
+export async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
+  for (const issue of issues) {
+    Logger.info(`Configuration issue: ${issue}`);
+    await vscode.window.showErrorMessage(`${EXTENSION_KEY} Configuration issue: ${issue}`);
+  }
 }

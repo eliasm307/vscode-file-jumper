@@ -3,17 +3,11 @@ import LinkManager from "./classes/LinkManager";
 import Logger, { EXTENSION_KEY } from "./classes/Logger";
 import { getIssuesWithMainConfig } from "./utils/config";
 import DecorationProviderManager from "./vscode/DecorationProviderManager";
-import { createUri, getAllWorkspacePaths, getMainConfig } from "./vscode/utils";
+import { createUri, getAllWorkspacePaths, getMainConfig, logAndShowIssuesWithConfig } from "./vscode/utils";
 import type { MainConfig } from "./utils/config";
 import registerNavigateCommand from "./vscode/registerNavigateCommand";
 import registerFileSystemWatcher from "./vscode/registerFileSystemWatcher";
-
-async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
-  for (const issue of issues) {
-    Logger.info(`Configuration issue: ${issue}`);
-    await vscode.window.showErrorMessage(`${EXTENSION_KEY} Configuration issue: ${issue}`);
-  }
-}
+import registerConfigurationWatcher from "./vscode/registerConfigurationWatcher";
 
 export async function activate(context: vscode.ExtensionContext) {
   let mainConfig: MainConfig;
@@ -53,13 +47,13 @@ export async function activate(context: vscode.ExtensionContext) {
     getDecorationData: (config) => linkManager.getFileTypeDecoratorData(config),
   });
 
-  linkManager.setOnFileLinksUpdatedHandler((affectedPaths) => {
+  linkManager.setOnFileLinksUpdatedHandler(async (affectedPaths) => {
     // need to use FS paths for context key so they work with menu items conditions (they dont have an option to use the normalised path)
     const fsPathsWithLinks = linkManager.getAllPathsWithOutgoingLinks().map((normalisedPath) => createUri(normalisedPath).fsPath);
 
     const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "fileJumper.filePathsWithLinks";
     // this is used to show the context menu item conditionally on files we know have links
-    void vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
+    await vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
 
     // notify decorators of changes
     Logger.info("onFileLinksUpdated handler called with affectedPaths:", affectedPaths);
@@ -82,37 +76,7 @@ export async function activate(context: vscode.ExtensionContext) {
     { dispose: () => decorationProviderManager.dispose() },
     registerNavigateCommand(linkManager),
     registerFileSystemWatcher(linkManager),
-    vscode.workspace.onDidChangeConfiguration(async (e) => {
-      try {
-        const newMainConfig = getMainConfig();
-
-        Logger.info("onDidChangeConfiguration", "newMainConfig", e, {
-          newMainConfig,
-        });
-
-        const newConfigIssues = getIssuesWithMainConfig(newMainConfig);
-        if (newConfigIssues.length) {
-          await logAndShowIssuesWithConfig(newConfigIssues);
-          Logger.info(`config change not applied due to config issues: [ ${newConfigIssues.join(", ")} ]`);
-          return;
-        }
-
-        linkManager.setContext({
-          config: newMainConfig,
-          paths: await getAllWorkspacePaths(),
-        });
-
-        const newFileTypeNames = newMainConfig.fileTypes.map((fileType) => fileType.name);
-        decorationProviderManager.setFileTypeNames(newFileTypeNames);
-
-        // show the user error before throwing it internally
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        Logger.error("onDidChangeConfiguration", message, error);
-        await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling configuration change: ${message}`);
-        throw error;
-      }
-    }),
+    registerConfigurationWatcher({ linkManager, decorationProviderManager }),
   );
 
   Logger.info("🚀 Extension activated");

@@ -4,7 +4,7 @@ import Logger, { EXTENSION_KEY } from "../classes/Logger";
 import { uriToPath, resolvePathsFromUris, getWorkspaceFoldersChildPaths } from "./utils";
 
 export default function registerFileWatcher(linkManager: LinkManager): vscode.Disposable {
-  const subscriptions: vscode.Disposable[] = [
+  return vscode.Disposable.from(
     /**
      * @remark When renaming a folder with children only one event is fired.
      */
@@ -80,9 +80,5 @@ export default function registerFileWatcher(linkManager: LinkManager): vscode.Di
         throw error;
       }
     }),
-  ];
-
-  return {
-    dispose: () => subscriptions.forEach((subscription) => subscription.dispose()),
-  };
+  );
 }
