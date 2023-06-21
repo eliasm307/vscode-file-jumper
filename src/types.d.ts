@@ -27,3 +27,4 @@ export type DecorationData = {
  * so we need to make sure to normalise them in some cases to make sure they match
  */
 export type NormalisedPath = string & { __normalisedPath: never };
+
