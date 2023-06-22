@@ -114,13 +114,16 @@ The option format is an object where the keys are glob patterns to ignore and th
 ```json
 {
   "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.hg/store/**": true,
     "**/node_modules/**": true,
     "**/dist/**": true,
-    "**/.next/**": true,
     "**/out/**": true,
-    "**/.yarn/**": true,
+    "**/build/**": true,
     "**/coverage/**": true,
-    "**/build/**": true
+    "**/.next/**": true,
+    "**/.yarn/**": true
   }
 }
 ```
