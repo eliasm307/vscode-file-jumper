@@ -14,4 +14,10 @@ module.exports = {
     "import/no-unresolved": ["error", { ignore: ["vscode"] }],
     "@typescript-eslint/no-unsafe-return": "off",
   },
+  settings: {
+    ...ecmConfig.settings,
+    "functional-core": {
+      pureModules: ".*",
+    },
+  },
 };

@@ -60,6 +60,18 @@
     }
   },
   "contributes": {
+    "configurationDefaults": {
+      "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/.git/**": true,
+        "**/dist/**": true,
+        "**/.next/**": true,
+        "**/out/**": true,
+        "**/.yarn/**": true,
+        "**/coverage/**": true,
+        "**/build/**": true
+      }
+    },
     "commands": [
       {
         "command": "fileJumper.navigateCommand",

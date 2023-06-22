@@ -99,6 +99,29 @@ Defines whether the extension should automatically jump to the related file when
 
 **Default**: `true`
 
+## files.watcherExclude
+
+For handling file system changes, the extension uses the VSCode file watcher to watch files in a workspace, however this can be resource intensive if there are a lot of files.
+
+This setting defines the files and folders to exclude from the file watcher as an object where the keys are glob patterns to ignore and the keys are booleans defining whether to ignore the patterns.
+
+**Default**:
+
+```json
+{
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true,
+    "**/out/**": true,
+    "**/.yarn/**": true,
+    "**/coverage/**": true,
+    "**/build/**": true
+  }
+}
+```
+
 # Usage
 
 To use File Jumper, simply right-click on a file in the file explorer panel or on a file tab which has one of the icons from your configuration (which shows it has links to other files) and select "Jump to...".
