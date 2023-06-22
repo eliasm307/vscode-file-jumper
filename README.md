@@ -103,17 +103,18 @@ Defines whether the extension should automatically jump to the related file when
 
 For handling file system changes, the extension uses the VSCode file watcher to watch files in a workspace, however this can be resource intensive if there are a lot of files.
 
-This setting defines the files and folders to exclude from the file watcher, to improve performance. Note, this is a native VS Code setting and is not specific to this extension.
+This setting defines the files and folders to exclude from the file watcher, to improve performance. Note, this is a native VS Code setting and is not specific to this extension. See the defaults for this option in the [VS Code Default Config](https://code.visualstudio.com/docs/getstarted/settings#_default-settings).
 
 The option format is an object where the keys are glob patterns to ignore and the keys are booleans defining whether to ignore the patterns.
 
 **Default**:
 
+<!-- START AUTO-GENERATED: files.watcherExclude default code block -->
+
 ```json
 {
   "files.watcherExclude": {
     "**/node_modules/**": true,
-    "**/.git/**": true,
     "**/dist/**": true,
     "**/.next/**": true,
     "**/out/**": true,
@@ -123,6 +124,8 @@ The option format is an object where the keys are glob patterns to ignore and th
   }
 }
 ```
+
+<!-- END AUTO-GENERATED: files.watcherExclude default code block -->
 
 # Usage
 
@@ -180,11 +183,17 @@ Here is an example configuration for the Rxjs project (note: the prefix capture 
   "fileJumper.fileTypes": {
     "Source Code": {
       "icon": "💻",
-      "patterns": ["\\/src\\/internal\\/(observable|scheduler)s?\\/(?<topic>.+)\\.ts$", "\\/src\\/internal\\/(?<topic>.+)\\.ts$"]
+      "patterns": [
+        "\\/src\\/internal\\/(observable|scheduler)s?\\/(?<topic>.+)\\.ts$",
+        "\\/src\\/internal\\/(?<topic>.+)\\.ts$"
+      ]
     },
     "Spec": {
       "icon": "🧪",
-      "patterns": ["\\/spec\\/(observable|scheduler)s?\\/(?<topic>.+)-spec\\.ts$", "\\/spec\\/(?<topic>.+)-spec\\.ts$"]
+      "patterns": [
+        "\\/spec\\/(observable|scheduler)s?\\/(?<topic>.+)-spec\\.ts$",
+        "\\/spec\\/(?<topic>.+)-spec\\.ts$"
+      ]
     }
   }
 }

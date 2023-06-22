@@ -2,10 +2,12 @@
 .vscode-test/**
 src/**
 **/test/**
+**/scripts/**
 .gitignore
 .yarnrc
 vsc-extension-quickstart.md
 **/tsconfig.json
+**/tsconfig.build.json
 **/.eslintrc.json
 **/.eslintrc.js
 **/*.map
@@ -21,3 +23,4 @@ coverage/**
 .vitest/**
 vite.config.js
 README_TEMPLATE.md
+CHANGELOG_TBC.md
