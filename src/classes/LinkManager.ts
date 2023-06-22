@@ -261,7 +261,9 @@ export default class LinkManager {
     return paths.flatMap((path) => {
       const mightHaveBeenAFolder = !path.split("/").at(-1)?.includes(".");
       if (mightHaveBeenAFolder) {
-        const folderChildPaths = [...this.#pathsWithKnownTypeMap.values()].filter((knownFilePath) => knownFilePath.startsWith(path));
+        const folderChildPaths = [...this.#pathsWithKnownTypeMap.values()].filter((knownFilePath) =>
+          knownFilePath.startsWith(`${path}/`),
+        );
         Logger.info("#applyPathRemovals", { folderPath: path, folderChildPath: folderChildPaths });
         return folderChildPaths;
       }

@@ -785,6 +785,29 @@ describe("LinkManager", () => {
       );
     });
 
+    it("does nothing when deleted folder partially matches an existing folder", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: TEST_MAIN_CONFIG,
+        paths: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"],
+      });
+
+      const INITIAL_FILE_LINKS: FileLinksExpectationMap = {
+        "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
+        "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+      };
+
+      assertFileLinks(INITIAL_FILE_LINKS, "initial linked files");
+
+      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
+      linkManager.modifyFilesAndNotify({ removePaths: ["/root/src/class"] }); // will delete source file
+
+      assertFileLinks(INITIAL_FILE_LINKS, "linked files not changed");
+
+      assert.deepStrictEqual(linksUpdatedHandler.mock.calls, [], "linksUpdatedHandler not called");
+    });
+
     it("does nothing if files with unknown types are added, removed, or renamed", () => {
       linkManager = new LinkManager();
       linkManager.setContext({
