@@ -44,7 +44,11 @@ export default class FileType {
       Logger.info(`Adding path key "${pathKey}" for file type "${this.name}", from "${path}"`);
       const fullPathsSet = this.pathKeyToFullPathsMap.get(pathKey) || new Set();
       fullPathsSet.add(path);
-      Logger.info(`Files for path key "${pathKey}" for file type "${this.name}": ${[...fullPathsSet].join(", ")}`);
+      Logger.info(
+        `Files for path key "${pathKey}" for file type "${this.name}": ${[...fullPathsSet].join(
+          ", ",
+        )}`,
+      );
       this.pathKeyToFullPathsMap.set(pathKey, fullPathsSet);
     });
   }
@@ -87,17 +91,23 @@ export default class FileType {
    * and the caching makes a difference
    */
   getPathKeyFromPath(path: string): PathKey | null | undefined {
+    Logger.count("FileType#getPathKeyFromPath CALLED");
     const normalisedPath = normalisePath(path);
     const cachedPathKey = this.fullPathToPathKeyCache.get(normalisedPath);
     if (typeof cachedPathKey !== "undefined") {
+      Logger.count("FileType#getPathKeyFromPath CACHE HIT");
       return cachedPathKey;
     }
+    Logger.count("FileType#getPathKeyFromPath CACHE MISS");
 
     for (const regex of this.patterns) {
       const regexMatch = path.match(regex);
       const pathTopic = regexMatch?.groups?.topic;
       if (pathTopic) {
-        const pathKey = this.createPathKey({ topic: pathTopic, prefix: regexMatch?.groups?.prefix });
+        const pathKey = this.createPathKey({
+          topic: pathTopic,
+          prefix: regexMatch?.groups?.prefix,
+        });
         this.fullPathToPathKeyCache.set(normalisedPath, pathKey);
         return pathKey;
       }
@@ -108,8 +118,7 @@ export default class FileType {
   }
 
   /**
-   * @remark this was cached initially, assuming regex could have performance cost depending on how complex it was
-   * but there weren't significant observed performance gains so decided to simplify until it actually becomes a problem
+   * This gets called a lot but the results are not cached at this level but instead at the LinkManager level
    */
   matches(path: string): boolean {
     return this.patterns.some((regex) => regex.test(path));
@@ -129,7 +138,11 @@ export default class FileType {
       }
 
       existingFullPathsSet.delete(path);
-      Logger.info(`Files for path key "${pathKey}" for file type "${this.name}": ${[...existingFullPathsSet].join(", ")}`);
+      Logger.info(
+        `Files for path key "${pathKey}" for file type "${this.name}": ${[
+          ...existingFullPathsSet,
+        ].join(", ")}`,
+      );
       if (!existingFullPathsSet.size) {
         this.pathKeyToFullPathsMap.delete(pathKey);
       }

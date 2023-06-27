@@ -271,7 +271,7 @@ describe("LinkManager", () => {
     });
 
     function assertPathHasNoLinksOrDecoration(path: string): void {
-      assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), []);
+      assert.deepStrictEqual(linkManager.getLinkedFilesFromPath(path), [], "has no linked files");
 
       assertDecorationDataForPath({
         path,
@@ -325,12 +325,19 @@ describe("LinkManager", () => {
             {
               name: "Test",
               icon: "🧪",
-              patterns: ["\\/test\\/(?<topic>.+)\\.test\\.ts$", "\\/test\\/(?<topic>.+)\\.spec\\.ts$"],
+              patterns: [
+                "\\/test\\/(?<topic>.+)\\.test\\.ts$",
+                "\\/test\\/(?<topic>.+)\\.spec\\.ts$",
+              ],
             },
             {
               name: "Build Output",
               icon: "📦",
-              patterns: ["\\/dist\\/(?<topic>.+)\\.map\\.js$", "\\/dist\\/(?<topic>.+)\\.json$", "\\/dist\\/(?<topic>.+)\\.js$"],
+              patterns: [
+                "\\/dist\\/(?<topic>.+)\\.map\\.js$",
+                "\\/dist\\/(?<topic>.+)\\.json$",
+                "\\/dist\\/(?<topic>.+)\\.js$",
+              ],
               onlyLinkFrom: ["Source"],
             },
           ],
@@ -458,7 +465,10 @@ describe("LinkManager", () => {
 
       const sourcePath = "/root/src/classes/Entity.ts";
 
-      assert.isTrue(linkManager.getLinkedFilesFromPath(sourcePath).length > 0, "Files related to Source file should be found");
+      assert.isTrue(
+        linkManager.getLinkedFilesFromPath(sourcePath).length > 0,
+        "Files related to Source file should be found",
+      );
 
       linkManager.revertToInitial();
 
@@ -494,7 +504,11 @@ describe("LinkManager", () => {
 
       assert.deepStrictEqual(
         linkManager.getAllPathsWithOutgoingLinks(),
-        ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md"],
+        [
+          "/root/src/classes/Entity.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/docs/classes/Entity.md",
+        ],
         "correct files found",
       );
     });
@@ -504,7 +518,9 @@ describe("LinkManager", () => {
 
   function assertFileLinks(expected: FileLinksExpectationMap, message: string) {
     const actual = Object.fromEntries(
-      linkManager.getAllPathsWithOutgoingLinks().map((path) => [path, linkManager.getLinkedFilesFromPath(path)]),
+      linkManager
+        .getAllPathsWithOutgoingLinks()
+        .map((path) => [path, linkManager.getLinkedFilesFromPath(path)]),
     );
 
     assert.deepStrictEqual(actual, expected, message);
@@ -526,13 +542,22 @@ describe("LinkManager", () => {
         pathsEmittedAfterUndo: string[] | null;
       };
     }): void {
+      const mainConfig = TEST_MAIN_CONFIG;
       linkManager = new LinkManager();
       linkManager.setContext({
-        config: TEST_MAIN_CONFIG,
+        config: mainConfig,
         paths: config.initial.paths,
       });
 
       assertFileLinks(config.initial.links, "initial linked files");
+
+      // when a file is added VS Code will get the decorations for the new files before the file watcher
+      // has notified us of the new file, so doing the same here to simulate that as this caused bugs previously due to caching
+      config.fileModifications.addPaths?.forEach((path) => {
+        mainConfig.fileTypes.forEach((fileType) => {
+          linkManager.getFileTypeDecoratorData({ fileTypeName: fileType.name, path });
+        });
+      });
 
       const linksUpdatedHandler = vitest.fn<[string[] | null]>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
@@ -575,7 +600,9 @@ describe("LinkManager", () => {
             "/root/src/unknown/file/path.ts",
           ],
           links: {
-            "/root/test/classes/Entity.test.ts": [{ fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" }],
+            "/root/test/classes/Entity.test.ts": [
+              { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
+            ],
           },
         },
         fileModifications: {
@@ -588,7 +615,9 @@ describe("LinkManager", () => {
               { icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" },
               { icon: "📖", fullPath: "/root/docs/classes/Entity.md", typeName: "Documentation" },
             ],
-            "/root/docs/classes/Entity.md": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+            "/root/docs/classes/Entity.md": [
+              { icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" },
+            ],
             "/root/src/classes/Entity.ts": [
               { icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" },
               { icon: "📖", fullPath: "/root/docs/classes/Entity.md", typeName: "Documentation" },
@@ -605,7 +634,10 @@ describe("LinkManager", () => {
             "/root/test/classes/Entity.test.ts",
             "/root/docs/classes/Entity.md",
           ],
-          pathsEmittedAfterUndo: ["/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md"],
+          pathsEmittedAfterUndo: [
+            "/root/test/classes/Entity.test.ts",
+            "/root/docs/classes/Entity.md",
+          ],
         },
       });
     });
@@ -628,7 +660,9 @@ describe("LinkManager", () => {
               { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
               { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
             ],
-            "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
+            "/root/docs/classes/Entity.md": [
+              { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+            ],
             "/root/src/classes/Entity.ts": [
               { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
               { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
@@ -657,7 +691,11 @@ describe("LinkManager", () => {
               { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
             ],
           },
-          pathsEmitted: ["/root/test/classes/Entity.test.ts", "/root/docs/classes/Entity.md", "/root/dist/classes/Entity.js"],
+          pathsEmitted: [
+            "/root/test/classes/Entity.test.ts",
+            "/root/docs/classes/Entity.md",
+            "/root/dist/classes/Entity.js",
+          ],
           pathsEmittedAfterUndo: [
             "/root/src/classes/Entity.ts",
             "/root/test/classes/Entity.test.ts",
@@ -680,11 +718,18 @@ describe("LinkManager", () => {
         },
         expect: {
           links: {
-            "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
-            "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+            "/root/src/classes/Entity.ts": [
+              { icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" },
+            ],
+            "/root/test/classes/Entity.test.ts": [
+              { icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" },
+            ],
           },
           pathsEmitted: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"],
-          pathsEmittedAfterUndo: ["/root/src/classes/Entity2.ts", "/root/test/classes/Entity.test.ts"],
+          pathsEmittedAfterUndo: [
+            "/root/src/classes/Entity2.ts",
+            "/root/test/classes/Entity.test.ts",
+          ],
         },
       });
     });
@@ -694,8 +739,12 @@ describe("LinkManager", () => {
         initial: {
           paths: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"],
           links: {
-            "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
-            "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+            "/root/src/classes/Entity.ts": [
+              { icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" },
+            ],
+            "/root/test/classes/Entity.test.ts": [
+              { icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" },
+            ],
           },
         },
         fileModifications: {
@@ -705,7 +754,10 @@ describe("LinkManager", () => {
         expect: {
           links: {},
           pathsEmitted: ["/root/src/classes/Entity2.ts", "/root/test/classes/Entity.test.ts"],
-          pathsEmittedAfterUndo: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts"],
+          pathsEmittedAfterUndo: [
+            "/root/src/classes/Entity.ts",
+            "/root/test/classes/Entity.test.ts",
+          ],
         },
       });
     });
@@ -713,10 +765,18 @@ describe("LinkManager", () => {
     it("can rename paths to change links and notifies of changed paths", () => {
       assertFileModification({
         initial: {
-          paths: ["/root/src/classes/Entity.ts", "/root/test/classes/Entity.test.ts", "/root/test/classes/Entity2.test.ts"],
+          paths: [
+            "/root/src/classes/Entity.ts",
+            "/root/test/classes/Entity.test.ts",
+            "/root/test/classes/Entity2.test.ts",
+          ],
           links: {
-            "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
-            "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+            "/root/src/classes/Entity.ts": [
+              { icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" },
+            ],
+            "/root/test/classes/Entity.test.ts": [
+              { icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" },
+            ],
           },
         },
         fileModifications: {
@@ -725,10 +785,18 @@ describe("LinkManager", () => {
         },
         expect: {
           links: {
-            "/root/src/classes/Entity2.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity2.test.ts", typeName: "Test" }],
-            "/root/test/classes/Entity2.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity2.ts", typeName: "Source" }],
+            "/root/src/classes/Entity2.ts": [
+              { icon: "🧪", fullPath: "/root/test/classes/Entity2.test.ts", typeName: "Test" },
+            ],
+            "/root/test/classes/Entity2.test.ts": [
+              { icon: "💻", fullPath: "/root/src/classes/Entity2.ts", typeName: "Source" },
+            ],
           },
-          pathsEmitted: ["/root/src/classes/Entity2.ts", "/root/test/classes/Entity2.test.ts", "/root/test/classes/Entity.test.ts"],
+          pathsEmitted: [
+            "/root/src/classes/Entity2.ts",
+            "/root/test/classes/Entity2.test.ts",
+            "/root/test/classes/Entity.test.ts",
+          ],
           pathsEmittedAfterUndo: [
             "/root/src/classes/Entity.ts",
             "/root/test/classes/Entity.test.ts",
@@ -747,8 +815,12 @@ describe("LinkManager", () => {
 
       assertFileLinks(
         {
-          "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
-          "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+          "/root/src/classes/Entity.ts": [
+            { icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" },
+          ],
+          "/root/test/classes/Entity.test.ts": [
+            { icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" },
+          ],
         },
         "initial linked files",
       );
@@ -771,8 +843,12 @@ describe("LinkManager", () => {
 
       assertFileLinks(
         {
-          "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
-          "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+          "/root/src/classes/Entity.ts": [
+            { icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" },
+          ],
+          "/root/test/classes/Entity.test.ts": [
+            { icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" },
+          ],
         },
         "linked files after re-adding file",
       );
@@ -793,8 +869,12 @@ describe("LinkManager", () => {
       });
 
       const INITIAL_FILE_LINKS: FileLinksExpectationMap = {
-        "/root/src/classes/Entity.ts": [{ icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" }],
-        "/root/test/classes/Entity.test.ts": [{ icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" }],
+        "/root/src/classes/Entity.ts": [
+          { icon: "🧪", fullPath: "/root/test/classes/Entity.test.ts", typeName: "Test" },
+        ],
+        "/root/test/classes/Entity.test.ts": [
+          { icon: "💻", fullPath: "/root/src/classes/Entity.ts", typeName: "Source" },
+        ],
       };
 
       assertFileLinks(INITIAL_FILE_LINKS, "initial linked files");
@@ -829,7 +909,9 @@ describe("LinkManager", () => {
           { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
           { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
-        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
+        "/root/docs/classes/Entity.md": [
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+        ],
         "/root/src/classes/Entity.ts": [
           { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
           { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
@@ -882,7 +964,9 @@ describe("LinkManager", () => {
           { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
           { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
-        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
+        "/root/docs/classes/Entity.md": [
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+        ],
         "/root/src/classes/Entity.ts": [
           { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
           { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
@@ -1029,7 +1113,9 @@ describe("LinkManager", () => {
           { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
           { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
         ],
-        "/root/docs/classes/Entity.md": [{ fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" }],
+        "/root/docs/classes/Entity.md": [
+          { fullPath: "/root/src/classes/Entity.ts", icon: "💻", typeName: "Source" },
+        ],
         "/root/src/classes/Entity.ts": [
           { fullPath: "/root/test/classes/Entity.test.ts", icon: "🧪", typeName: "Test" },
           { fullPath: "/root/docs/classes/Entity.md", icon: "📖", typeName: "Documentation" },
@@ -1081,7 +1167,10 @@ describe("LinkManager", () => {
     type PathToDecorationsMap = Record<string, DecorationData[] | null>;
 
     it("should be fast and accurate", async () => {
-      const eslintPathsPath = pathModule.join(__dirname, "LinkManagerTestData/eslint-project-files.json");
+      const eslintPathsPath = pathModule.join(
+        __dirname,
+        "LinkManagerTestData/eslint-project-files.json",
+      );
       const eslintPaths = JSON.parse(fs.readFileSync(eslintPathsPath, "utf8")) as string[];
       const fileCount = eslintPaths.length;
       console.log(`Testing ${fileCount} Eslint files`);
@@ -1098,7 +1187,7 @@ describe("LinkManager", () => {
           linkManager.setContext({ config, paths: eslintPaths });
           const addPathsDurationMs = Date.now() - startTime;
 
-          console.log(`#setContext actually took`, addPathsDurationMs, `ms`);
+          console.log("#setContext actually took", addPathsDurationMs, "ms");
           assert.isBelow(addPathsDurationMs, 100, `time (ms) to add ${fileCount} files`);
 
           // get the decorations for all the files
@@ -1116,8 +1205,12 @@ describe("LinkManager", () => {
             });
           });
           const getDecorationsDurationMs = Date.now() - startTime;
-          console.log(`#getDecorations actually took`, getDecorationsDurationMs, `ms`);
-          assert.isBelow(getDecorationsDurationMs, 150, `time (ms) to get decorations for ${fileCount} files`);
+          console.log("#getDecorations actually took", getDecorationsDurationMs, "ms");
+          assert.isBelow(
+            getDecorationsDurationMs,
+            150,
+            `time (ms) to get decorations for ${fileCount} files`,
+          );
 
           linkManager.revertToInitial();
 
@@ -1125,18 +1218,30 @@ describe("LinkManager", () => {
         });
 
       // assert that the actual decorations match the snapshot
-      const expectedDecorationsPath = pathModule.join(__dirname, "LinkManagerTestData/expected-eslint-project-decorations.json");
+      const expectedDecorationsPath = pathModule.join(
+        __dirname,
+        "LinkManagerTestData/expected-eslint-project-decorations.json",
+      );
       const expectedDecorationsSnapshotExists = fs.existsSync(expectedDecorationsPath);
       if (expectedDecorationsSnapshotExists) {
-        const actualDecorationsPath = pathModule.join(__dirname, "LinkManagerTestData/actual-eslint-project-decorations.json");
+        const actualDecorationsPath = pathModule.join(
+          __dirname,
+          "LinkManagerTestData/actual-eslint-project-decorations.json",
+        );
         fs.writeFileSync(actualDecorationsPath, JSON.stringify(actualDecorationsMap, null, 2));
-        const expectedDecorationsMap: PathToDecorationsMap = JSON.parse(fs.readFileSync(expectedDecorationsPath, "utf8"));
+        const expectedDecorationsMap: PathToDecorationsMap = JSON.parse(
+          fs.readFileSync(expectedDecorationsPath, "utf8"),
+        );
 
         // using deep strict equal produces unhelpful diff because the data is large, so we do a manual comparison for each item
         Object.entries(expectedDecorationsMap).forEach(([path, expectedFileDecorations]) => {
           const actualFileDecorations = actualDecorationsMap[path];
           assert.isDefined(actualFileDecorations, `actual decorations for ${path} should exist`);
-          assert.deepStrictEqual(actualFileDecorations, expectedFileDecorations, `decorations for "${path}" should match expected`);
+          assert.deepStrictEqual(
+            actualFileDecorations,
+            expectedFileDecorations,
+            `decorations for "${path}" should match expected`,
+          );
         });
 
         // asserting the total count after so we see any differences first
@@ -1147,7 +1252,11 @@ describe("LinkManager", () => {
         );
         // create the snapshot file
       } else {
-        fs.writeFileSync(expectedDecorationsPath, JSON.stringify(actualDecorationsMap, null, 2), "utf8");
+        fs.writeFileSync(
+          expectedDecorationsPath,
+          JSON.stringify(actualDecorationsMap, null, 2),
+          "utf8",
+        );
         assert.fail("eslint decorations snapshot file created");
       }
     });

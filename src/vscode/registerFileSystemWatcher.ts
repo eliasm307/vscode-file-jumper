@@ -3,6 +3,10 @@ import type LinkManager from "../classes/LinkManager";
 import Logger, { EXTENSION_KEY } from "../classes/Logger";
 import { uriToPath, getWorkspaceFoldersChildPaths, resolvePathsFromUris } from "./utils";
 
+function isGitPath(path: string) {
+  return path.includes("/.git/");
+}
+
 export default function registerFileWatcher(linkManager: LinkManager): vscode.Disposable {
   const fileSystemWatcher = vscode.workspace.createFileSystemWatcher("**", false, true);
   fileSystemWatcher.onDidCreate((uri) => handleFileCreation({ linkManager, uri }));
@@ -22,29 +26,53 @@ export default function registerFileWatcher(linkManager: LinkManager): vscode.Di
         // show user error before throwing it internally
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling renamed files: ${message}`);
+        await vscode.window.showErrorMessage(
+          `${EXTENSION_KEY} Issue handling renamed files: ${message}`,
+        );
         throw error;
       }
     }),
   );
 }
 
-async function handleFileDeletion({ linkManager, uri }: { linkManager: LinkManager; uri: vscode.Uri }) {
+async function handleFileDeletion({
+  linkManager,
+  uri,
+}: {
+  linkManager: LinkManager;
+  uri: vscode.Uri;
+}) {
   try {
     const path = uriToPath(uri);
-    Logger.info("onDidDeleteFiles", path);
+    if (isGitPath(path)) {
+      // ignore git paths, keeping the default git pattern for the watcher just incase it affects anything
+      return;
+    }
+    Logger.info("handleFileDeletion", path);
     linkManager.modifyFilesAndNotify({ removePaths: [path] });
 
     // show user error before throwing it internally
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling deleted files: ${message}`);
+    await vscode.window.showErrorMessage(
+      `${EXTENSION_KEY} Issue handling deleted files: ${message}`,
+    );
     throw error;
   }
 }
 
-async function handleFileCreation({ linkManager, uri }: { linkManager: LinkManager; uri: vscode.Uri }) {
+async function handleFileCreation({
+  linkManager,
+  uri,
+}: {
+  linkManager: LinkManager;
+  uri: vscode.Uri;
+}) {
   try {
+    if (isGitPath(uriToPath(uri))) {
+      // ignore git paths, keeping the default git pattern for the watcher just incase it affects anything
+      return;
+    }
     const resolvedPaths = await resolvePathsFromUris([uri]);
     Logger.info("handleFileCreation", { uriPath: uri.path, resolvedPaths });
     linkManager.modifyFilesAndNotify({ addPaths: resolvedPaths });
@@ -52,7 +80,9 @@ async function handleFileCreation({ linkManager, uri }: { linkManager: LinkManag
     // show user error before throwing it internally
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling created files: ${message}`);
+    await vscode.window.showErrorMessage(
+      `${EXTENSION_KEY} Issue handling created files: ${message}`,
+    );
     throw error;
   }
 }
