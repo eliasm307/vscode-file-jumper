@@ -32,6 +32,7 @@
     "vscode:login": "vsce login ecm",
     "vscode:help": "vsce help",
     "vscode:list-files": "vsce ls --no-yarn",
+    "vscode:list-publishers": "vsce ls-publishers",
     "precompile": "echo 'Cleaning old output...' && rm -rf ./out",
     "compile": "echo 'Compiling...' && tsc -build ./tsconfig.build.json",
     "watch": "tsc -watch -p ./tsconfig.build.json",
