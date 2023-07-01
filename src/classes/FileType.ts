@@ -4,6 +4,9 @@ import Logger from "./Logger";
 
 import type { FileTypeConfig } from "../utils/config";
 // ! this should only be created from this file so it can be changed without affecting the rest of the code
+/**
+ * This is the key used to compare whether files of different types are linked to each other
+ */
 export type PathKey = string & { __brand: "pathKey" };
 
 export default class FileType {
@@ -26,6 +29,8 @@ export default class FileType {
 
   private readonly patterns: RegExp[];
 
+  private ignoreNonAlphaNumericCharacters: boolean;
+
   readonly name: string;
 
   constructor(private readonly config: FileTypeConfig) {
@@ -33,6 +38,7 @@ export default class FileType {
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
     this.onlyLinkFromTypeNamesSet = config.onlyLinkFrom && new Set(config.onlyLinkFrom);
     this.name = config.name;
+    this.ignoreNonAlphaNumericCharacters = !!config.ignoreNonAlphaNumericCharacters;
   }
 
   addPaths(paths: Set<string> | string[]): void {
@@ -150,6 +156,12 @@ export default class FileType {
   }
 
   private createPathKey({ topic, prefix }: { prefix?: string; topic: string }): PathKey {
+    // regex is case insensitive so we need to normalise the topic
+    topic = topic.toLowerCase();
+    if (this.ignoreNonAlphaNumericCharacters) {
+      // this needs to include "/" as it is used as a path separator
+      topic = topic.replace(/[^a-zA-Z0-9/]/g, "");
+    }
     if (!prefix) {
       return topic as PathKey;
     }

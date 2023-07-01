@@ -18,6 +18,7 @@ export type FileTypeConfig = {
    * @remark Setting this to an empty array will prevent other files from linking to this file type, ie it will not have shortcuts to it but it can have shortcuts to other file types
    */
   onlyLinkFrom?: string[];
+  ignoreNonAlphaNumericCharacters?: boolean;
 };
 
 export type MainConfig = {
@@ -35,7 +36,9 @@ export type MainConfig = {
  */
 type RawFileTypesConfig = Record<string, Omit<FileTypeConfig, "name">>;
 
-export function formatRawFileTypesConfig(rawConfig: RawFileTypesConfig | undefined): FileTypeConfig[] {
+export function formatRawFileTypesConfig(
+  rawConfig: RawFileTypesConfig | undefined,
+): FileTypeConfig[] {
   if (!rawConfig) {
     // apply default config
     // ! dont define this in the "default" for the JSON schema, as this means it will be merged into the custom user config
@@ -44,7 +47,9 @@ export function formatRawFileTypesConfig(rawConfig: RawFileTypesConfig | undefin
       {
         name: "Source",
         icon: "💻",
-        patterns: ["(?<prefix>.+)\\/src\\/(?!\\.test\\.|\\.spec\\.)(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
+        patterns: [
+          "(?<prefix>.+)\\/src\\/(?!\\.test\\.|\\.spec\\.)(?<topic>.+)\\.(js|jsx|ts|tsx)$",
+        ],
       },
       {
         name: "Test",

@@ -299,7 +299,7 @@ export default class LinkManager {
   /**
    * This gets called a lot but its not cached because it is called on initial load and when files/workspaces change
    * which means an event that causes this to be called has new paths and that means lots of cache misses
-   * so the caching overhead isnt worth it
+   * so the caching overhead isn't worth it
    */
   private pathIsRelevant(path: string): boolean {
     const shouldBeIgnored = this.ignorePatterns.some((regex) => regex.test(path));

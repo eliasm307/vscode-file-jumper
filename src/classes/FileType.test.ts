@@ -11,7 +11,11 @@ describe("FileType", () => {
       icon: "🧪",
       patterns: ["\\/test\\/(?<topic>.+)\\.test\\.ts"],
     });
-    fileType.addPaths(["/test/file0.test.ts", "/test/dir1/file1.test.ts", "/test/dir1/dir2/file2.test.ts"]);
+    fileType.addPaths([
+      "/test/file0.test.ts",
+      "/test/dir1/file1.test.ts",
+      "/test/dir1/dir2/file2.test.ts",
+    ]);
     return fileType;
   }
 
@@ -102,6 +106,48 @@ describe("FileType", () => {
     });
   });
 
+  describe(`#${FileType.prototype.getPathKeyFromPath.name}`, () => {
+    it("creates path keys in lower case", () => {
+      fileType = new FileType({
+        name: "Source",
+        icon: "💻",
+        patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
+      });
+      assert.strictEqual(
+        fileType.getPathKeyFromPath("/src/Dir1/MODULE.ts"),
+        "dir1/module",
+        "path key is lower case",
+      );
+    });
+
+    it("includes non-alphanumeric characters in path key by default", () => {
+      fileType = new FileType({
+        name: "Source",
+        icon: "💻",
+        patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
+      });
+      assert.strictEqual(
+        fileType.getPathKeyFromPath("/src/dir1/file-0.ts"),
+        "dir1/file-0",
+        "path key includes non-alphanumeric characters",
+      );
+    });
+
+    it("does not include non-alphanumeric characters in path key with option", () => {
+      fileType = new FileType({
+        name: "Source",
+        icon: "💻",
+        patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
+        ignoreNonAlphaNumericCharacters: true,
+      });
+      assert.strictEqual(
+        fileType.getPathKeyFromPath("/src/dir1/file-0.ts"),
+        "dir1/file0",
+        "path key does not include non-alphanumeric characters",
+      );
+    });
+  });
+
   describe("#matches", () => {
     it("should return true if the file is linked", () => {
       fileType = createFileTypeWithRegisteredFiles();
@@ -128,7 +174,11 @@ describe("FileType", () => {
 
       fileType.dispose();
 
-      assert.deepStrictEqual(fileType.getFilesMatching(validKeyPath), [], "linked file should not be found");
+      assert.deepStrictEqual(
+        fileType.getFilesMatching(validKeyPath),
+        [],
+        "linked file should not be found",
+      );
     });
   });
 
@@ -148,7 +198,11 @@ describe("FileType", () => {
           "linked file0 should be found",
         );
       } else {
-        assert.deepStrictEqual(fileType.getFilesMatching(validKeyPath0), [], "linked file0 should not be found");
+        assert.deepStrictEqual(
+          fileType.getFilesMatching(validKeyPath0),
+          [],
+          "linked file0 should not be found",
+        );
       }
     }
 
@@ -160,7 +214,11 @@ describe("FileType", () => {
           "linked file1 should be found",
         );
       } else {
-        assert.deepStrictEqual(fileType.getFilesMatching(validKeyPath1), [], "linked file1 should not be found");
+        assert.deepStrictEqual(
+          fileType.getFilesMatching(validKeyPath1),
+          [],
+          "linked file1 should not be found",
+        );
       }
     }
 
@@ -172,7 +230,11 @@ describe("FileType", () => {
           "linked file2 should be found",
         );
       } else {
-        assert.deepStrictEqual(fileType.getFilesMatching(validKeyPath2), [], "linked file2 should not be found");
+        assert.deepStrictEqual(
+          fileType.getFilesMatching(validKeyPath2),
+          [],
+          "linked file2 should not be found",
+        );
       }
     }
 
@@ -222,7 +284,7 @@ describe("FileType", () => {
     });
   });
 
-  describe("#canRelateTo", () => {
+  describe(`#${FileType.prototype.allowsLinksTo.name}`, () => {
     const srcFileType = new FileType({
       name: "src",
       icon: "📁",
@@ -267,4 +329,6 @@ describe("FileType", () => {
       assert.isFalse(fileType.allowsLinksTo(testFileType), "does not relate to test file");
     });
   });
+
+  describe.todo(`#${FileType.prototype.allowsLinksFrom.name}`);
 });

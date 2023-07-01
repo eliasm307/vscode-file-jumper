@@ -1338,4 +1338,79 @@ describe("LinkManager", () => {
       "linked files found",
     );
   });
+
+  describe("ignoreNonAlphaNumericCharacters option", () => {
+    it("does not ignore non-alphanumeric characters by default", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: {
+          fileTypes: [
+            {
+              name: "Source",
+              icon: "💻",
+              patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.+)\\.ts$"],
+            },
+            {
+              name: "Styles",
+              icon: "💄",
+              patterns: ["(?<prefix>.*)\\/styles\\/(?<topic>.+)\\.css$"],
+            },
+          ],
+          ignorePatterns: [],
+        },
+        paths: [
+          "/root/app/src/components/SomeControl.ts",
+          "/root/app/styles/components/some-control.css",
+        ],
+      });
+
+      assertFileLinks({}, "no links by default without option");
+    });
+
+    it("ignores non-alphanumeric characters with option", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: {
+          fileTypes: [
+            {
+              name: "Source",
+              icon: "💻",
+              patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.+)\\.ts$"],
+            },
+            {
+              name: "Styles",
+              icon: "💄",
+              patterns: ["(?<prefix>.*)\\/styles\\/(?<topic>.+)\\.css$"],
+              ignoreNonAlphaNumericCharacters: true,
+            },
+          ],
+          ignorePatterns: [],
+        },
+        paths: [
+          "/root/app/src/components/SomeControl.ts",
+          "/root/app/styles/components/some-control.css",
+        ],
+      });
+
+      assertFileLinks(
+        {
+          "/root/app/src/components/SomeControl.ts": [
+            {
+              fullPath: "/root/app/styles/components/some-control.css",
+              icon: "💄",
+              typeName: "Styles",
+            },
+          ],
+          "/root/app/styles/components/some-control.css": [
+            {
+              fullPath: "/root/app/src/components/SomeControl.ts",
+              icon: "💻",
+              typeName: "Source",
+            },
+          ],
+        },
+        "finds links with option",
+      );
+    });
+  });
 });
