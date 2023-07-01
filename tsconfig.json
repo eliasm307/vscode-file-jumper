@@ -5,6 +5,7 @@
     "lib": ["ES2020"],
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
     // "incremental": true, // causes issues by not recompiling files on publish
     "skipLibCheck": true,
     "strict": true /* enable all strict type-checking options */
