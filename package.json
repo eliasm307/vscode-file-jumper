@@ -144,7 +144,7 @@
                   "uniqueItems": true
                 },
                 "ignoreNonAlphaNumericCharacters": {
-                  "markdownDescription": "(**OPTIONAL**) Whether to ignore non-alphanumeric characters when matching file names.\n\nBy default (when not defined), non-alphanumeric characters are not ignored.\n\n**NOTE** This is useful for matching files with names that include special characters, such as `@` or `-`",
+                  "markdownDescription": "(**OPTIONAL**) Whether to ignore non-alphanumeric characters when matching file name topics.\n\nBy default (when not defined), non-alphanumeric characters are not ignored.\n\n**NOTE** This is useful for matching files with names that include special characters, such as `@` or `-`",
                   "type": "boolean",
                   "default": false
                 }

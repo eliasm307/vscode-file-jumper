@@ -35,7 +35,7 @@ The object keys represent the file type names. The values are objects that defin
 - `patterns`: (**Required**) An array of RegEx patterns (case insensitive) to match relevant files and capture the topic and/or a prefix. More detail below.
 - `onlyLinkTo`: (**OPTIONAL**) Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types. Defaults to being able to link to all other file types.
 - `onlyLinkFrom`: (**OPTIONAL**) Array of other file types that can link to this file type. By default, all file types can be linked to all other file types. Defaults to all files being able to link to this file type.
-- `ignoreNonAlphaNumericCharacters`: (**OPTIONAL**) Boolean to ignore non-alphanumeric characters when comparing file paths. This is useful for matching files with the same name but different naming styles (e.g. `kebab-case`, `camelCase`, `snake_case`). Defaults to `false`.
+- `ignoreNonAlphaNumericCharacters`: (**OPTIONAL**) Boolean to ignore non-alphanumeric characters when comparing the "topic" in file paths. This is useful for matching files with the same name but different naming styles (e.g. `kebab-case`, `camelCase`, `snake_case`). Defaults to `false`.
 
 **NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
 
