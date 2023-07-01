@@ -42,7 +42,7 @@
     "sync-readme": "echo 'Syncing README...' && node src/scripts/sync-readme.js"
   },
   "devDependencies": {
-    "@eliasm307/config": "^0.26.0",
+    "@eliasm307/config": "^0.28.0",
     "@types/node": "^18.16.18",
     "@types/vscode": "^1.79.1",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
