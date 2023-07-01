@@ -265,9 +265,6 @@ export default class LinkManager {
     }
     Logger.count("LinkManager#getPathData CACHE MISS");
 
-    if (normalisedPath.endsWith("eslint/tests/lib/cli.js")) {
-      // debugger;
-    }
     const targetFile = this.getFileInfo(normalisedPath);
     if (!targetFile) {
       Logger.count("LinkManager#getPathData: NO TARGET FILE");
