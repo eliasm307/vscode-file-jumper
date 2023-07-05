@@ -1413,4 +1413,57 @@ describe("LinkManager", () => {
       );
     });
   });
+
+  describe("formatters option", () => {
+    it("supports custom formatters", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: {
+          fileTypes: [
+            {
+              name: "Source",
+              icon: "💻",
+              patterns: ["(?<prefix>.*)\\/src\\/(?<topic>.+)\\.ts$"],
+            },
+            {
+              name: "Styles",
+              icon: "💄",
+              patterns: ["(?<prefix>.*)\\/styles\\/(?<topic>.+)\\.css$"],
+              formatters: [
+                {
+                  name: "Kebab Case",
+                  format: (topic) => topic.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(),
+                },
+              ],
+            },
+          ],
+          ignorePatterns: [],
+        },
+        paths: [
+          "/root/app/src/components/SomeControl.ts",
+          "/root/app/styles/components/some-control.css",
+        ],
+      });
+
+      assertFileLinks(
+        {
+          "/root/app/src/components/SomeControl.ts": [
+            {
+              fullPath: "/root/app/styles/components/some-control.css",
+              icon: "💄",
+              typeName: "Styles",
+            },
+          ],
+          "/root/app/styles/components/some-control.css": [
+            {
+              fullPath: "/root/app/src/components/SomeControl.ts",
+              icon: "💻",
+              typeName: "Source",
+            },
+          ],
+        },
+        "finds links with formatter",
+      );
+    });
+  });
 });

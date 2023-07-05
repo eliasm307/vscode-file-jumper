@@ -19,6 +19,11 @@ export type FileTypeConfig = {
    */
   onlyLinkFrom?: string[];
   ignoreNonAlphaNumericCharacters?: boolean;
+  formatters?: {
+    testPattern?: { regex: string; regexFlags?: string };
+    findPattern: { regex: string; regexFlags?: string };
+    replacePattern: string;
+  }[];
 };
 
 export type MainConfig = {

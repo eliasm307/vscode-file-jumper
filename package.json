@@ -148,6 +148,56 @@
                   "markdownDescription": "(**OPTIONAL**) Whether to ignore non-alphanumeric characters when matching file name topics.\n\nBy default (when not defined), non-alphanumeric characters are not ignored.\n\n**NOTE** This is useful for matching files with names that include special characters, such as `@` or `-`",
                   "type": "boolean",
                   "default": false
+                },
+                "formatters": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "testPattern": {
+                        "description": "A RegEx pattern that should match the file path that should be formatted.\n\n**NOTE** RegEx flags can be defined optionally, however the default are `gi`.\n\n**NOTE** This will be used to evaluate file and also folder paths, so an extension should be included if possible to prevent matching folder paths.",
+                        "type": "object",
+                        "properties": {
+                          "regex": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "regexFlags": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "regex"
+                        ]
+                      },
+                      "findPattern": {
+                        "description": "A RegEx pattern that should match the part of the path that should be replaced.\n\n**NOTE** RegEx flags can be defined optionally, however the default are `gi`.",
+                        "type": "object",
+                        "properties": {
+                          "regex": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "regexFlags": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "regex"
+                        ]
+                      },
+                      "replacePattern": {
+                        "description": "A string that should be used to replace the part of the path that was matched by the `findPattern`.\n\n**NOTE** This can include capture groups from the `findPattern`.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "findPattern",
+                      "replacePattern"
+                    ]
+                  }
                 }
               },
               "required": [
