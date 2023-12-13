@@ -17,7 +17,7 @@ export default class FileType {
    * @remark cache not cleared on reset as its not context specific and doesn't affect behaviour
    * @remark `null` means this was executed and no path key found
    */
-  private readonly fullPathToPathKeyCache: Map<NormalisedPath, PathKey | null> = new Map();
+  private readonly fullPathToPathKeyCache = new Map<NormalisedPath, PathKey | null>();
 
   private readonly onlyLinkFromTypeNamesSet?: Set<string>;
 
@@ -26,7 +26,7 @@ export default class FileType {
   /**
    * @remark this does affect behaviour, so it is cleared on reset
    */
-  private readonly pathKeyToFullPathsMap: Map<string, Set<string>> = new Map();
+  private readonly pathKeyToFullPathsMap = new Map<string, Set<string>>();
 
   private readonly patterns: RegExp[];
 
@@ -113,7 +113,7 @@ export default class FileType {
       if (pathTopic) {
         const pathKey = this.createPathKey({
           topic: pathTopic,
-          prefix: regexMatch?.groups?.prefix,
+          prefix: regexMatch.groups?.prefix,
         });
         this.fullPathToPathKeyCache.set(normalisedPath, pathKey);
         return pathKey;

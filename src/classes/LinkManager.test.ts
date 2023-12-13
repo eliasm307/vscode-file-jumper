@@ -84,7 +84,7 @@ describe("LinkManager", () => {
   }
 
   afterEach(() => {
-    linkManager?.revertToInitial();
+    linkManager.revertToInitial();
     // @ts-expect-error [allowed on after each to prevent re-use]
     linkManager = undefined;
   });
@@ -514,7 +514,7 @@ describe("LinkManager", () => {
     });
   });
 
-  type FileLinksExpectationMap = { [path: string]: LinkedFileData[] };
+  type FileLinksExpectationMap = Record<string, LinkedFileData[]>;
 
   function assertFileLinks(expected: FileLinksExpectationMap, message: string) {
     const actual = Object.fromEntries(
@@ -1093,7 +1093,7 @@ describe("LinkManager", () => {
       assert.isFalse(linkManager.autoJumpEnabled, "autoJumpEnabled is false");
     });
 
-    it("does nothing if context is unchanged", async () => {
+    it("does nothing if context is unchanged", () => {
       const paths = [
         "/root/node_modules/package/src/classes/Entity.ts",
         "/root/node_modules/package/test/classes/Entity.test.ts",
@@ -1166,7 +1166,7 @@ describe("LinkManager", () => {
 
     type PathToDecorationsMap = Record<string, DecorationData[] | null>;
 
-    it("should be fast and accurate", async () => {
+    it("should be fast and accurate", () => {
       const eslintPathsPath = pathModule.join(
         __dirname,
         "LinkManagerTestData/eslint-project-files.json",

@@ -17,14 +17,14 @@ type PathData = {
 };
 
 export default class LinkManager {
-  private readonly pathDataCache: Map<NormalisedPath, PathData | null> = new Map();
+  private readonly pathDataCache = new Map<NormalisedPath, PathData | null>();
 
   /**
    * This represents all the relevant paths the link manager is aware of that are of a known type
    *
    * @value is the original un-normalised path
    */
-  #pathsWithKnownTypeMap: Map<NormalisedPath, string> = new Map();
+  #pathsWithKnownTypeMap = new Map<NormalisedPath, string>();
 
   private config: MainConfig | undefined;
 

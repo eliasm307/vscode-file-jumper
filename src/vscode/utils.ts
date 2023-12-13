@@ -45,7 +45,7 @@ export function getMainConfig(): MainConfig {
 }
 
 export async function getAllWorkspacePaths(): Promise<string[]> {
-  const allUris = (await vscode.workspace.findFiles("**")) || [];
+  const allUris = await vscode.workspace.findFiles("**");
   return allUris.map((uri) => uri.path);
 }
 
