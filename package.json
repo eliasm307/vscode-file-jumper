@@ -181,18 +181,18 @@
                         "default": "",
                         "maxLength": 1
                       },
-                      "pathRegex": {
+                      "pathSearchRegex": {
                         "description": "A RegEx pattern that will be run against a source file path to determine if this creation pattern should be used. If the pattern matches, this regex will then be used along with `pathReplacementText` to generate the new file path from the source file path.\n\nThe pattern is evaluated against the full path, not relative to the workspace root.",
                         "type": "string",
                         "minLength": 1
                       },
-                      "pathRegexFlags": {
-                        "description": "The flags to use when evaluating the `pathRegex` pattern",
+                      "pathSearchRegexFlags": {
+                        "description": "The flags to use when evaluating the `pathSearchRegex` pattern",
                         "type": "string",
                         "default": ""
                       },
                       "pathReplacementText": {
-                        "description": "The text to replace text in the source file path after the `pathRegex` is run, in order to generate the new file path.\n\nThe text can include capture groups from the `pathRegex` pattern, which will be replaced with the captured text.\n\n**NOTE** The text is evaluated as a RegEx replacement, so special characters should be escaped.",
+                        "description": "The text to replace text in the source file path after the `pathSearchRegex` is run, in order to generate the new file path.\n\nThe text can include capture groups from the `pathSearchRegex` pattern, which will be replaced with the captured text.\n\n**NOTE** The text is evaluated as a RegEx replacement, so special characters should be escaped.",
                         "type": "string",
                         "minLength": 1
                       },
@@ -206,7 +206,7 @@
                     },
                     "required": [
                       "name",
-                      "pathRegex",
+                      "pathSearchRegex",
                       "pathReplacementText"
                     ]
                   }

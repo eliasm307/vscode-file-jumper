@@ -133,7 +133,10 @@ export default class FileType {
     const creationPathsData: FileCreationData[] = [];
     for (const creationPattern of this.config.creationPatterns || []) {
       // NOTE: regex with some flags is stateful, so we create a new regex each time to avoid state being carried over
-      const searchRegex = new RegExp(creationPattern.pathRegex, creationPattern.pathRegexFlags);
+      const searchRegex = new RegExp(
+        creationPattern.pathSearchRegex,
+        creationPattern.pathSearchRegexFlags,
+      );
       const creationPath = sourcePath.replace(searchRegex, creationPattern.pathReplacementText);
       if (creationPath === sourcePath || uniqueCreationPaths.has(creationPath)) {
         continue; // creation not possible or creation path already exists

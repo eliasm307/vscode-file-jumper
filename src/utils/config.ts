@@ -27,8 +27,8 @@ export type FileTypeConfig = {
   creationPatterns?: {
     name: string;
     icon?: string;
-    pathRegex: string;
-    pathRegexFlags?: string;
+    pathSearchRegex: string;
+    pathSearchRegexFlags?: string;
     pathReplacementText: string;
     defaultContent?: string[];
   }[];
