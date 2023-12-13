@@ -157,7 +157,7 @@ export default class FileType {
         name: creationPattern.name,
         icon: creationPattern.icon || "",
         fullPath: creationPath,
-        defaultContent: creationPattern.defaultContent?.join("\n") || "",
+        initialContentSnippet: creationPattern.initialContentSnippet,
       });
     }
     return creationPathsData;

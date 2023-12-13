@@ -24,14 +24,20 @@ export type FileTypeConfig = {
     findPattern: { regex: string; regexFlags?: string };
     replacePattern: string;
   }[];
-  creationPatterns?: {
-    name: string;
-    icon?: string;
-    pathSearchRegex: string;
-    pathSearchRegexFlags?: string;
-    pathReplacementText: string;
-    defaultContent?: string[];
-  }[];
+  creationPatterns?: CreationPatternConfig[];
+};
+
+export type CreationPatternConfig = {
+  name: string;
+  icon?: string;
+  pathSearchRegex: string;
+  pathSearchRegexFlags?: string;
+  pathReplacementText: string;
+  /**
+   * Either a string as an existing snippet name
+   * or an array of strings as lines of a snippet body
+   */
+  initialContentSnippet?: string[] | string;
 };
 
 export type MainConfig = {

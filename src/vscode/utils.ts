@@ -7,7 +7,7 @@ import { isTruthy } from "../utils";
 
 export async function openFileInNewTab(path: string) {
   const doc = await vscode.workspace.openTextDocument(createUri(path));
-  await vscode.window.showTextDocument(doc, { preview: false });
+  return vscode.window.showTextDocument(doc, { preview: false });
 }
 
 export function getWorkspaceRelativePath(pathOrUri: string | vscode.Uri) {
@@ -97,4 +97,18 @@ export async function getPossibleFileCreations(
 
 async function nullIfCreationNotPossible(data: FileCreationData): Promise<FileCreationData | null> {
   return (await pathExists(data.fullPath)) ? null : data;
+}
+
+export async function createFile(path: string) {
+  Logger.info("Creating file:", path);
+  const uri = createUri(path);
+  await vscode.workspace.fs.writeFile(uri, new Uint8Array());
+  Logger.info("Created file:", path);
+}
+
+export async function deleteFile(path: string) {
+  Logger.info("Deleting file:", path);
+  const uri = createUri(path);
+  await vscode.workspace.fs.delete(uri);
+  Logger.info("Deleted file:", path);
 }

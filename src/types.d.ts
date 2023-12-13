@@ -1,4 +1,5 @@
 import type FileType from "./classes/FileType";
+import type { CreationPatternConfig } from "./utils/config";
 
 export type FileMetaData = {
   fileType: FileType;
@@ -21,7 +22,7 @@ export type FileCreationData = {
   name: string;
   icon: string;
   fullPath: string;
-  defaultContent: string;
+  initialContentSnippet: CreationPatternConfig["defaultContent"];
 };
 
 export type DecorationData = {

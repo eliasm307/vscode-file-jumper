@@ -16,6 +16,8 @@ import registerFileSystemWatcher from "./vscode/registerFileSystemWatcher";
 import registerConfigurationWatcher from "./vscode/registerConfigurationWatcher";
 import registerCreateFileCommand from "./vscode/registerCreateFileCommand";
 
+// todo generate readme from extension config in package.json, e.g. get descriptions of config options, generate types etc
+
 export async function activate(context: vscode.ExtensionContext) {
   let mainConfig: MainConfig;
   try {
