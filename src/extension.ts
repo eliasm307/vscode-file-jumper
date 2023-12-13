@@ -58,7 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
     Logger.info("START onFileLinksUpdated handler called with affectedPaths:", affectedPaths);
 
     try {
-      // need to use FS paths for context key so they work with menu items conditions (they don't have an option to use the normalised path)
+      // need to use FS paths for context key so they work (ie match) with menu items conditions (they don't have an option to use the normalised path)
       const fsPathsWithLinks = linkManager
         .getAllPathsWithOutgoingLinks()
         .map((normalisedPath) => createUri(normalisedPath).fsPath);
@@ -70,9 +70,8 @@ export async function activate(context: vscode.ExtensionContext) {
         fsPathsWithLinks,
       );
 
-      const fsPathsThatCanCreateFiles = await getPathsWithPossibleFileCreations(linkManager);
-
       // this is used to show the context menu item conditionally on files we know can create other files
+      const fsPathsThatCanCreateFiles = await getFsPathsWithPossibleFileCreations(linkManager);
       await vscode.commands.executeCommand(
         "setContext",
         "fileJumper.filePathsWithPossibleCreations", // key, used in Extension commands conditions
@@ -114,7 +113,7 @@ export async function activate(context: vscode.ExtensionContext) {
   Logger.info("🚀 Extension activated");
 }
 
-async function getPathsWithPossibleFileCreations(linkManager: LinkManager) {
+async function getFsPathsWithPossibleFileCreations(linkManager: LinkManager) {
   const possibleCreationsMap = linkManager.getAllPathsWithPossibleCreationsEntries();
   return (
     (
