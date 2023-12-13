@@ -4,7 +4,7 @@ import { mainConfigsAreEqual } from "../utils/config";
 import FileType from "./FileType";
 import Logger from "./Logger";
 
-import type { DecorationData, LinkedFileData, NormalisedPath } from "../types";
+import type { FileCreationData, DecorationData, LinkedFileData, NormalisedPath } from "../types";
 import type { MainConfig } from "../utils/config";
 
 type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => Promise<void>;
@@ -45,6 +45,28 @@ export default class LinkManager {
     );
     stopTimer();
     return paths;
+  }
+
+  /**
+   * @remark Returns entries as that is the most convenient format for the use case, so we avoid returning an object and having to use Object.entries
+   */
+  getAllPathsWithPossibleCreationsEntries(): (readonly [string, FileCreationData[]])[] {
+    const stopTimer = Logger.startTimer("LinkManager#getAllPathsWithPossibleCreations");
+
+    const pathToPossibleCreations = [...this.#pathsWithKnownTypeMap.values()]
+      .map((path) => [path, this.getAllFileCreationsFrom(path)] as const)
+      .filter(([, allCreations]) => allCreations.length);
+
+    stopTimer();
+    return pathToPossibleCreations;
+  }
+
+  getAllFileCreationsFrom(path: string): FileCreationData[] {
+    const stopTimer = Logger.startTimer("LinkManager#getCreationPathsFrom", path);
+    const pathData = this.getPathData(path);
+    const creationData = pathData?.file.type.getPossibleCreationPaths(path) || [];
+    stopTimer();
+    return creationData;
   }
 
   /**

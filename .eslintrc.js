@@ -10,6 +10,7 @@ module.exports = {
   rules: {
     ...ecmConfig.rules,
     "no-console": "warn",
+    "no-continue": "off",
     "import/no-unresolved": ["error", { ignore: ["vscode"] }],
     "@typescript-eslint/no-unsafe-return": "off",
   },

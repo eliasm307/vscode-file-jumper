@@ -1,8 +1,9 @@
-import type { DecorationData, LinkedFileData, NormalisedPath } from "../types";
+import * as pathModule from "node:path";
+import type { FileCreationData, DecorationData, LinkedFileData, NormalisedPath } from "../types";
 import { normalisePath } from "../utils";
 import Logger from "./Logger";
-
 import type { FileTypeConfig } from "../utils/config";
+
 // ! this should only be created from this file so it can be changed without affecting the rest of the code
 /**
  * This is the key used to compare whether files of different types are linked to each other
@@ -121,6 +122,42 @@ export default class FileType {
 
     // no match, the path cannot produce a path key in the future so we cache the negative result
     this.fullPathToPathKeyCache.set(normalisedPath, null);
+  }
+
+  /**
+   * @remark This produces a raw list of paths that could be created, but they may be files that already exist
+   */
+  getPossibleCreationPaths(sourcePath: string): FileCreationData[] {
+    // todo test if multiple creation paths create the same file then only show one
+    const uniqueCreationPaths = new Set<string>();
+    const creationPathsData: FileCreationData[] = [];
+    for (const creationPattern of this.config.creationPatterns || []) {
+      // NOTE: regex with some flags is stateful, so we create a new regex each time to avoid state being carried over
+      const searchRegex = new RegExp(creationPattern.pathRegex, creationPattern.pathRegexFlags);
+      const creationPath = sourcePath.replace(searchRegex, creationPattern.pathReplacementText);
+      if (creationPath === sourcePath || uniqueCreationPaths.has(creationPath)) {
+        continue; // creation not possible or creation path already exists
+      }
+
+      // assert creation path is valid path, ie the user has not made a made a mistake with the path
+      if (!pathModule.isAbsolute(creationPath)) {
+        const error = `Resulting creation path "${creationPath}" from source file "${sourcePath}" with type "${
+          this.name
+        }" is not absolute. Creation pattern: ${JSON.stringify(creationPattern)}`;
+        console.error(error);
+        // continue;
+      }
+
+      uniqueCreationPaths.add(creationPath);
+      // change means creation pattern matched and produced a creation path
+      creationPathsData.push({
+        name: creationPattern.name,
+        icon: creationPattern.icon || "",
+        fullPath: creationPath,
+        defaultContent: creationPattern.defaultContent?.join("\n") || "",
+      });
+    }
+    return creationPathsData;
   }
 
   /**

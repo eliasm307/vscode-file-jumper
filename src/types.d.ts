@@ -5,10 +5,23 @@ export type FileMetaData = {
   linkedFiles: LinkedFileData[];
 };
 
+/**
+ * Data for a file that is linked to from a file
+ */
 export type LinkedFileData = {
   typeName: string;
   icon: string;
   fullPath: string;
+};
+
+/**
+ * Data for a file that can be created from a file
+ */
+export type FileCreationData = {
+  name: string;
+  icon: string;
+  fullPath: string;
+  defaultContent: string;
 };
 
 export type DecorationData = {

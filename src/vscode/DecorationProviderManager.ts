@@ -3,14 +3,20 @@ import * as vscode from "vscode";
 import type { DecorationData } from "../types";
 import DecorationProvider from "./DecorationProvider";
 
-export default class DecorationProviderManager {
+export default class DecorationProviderManager implements vscode.Disposable {
   private subscriptions: vscode.Disposable[] = [];
 
   private decorationProviders: DecorationProvider[] = [];
 
   constructor(
     private readonly config: {
-      getDecorationData: ({ fileTypeName, path }: { fileTypeName: string; path: string }) => DecorationData | undefined;
+      getDecorationData: ({
+        fileTypeName,
+        path,
+      }: {
+        fileTypeName: string;
+        path: string;
+      }) => DecorationData | undefined;
     },
   ) {}
 
@@ -35,7 +41,9 @@ export default class DecorationProviderManager {
 
   notifyFileDecorationsChanged(affectedPaths: string[] | null) {
     const affectedPathUris = affectedPaths?.map((path) => vscode.Uri.file(path));
-    this.decorationProviders.forEach((provider) => provider.notifyFileDecorationsChanged(affectedPathUris));
+    this.decorationProviders.forEach((provider) =>
+      provider.notifyFileDecorationsChanged(affectedPathUris),
+    );
   }
 
   dispose(): void {

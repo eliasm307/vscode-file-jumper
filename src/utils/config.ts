@@ -19,6 +19,19 @@ export type FileTypeConfig = {
    */
   onlyLinkFrom?: string[];
   ignoreNonAlphaNumericCharacters?: boolean;
+  formatters?: {
+    testPattern?: { regex: string; regexFlags?: string };
+    findPattern: { regex: string; regexFlags?: string };
+    replacePattern: string;
+  }[];
+  creationPatterns?: {
+    name: string;
+    icon?: string;
+    pathRegex: string;
+    pathRegexFlags?: string;
+    pathReplacementText: string;
+    defaultContent?: string[];
+  }[];
 };
 
 export type MainConfig = {
@@ -41,7 +54,7 @@ export function formatRawFileTypesConfig(
 ): FileTypeConfig[] {
   if (!rawConfig) {
     // apply default config
-    // ! dont define this in the "default" for the JSON schema, as this means it will be merged into the custom user config
+    // ! don't define this in the "default" for the JSON schema, as this means it will be merged into the custom user config
     // ! we only want to apply this default config if the user has not defined any config
     return [
       {

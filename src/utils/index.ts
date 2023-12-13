@@ -23,3 +23,7 @@ export function shortenPath(path: string): string {
 export function normalisePath(path: string): NormalisedPath {
   return path.toLowerCase() as NormalisedPath;
 }
+
+export function isTruthy<T>(value: T | null | undefined): value is T {
+  return !!value;
+}

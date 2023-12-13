@@ -80,6 +80,10 @@
       {
         "command": "fileJumper.navigateCommand",
         "title": "Jump to..."
+      },
+      {
+        "command": "fileJumper.createFileCommand",
+        "title": "Create..."
       }
     ],
     "menus": {
@@ -88,12 +92,22 @@
           "command": "fileJumper.navigateCommand",
           "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithLinks",
           "group": "navigation@1"
+        },
+        {
+          "command": "fileJumper.createFileCommand",
+          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithPossibleCreations",
+          "group": "navigation@1"
         }
       ],
       "editor/title/context": [
         {
           "command": "fileJumper.navigateCommand",
           "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithLinks",
+          "group": "1_close@1"
+        },
+        {
+          "command": "fileJumper.createFileCommand",
+          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithPossibleCreations",
           "group": "1_close@1"
         }
       ]
@@ -148,6 +162,52 @@
                   "markdownDescription": "(**OPTIONAL**) Whether to ignore non-alphanumeric characters when matching file name topics.\n\nBy default (when not defined), non-alphanumeric characters are not ignored.\n\n**NOTE** This is useful for matching files with names that include special characters, such as `@` or `-`",
                   "type": "boolean",
                   "default": false
+                },
+                "creationPatterns": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "The name of the creation pattern, which will be used in the UI",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "icon": {
+                        "description": "An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
+                        "type": "string",
+                        "default": "",
+                        "maxLength": 1
+                      },
+                      "pathRegex": {
+                        "description": "A RegEx pattern that will be run against a source file path to determine if this creation pattern should be used. If the pattern matches, this regex will then be used along with `pathReplacementText` to generate the new file path from the source file path.\n\nThe pattern is evaluated against the full path, not relative to the workspace root.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "pathRegexFlags": {
+                        "description": "The flags to use when evaluating the `pathRegex` pattern",
+                        "type": "string",
+                        "default": ""
+                      },
+                      "pathReplacementText": {
+                        "description": "The text to replace text in the source file path after the `pathRegex` is run, in order to generate the new file path.\n\nThe text can include capture groups from the `pathRegex` pattern, which will be replaced with the captured text.\n\n**NOTE** The text is evaluated as a RegEx replacement, so special characters should be escaped.",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "defaultContent": {
+                        "description": "The default content to add to the new file, where the content is defined as an array of lines.",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "pathRegex",
+                      "pathReplacementText"
+                    ]
+                  }
                 }
               },
               "required": [

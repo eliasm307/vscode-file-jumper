@@ -7,17 +7,21 @@ import { openFileInNewTab, getWorkspaceRelativePath } from "./utils";
 export default function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
-  return vscode.commands.registerCommand("fileJumper.navigateCommand", async (fromUri: vscode.Uri) => {
-    Logger.info("navigateCommand called with uri:", fromUri.path);
+  return vscode.commands.registerCommand(
+    "fileJumper.navigateCommand",
+    async (fromUri: vscode.Uri) => {
+      Logger.info("navigateCommand called with uri:", fromUri.path);
 
-    const selectedPath = await getPathToNavigateToFromOptions({ linkManager, fromUri });
-    if (selectedPath) {
-      await openFileInNewTab(selectedPath);
-    }
-  });
+      const selectedPath = await getTargetPathFromUser({ linkManager, fromUri });
+      if (selectedPath) {
+        await openFileInNewTab(selectedPath);
+      }
+      // else user canceled the selection
+    },
+  );
 }
 
-async function getPathToNavigateToFromOptions({
+async function getTargetPathFromUser({
   fromUri,
   linkManager,
 }: {
