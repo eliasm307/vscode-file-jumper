@@ -46,7 +46,7 @@ export function getMainConfig(): MainConfig {
 
 export async function getAllWorkspacePaths(): Promise<string[]> {
   const allUris = await vscode.workspace.findFiles("**");
-  return allUris.map((uri) => uri.path);
+  return allUris.map(uriToPath);
 }
 
 /**
@@ -59,7 +59,10 @@ export async function resolvePathsFromUris(uris: readonly vscode.Uri[]): Promise
       try {
         const stat = await vscode.workspace.fs.stat(uri);
         if (stat.type === vscode.FileType.Directory) {
-          return await vscode.workspace.findFiles(new vscode.RelativePattern(uri, "**"));
+          const folderChildUris = await vscode.workspace.findFiles(
+            new vscode.RelativePattern(uri, "**"),
+          );
+          return folderChildUris;
         }
         return uri;
       } catch (e) {
@@ -96,6 +99,7 @@ export async function getPossibleFileCreations(
 }
 
 async function nullIfCreationNotPossible(data: FileCreationData): Promise<FileCreationData | null> {
+  // If the file already exists then it is not a possible creation
   return (await pathExists(data.fullPath)) ? null : data;
 }
 

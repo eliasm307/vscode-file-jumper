@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import type LinkManager from "../classes/LinkManager";
-import Logger from "../classes/Logger";
+import Logger, { EXTENSION_KEY } from "../classes/Logger";
 import { shortenPath } from "../utils";
 import {
   getWorkspaceRelativePath,
@@ -36,28 +36,43 @@ export default function registerCreateFileCommand(linkManager: LinkManager) {
           async (progress, cancelToken) => {
             // todo test it can create multiple files at once
             // execute selected file creations, do this one at a time so editors don't get closed during file creation if a limit is reached
-            for (const fileCreation of selectedFileCreations) {
-              progress.report({ increment: 0, message: `Creating ${fileCreation.name}...` });
-              await executeFileCreationAndOpen(fileCreation, cancelToken);
-              progress.report({ increment: stepSize });
-              if (cancelToken.isCancellationRequested) {
-                Logger.info("createFileCommand cancelled");
-                break;
-              }
-            }
-
-            if (cancelToken.isCancellationRequested) {
-              // todo test it can delete all created files if the user cancels the creation
+            try {
               for (const fileCreation of selectedFileCreations) {
-                progress.report({ increment: 0, message: `Deleting ${fileCreation.name}...` });
-                await deleteFile(fileCreation.fullPath);
+                progress.report({ increment: 0, message: `Creating ${fileCreation.name}...` });
+                await executeFileCreationAndOpen(fileCreation, cancelToken);
                 progress.report({ increment: stepSize });
+                if (cancelToken.isCancellationRequested) {
+                  Logger.info("createFileCommand cancelled");
+                  break;
+                }
               }
+
+              if (cancelToken.isCancellationRequested) {
+                // todo test it can delete all created files if the user cancels the creation
+                for (const fileCreation of selectedFileCreations) {
+                  progress.report({ increment: 0, message: `Deleting ${fileCreation.name}...` });
+                  await deleteFile(fileCreation.fullPath).catch(() => null); // ignore errors
+                }
+              }
+            } catch (e) {
+              Logger.error("Error in createFileCommand process", e);
+              await vscode.window.showErrorMessage(
+                `${EXTENSION_KEY} Error creating file(s) from "${getWorkspaceRelativePath(
+                  fromUri,
+                )}": ${String(e)}`,
+              );
+            } finally {
+              progress.report({ increment: 100 });
             }
           },
         );
       } catch (e) {
         Logger.error("Error in createFileCommand handler", e);
+        await vscode.window.showErrorMessage(
+          `${EXTENSION_KEY} Error creating file(s) from "${getWorkspaceRelativePath(
+            fromUri,
+          )}": ${String(e)}`,
+        );
       }
     },
   );
@@ -78,6 +93,12 @@ async function executeFileCreationAndOpen(
   // open the created file in a new tab
   const newFileEditor = await openFileInNewTab(fileCreation.fullPath);
   if (cancelToken.isCancellationRequested) {
+    return;
+  }
+
+  const hasExistingContent = !!newFileEditor.document.getText().trim();
+  if (hasExistingContent) {
+    // todo test it does not insert initial content if the file already has content
     return;
   }
 

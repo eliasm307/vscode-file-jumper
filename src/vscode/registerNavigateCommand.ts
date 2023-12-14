@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import type LinkManager from "../classes/LinkManager";
-import Logger from "../classes/Logger";
+import Logger, { EXTENSION_KEY } from "../classes/Logger";
 import { shortenPath } from "../utils";
 import { openFileInNewTab, getWorkspaceRelativePath } from "./utils";
 
@@ -12,11 +12,20 @@ export default function registerNavigateCommand(linkManager: LinkManager) {
     async (fromUri: vscode.Uri) => {
       Logger.info("navigateCommand called with uri:", fromUri.path);
 
-      const selectedPath = await getTargetPathFromUser({ linkManager, fromUri });
-      if (selectedPath) {
-        await openFileInNewTab(selectedPath);
+      try {
+        const selectedPath = await getTargetPathFromUser({ linkManager, fromUri });
+        if (selectedPath) {
+          await openFileInNewTab(selectedPath);
+        }
+        // else user canceled the selection
+      } catch (e) {
+        Logger.error("Error in navigateCommand handler", e);
+        await vscode.window.showErrorMessage(
+          `${EXTENSION_KEY} Error navigating to file: ${
+            e instanceof Error ? e.message : String(e)
+          }`,
+        );
       }
-      // else user canceled the selection
     },
   );
 }
