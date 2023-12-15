@@ -67,6 +67,7 @@ export default function registerCreateFileCommand(linkManager: LinkManager) {
           },
         );
       } catch (e) {
+        // todo test it can handle errors
         Logger.error("Error in createFileCommand handler", e);
         await vscode.window.showErrorMessage(
           `${EXTENSION_KEY} Error creating file(s) from "${getWorkspaceRelativePath(

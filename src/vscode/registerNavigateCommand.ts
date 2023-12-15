@@ -19,6 +19,7 @@ export default function registerNavigateCommand(linkManager: LinkManager) {
         }
         // else user canceled the selection
       } catch (e) {
+        // todo test it can handle errors
         Logger.error("Error in navigateCommand handler", e);
         await vscode.window.showErrorMessage(
           `${EXTENSION_KEY} Error navigating to file: ${
