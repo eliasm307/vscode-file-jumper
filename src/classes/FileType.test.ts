@@ -331,4 +331,219 @@ describe("FileType", () => {
   });
 
   describe.todo(`#${FileType.prototype.allowsLinksFrom.name}`);
+
+  describe(`#${FileType.prototype.getPossibleCreationConfigs.name}`, () => {
+    it("should return the possible creation paths with/without initial content or icons", () => {
+      fileType = new FileType({
+        name: "test",
+        icon: "🧪",
+        patterns: ["\\.test\\.ts"],
+        creationPatterns: [
+          {
+            name: "with-icon",
+            icon: "⭐",
+            pathTransformations: [
+              {
+                searchRegex: "\\.test\\.",
+                replacementText: ".test-with-icon.",
+              },
+            ],
+          },
+          {
+            name: "with-inline-snippet-content",
+            icon: "😀",
+            pathTransformations: [
+              {
+                searchRegex: "\\.test\\.",
+                replacementText: ".test-with-inline-snippet-content.",
+              },
+            ],
+            initialContentSnippet: ["inline", "snippet", "content"],
+          },
+          {
+            name: "with-referenced-snippet-content",
+            icon: "💖",
+            pathTransformations: [
+              {
+                searchRegex: "\\.test\\.",
+                replacementText: ".test-with-referenced-snippet-content.",
+              },
+            ],
+            initialContentSnippet: "referenced-snippet-content",
+          },
+        ],
+      });
+
+      assert.deepStrictEqual(fileType.getPossibleCreationConfigs("C:/User/tests/some.test.ts"), [
+        {
+          name: "with-icon",
+          icon: "⭐",
+          fullPath: "C:/User/tests/some.test-with-icon.ts",
+          initialContentSnippet: undefined,
+        },
+        {
+          name: "with-inline-snippet-content",
+          icon: "😀",
+          fullPath: "C:/User/tests/some.test-with-inline-snippet-content.ts",
+          initialContentSnippet: ["inline", "snippet", "content"],
+        },
+        {
+          name: "with-referenced-snippet-content",
+          icon: "💖",
+          fullPath: "C:/User/tests/some.test-with-referenced-snippet-content.ts",
+          initialContentSnippet: "referenced-snippet-content",
+        },
+      ]);
+    });
+
+    it("supports multiple transformations", () => {
+      fileType = new FileType({
+        name: "test",
+        icon: "🧪",
+        patterns: ["\\.test\\.ts"],
+        creationPatterns: [
+          {
+            name: "with-icon",
+            icon: "⭐",
+            pathTransformations: [
+              {
+                searchRegex: "\\.test\\.",
+                replacementText: ".test-with-icon.",
+              },
+              {
+                searchRegex: "some",
+                replacementText: "other",
+              },
+            ],
+          },
+        ],
+      });
+
+      assert.deepStrictEqual(fileType.getPossibleCreationConfigs("C:/User/tests/some.test.ts"), [
+        {
+          name: "with-icon",
+          icon: "⭐",
+          fullPath: "C:/User/tests/other.test-with-icon.ts",
+          initialContentSnippet: undefined,
+        },
+      ]);
+    });
+
+    it("should throw an error if the path transformation does not result in a valid path", () => {
+      fileType = new FileType({
+        name: "test",
+        icon: "🧪",
+        patterns: ["\\.test\\.ts"],
+        creationPatterns: [
+          {
+            name: "with-icon",
+            icon: "⭐",
+            pathTransformations: [
+              {
+                searchRegex: "C:\\/",
+                replacementText: "",
+              },
+            ],
+          },
+        ],
+      });
+
+      assert.throws(
+        () => fileType.getPossibleCreationConfigs("C:/User/tests/some.test.ts"),
+        'Resulting creation path "User/tests/some.test.ts" from source file "C:/User/tests/some.test.ts" with type "test" is not absolute. Creation pattern: {"name":"with-icon","icon":"⭐","pathTransformations":[{"searchRegex":{},"replacementText":""}]}',
+      );
+    });
+
+    it("does not produce duplicate creation paths if multiple creation patterns create the same file", () => {
+      fileType = new FileType({
+        name: "test",
+        icon: "🧪",
+        patterns: ["\\.test\\.ts"],
+        creationPatterns: [
+          {
+            name: "file1",
+            icon: "⭐",
+            pathTransformations: [
+              {
+                searchRegex: "\\.test\\.",
+                replacementText: ".test-file.",
+              },
+            ],
+          },
+          {
+            name: "file2",
+            icon: "😀",
+            pathTransformations: [
+              {
+                searchRegex: "\\.test\\.",
+                replacementText: ".test-file.",
+              },
+            ],
+            initialContentSnippet: ["content"],
+          },
+        ],
+      });
+
+      assert.deepStrictEqual(fileType.getPossibleCreationConfigs("C:/User/tests/some.test.ts"), [
+        {
+          name: "file1",
+          icon: "⭐",
+          fullPath: "C:/User/tests/some.test-file.ts",
+          initialContentSnippet: undefined,
+        },
+      ]);
+    });
+
+    it("can filter out file transformations using a test regex", () => {
+      fileType = new FileType({
+        name: "test",
+        icon: "🧪",
+        patterns: ["\\.test\\.ts"],
+        creationPatterns: [
+          {
+            name: "with-icon",
+            icon: "⭐",
+            pathTransformations: [
+              {
+                searchRegex: "\\.test\\.",
+                replacementText: ".some.test.",
+                testRegex: "some",
+              },
+              {
+                searchRegex: "\\.test\\.",
+                replacementText: ".other.test.",
+                testRegex: "other",
+              },
+            ],
+          },
+        ],
+      });
+
+      assert.deepStrictEqual(
+        fileType.getPossibleCreationConfigs("C:/User/tests/some.test.ts"),
+        [
+          {
+            name: "with-icon",
+            icon: "⭐",
+            fullPath: "C:/User/tests/some.some.test.ts",
+            initialContentSnippet: undefined,
+          },
+        ],
+        "only the first transformation should be applied",
+      );
+
+      assert.deepStrictEqual(
+        fileType.getPossibleCreationConfigs("C:/User/tests/other.test.ts"),
+        [
+          {
+            name: "with-icon",
+            icon: "⭐",
+            fullPath: "C:/User/tests/other.other.test.ts",
+            initialContentSnippet: undefined,
+          },
+        ],
+        "only the second transformation should be applied",
+      );
+    });
+  });
 });

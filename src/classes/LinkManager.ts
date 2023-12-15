@@ -64,7 +64,7 @@ export default class LinkManager {
   getAllFileCreationsFrom(path: string): FileCreationData[] {
     const stopTimer = Logger.startTimer("LinkManager#getCreationPathsFrom", path);
     const pathData = this.getPathData(path);
-    const creationData = pathData?.file.type.getPossibleCreationPaths(path) || [];
+    const creationData = pathData?.file.type.getPossibleCreationConfigs(path) || [];
     stopTimer();
     return creationData;
   }

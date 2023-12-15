@@ -1,12 +1,12 @@
 import * as pathModule from "node:path";
 import type {
-  FileCreationData,
+  FileCreationData as FileCreationConfig,
   DecorationData,
   LinkedFileData,
   NormalisedPath,
   PathTransformation,
 } from "../types";
-import { normalisePath } from "../utils";
+import { isTruthy, normalisePath } from "../utils";
 import Logger from "./Logger";
 import {
   applyPathTransformations,
@@ -51,7 +51,7 @@ export default class FileType {
 
   private readonly patterns: RegExp[];
 
-  private readonly creationPatterns?: CreationPattern[];
+  private readonly creationPatterns: CreationPattern[];
 
   private ignoreNonAlphaNumericCharacters: boolean;
 
@@ -76,6 +76,7 @@ export default class FileType {
       ...creationPattern,
       pathTransformations: creationPattern.pathTransformations.map((transformation) => ({
         ...transformation,
+        // NOTE: we assume this will only be used for string replace, so stateful regex flags should not cause issues when regex is reused
         searchRegex: new RegExp(transformation.searchRegex, transformation.searchRegexFlags),
         testRegex: transformation.testRegex ? new RegExp(transformation.testRegex) : undefined,
       })),
@@ -165,41 +166,42 @@ export default class FileType {
   }
 
   /**
-   * @remark This produces a raw list of paths that could be created, but they may be files that already exist
+   * @remark This produces a raw list of possible file creations from a file, but they may be files that already exist
+   *
+   * @remark This assumes the source path is a valid path for this file type
    */
-  getPossibleCreationPaths(sourcePath: string): FileCreationData[] {
+  getPossibleCreationConfigs(sourcePath: string): FileCreationConfig[] {
     // todo test if multiple creation paths create the same file then only show one
     const uniqueCreationPaths = new Set<string>();
-    const creationPathsData: FileCreationData[] = [];
-    for (const creationPattern of this.creationPatterns || []) {
-      const creationPath = applyPathTransformations({
-        sourcePath,
-        transformations: creationPattern.pathTransformations,
-      });
+    return this.creationPatterns
+      .map((creationPattern) => {
+        const creationPath = applyPathTransformations({
+          sourcePath,
+          transformations: creationPattern.pathTransformations,
+        });
 
-      if (creationPath === sourcePath || uniqueCreationPaths.has(creationPath)) {
-        continue; // creation not possible or creation path already exists
-      }
+        if (creationPath === sourcePath || uniqueCreationPaths.has(creationPath)) {
+          return; // creation not possible or creation path already exists
+        }
 
-      // assert creation path is valid path, ie the user has not made a made a mistake with the path
-      if (!pathModule.isAbsolute(creationPath)) {
-        const error = `Resulting creation path "${creationPath}" from source file "${sourcePath}" with type "${
-          this.name
-        }" is not absolute. Creation pattern: ${JSON.stringify(creationPattern)}`;
-        console.error(error);
-        throw new Error(error);
-      }
+        // assert creation path is valid path, ie the user has not made a made a mistake with the path
+        if (!pathModule.isAbsolute(creationPath)) {
+          const error = `Resulting creation path "${creationPath}" from source file "${sourcePath}" with type "${
+            this.name
+          }" is not absolute. Creation pattern: ${JSON.stringify(creationPattern)}`;
+          console.error(error);
+          throw new Error(error);
+        }
 
-      uniqueCreationPaths.add(creationPath);
-      creationPathsData.push({
-        name: creationPattern.name,
-        icon: creationPattern.icon || "",
-        fullPath: creationPath,
-        initialContentSnippet: creationPattern.initialContentSnippet,
-      });
-    }
-
-    return creationPathsData;
+        uniqueCreationPaths.add(creationPath);
+        return {
+          name: creationPattern.name,
+          icon: creationPattern.icon || "",
+          fullPath: creationPath,
+          initialContentSnippet: creationPattern.initialContentSnippet,
+        };
+      })
+      .filter(isTruthy);
   }
 
   /**
