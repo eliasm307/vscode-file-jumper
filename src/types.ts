@@ -24,7 +24,7 @@ export type FileCreationData = {
   name: string;
   icon: string;
   fullPath: string;
-  initialContentSnippet: CreationPatternConfig["defaultContent"];
+  initialContentSnippet: CreationPatternConfig["initialContentSnippet"];
 };
 
 export type DecorationData = {
