@@ -1,14 +1,35 @@
 import * as pathModule from "node:path";
-import type { FileCreationData, DecorationData, LinkedFileData, NormalisedPath } from "../types";
+import type {
+  FileCreationData,
+  DecorationData,
+  LinkedFileData,
+  NormalisedPath,
+  PathTransformation,
+} from "../types";
 import { normalisePath } from "../utils";
 import Logger from "./Logger";
-import type { FileTypeConfig } from "../utils/config";
+import {
+  applyPathTransformations,
+  type CreationPatternConfig,
+  type FileTypeConfig,
+} from "../utils/config";
 
-// ! this should only be created from this file so it can be changed without affecting the rest of the code
 /**
  * This is the key used to compare whether files of different types are linked to each other
  */
+// ! this should only be created from this file so it can be changed without affecting the rest of the code
 export type PathKey = string & { __brand: "pathKey" };
+
+type CreationPattern = {
+  name: string;
+  icon?: string;
+  pathTransformations: PathTransformation[];
+  /**
+   * Either a string as an existing snippet name
+   * or an array of strings as lines of a snippet body
+   */
+  initialContentSnippet?: string[] | string;
+};
 
 export default class FileType {
   /**
@@ -30,16 +51,35 @@ export default class FileType {
 
   private readonly patterns: RegExp[];
 
+  private readonly creationPatterns?: CreationPattern[];
+
   private ignoreNonAlphaNumericCharacters: boolean;
+
+  private icon: string;
 
   readonly name: string;
 
-  constructor(private readonly config: FileTypeConfig) {
+  constructor(config: FileTypeConfig) {
+    this.icon = config.icon;
     this.patterns = config.patterns.map((pattern) => new RegExp(pattern, "i"));
+    this.creationPatterns = this.parseCreationPatternConfigs(config.creationPatterns);
     this.onlyLinkToTypeNamesSet = config.onlyLinkTo && new Set(config.onlyLinkTo);
     this.onlyLinkFromTypeNamesSet = config.onlyLinkFrom && new Set(config.onlyLinkFrom);
     this.name = config.name;
     this.ignoreNonAlphaNumericCharacters = !!config.ignoreNonAlphaNumericCharacters;
+  }
+
+  private parseCreationPatternConfigs(
+    creationPatterns: CreationPatternConfig[] | undefined = [],
+  ): CreationPattern[] {
+    return creationPatterns.map((creationPattern) => ({
+      ...creationPattern,
+      pathTransformations: creationPattern.pathTransformations.map((transformation) => ({
+        ...transformation,
+        searchRegex: new RegExp(transformation.searchRegex, transformation.searchRegexFlags),
+        testRegex: transformation.testRegex ? new RegExp(transformation.testRegex) : undefined,
+      })),
+    }));
   }
 
   addPaths(paths: Set<string> | string[]): void {
@@ -77,8 +117,8 @@ export default class FileType {
 
   getDecorationData(): DecorationData {
     return {
-      badgeText: this.config.icon,
-      tooltip: `${this.config.icon} ${this.name}`,
+      badgeText: this.icon,
+      tooltip: `${this.icon} ${this.name}`,
     };
   }
 
@@ -87,7 +127,7 @@ export default class FileType {
     const fullPathsArray = fullPathsSet ? [...fullPathsSet] : [];
     return fullPathsArray.map((fullPath) => ({
       typeName: this.name,
-      icon: this.config.icon,
+      icon: this.icon,
       fullPath,
     }));
   }
@@ -131,13 +171,12 @@ export default class FileType {
     // todo test if multiple creation paths create the same file then only show one
     const uniqueCreationPaths = new Set<string>();
     const creationPathsData: FileCreationData[] = [];
-    for (const creationPattern of this.config.creationPatterns || []) {
-      // NOTE: regex with some flags is stateful, so we create a new regex each time to avoid state being carried over
-      const searchRegex = new RegExp(
-        creationPattern.pathSearchRegex,
-        creationPattern.pathSearchRegexFlags,
-      );
-      const creationPath = sourcePath.replace(searchRegex, creationPattern.pathReplacementText);
+    for (const creationPattern of this.creationPatterns || []) {
+      const creationPath = applyPathTransformations({
+        sourcePath,
+        transformations: creationPattern.pathTransformations,
+      });
+
       if (creationPath === sourcePath || uniqueCreationPaths.has(creationPath)) {
         continue; // creation not possible or creation path already exists
       }
@@ -148,11 +187,10 @@ export default class FileType {
           this.name
         }" is not absolute. Creation pattern: ${JSON.stringify(creationPattern)}`;
         console.error(error);
-        // continue;
+        throw new Error(error);
       }
 
       uniqueCreationPaths.add(creationPath);
-      // change means creation pattern matched and produced a creation path
       creationPathsData.push({
         name: creationPattern.name,
         icon: creationPattern.icon || "",
@@ -160,6 +198,7 @@ export default class FileType {
         initialContentSnippet: creationPattern.initialContentSnippet,
       });
     }
+
     return creationPathsData;
   }
 

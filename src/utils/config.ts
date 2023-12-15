@@ -1,3 +1,5 @@
+import type { PathTransformation } from "../types";
+
 export type FileTypeConfig = {
   name: string;
   icon: string;
@@ -30,14 +32,19 @@ export type FileTypeConfig = {
 export type CreationPatternConfig = {
   name: string;
   icon?: string;
-  pathSearchRegex: string;
-  pathSearchRegexFlags?: string;
-  pathReplacementText: string;
+  pathTransformations: PathTransformationConfig[];
   /**
    * Either a string as an existing snippet name
    * or an array of strings as lines of a snippet body
    */
   initialContentSnippet?: string[] | string;
+};
+
+type PathTransformationConfig = {
+  testRegex?: string;
+  searchRegex: string;
+  searchRegexFlags?: string;
+  replacementText: string;
 };
 
 export type MainConfig = {
@@ -110,4 +117,22 @@ export function getIssuesWithMainConfig(mainConfig: MainConfig): string[] {
   }
 
   return issues;
+}
+
+// todo validate output is a valid path
+export function applyPathTransformations({
+  sourcePath,
+  transformations,
+}: {
+  sourcePath: string;
+  transformations: PathTransformation[];
+}): string {
+  return transformations.reduce((output, transformation) => {
+    if (transformation.testRegex && !transformation.testRegex.test(output)) {
+      return output; // transformation should not be applied to this path
+    }
+
+    // NOTE: regex with some flags is stateful, so we create a new regex each time to avoid state being carried over
+    return output.replace(transformation.searchRegex, transformation.replacementText);
+  }, sourcePath);
 }

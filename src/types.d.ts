@@ -1,6 +1,8 @@
 import type FileType from "./classes/FileType";
 import type { CreationPatternConfig } from "./utils/config";
 
+// todo convert this to ts file
+
 export type FileMetaData = {
   fileType: FileType;
   linkedFiles: LinkedFileData[];
@@ -41,3 +43,10 @@ export type DecorationData = {
  * so we need to make sure to normalise them in some cases to make sure they match
  */
 export type NormalisedPath = string & { __normalisedPath: never };
+
+export type PathTransformation = {
+  searchRegex: RegExp;
+  searchRegexFlags?: string;
+  replacementText: string;
+  testRegex?: RegExp;
+};
