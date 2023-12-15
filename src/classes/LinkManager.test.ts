@@ -75,10 +75,13 @@ describe("LinkManager", () => {
     path: string;
     expected: Record<TestFileTypeName, DecorationData | undefined>;
   }) {
-    const actual = TEST_FILE_TYPE_NAMES.reduce((out, fileTypeName) => {
-      out[fileTypeName] = linkManager.getFileTypeDecoratorData({ path, fileTypeName });
-      return out;
-    }, {} as Record<TestFileTypeName, DecorationData | undefined>);
+    const actual = TEST_FILE_TYPE_NAMES.reduce(
+      (out, fileTypeName) => {
+        out[fileTypeName] = linkManager.getFileTypeDecoratorData({ path, fileTypeName });
+        return out;
+      },
+      {} as Record<TestFileTypeName, DecorationData | undefined>,
+    );
 
     assert.deepStrictEqual(actual, expected, `Decoration data for "${path}" is correct`);
   }
@@ -1410,6 +1413,102 @@ describe("LinkManager", () => {
           ],
         },
         "finds links with option",
+      );
+    });
+  });
+
+  describe(LinkManager.prototype.getAllPathsWithPossibleCreationsEntries.name, () => {
+    it("should return all paths with possible creations entries", () => {
+      linkManager = new LinkManager();
+      linkManager.setContext({
+        config: {
+          fileTypes: [
+            {
+              name: "Source",
+              icon: "💻",
+              patterns: ["\\/src\\/(?<topic>.+)\\.ts$"],
+              creationPatterns: [
+                {
+                  name: "Test",
+                  icon: "🧪",
+                  pathTransformations: [
+                    {
+                      searchRegex: "\\/src\\/",
+                      replacementText: "/test/",
+                    },
+                    {
+                      searchRegex: "\\.ts$",
+                      replacementText: ".test.ts",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "Test",
+              icon: "🧪",
+              patterns: ["\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$"],
+              creationPatterns: [
+                {
+                  name: "Source",
+                  icon: "💻",
+                  pathTransformations: [
+                    {
+                      searchRegex: "\\/test\\/",
+                      replacementText: "/src/",
+                    },
+                    {
+                      searchRegex: "\\.test\\.ts$",
+                      replacementText: ".ts",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "Documentation",
+              icon: "📖",
+              patterns: ["\\/(docs|docs)\\/(?<topic>.+)\\.md$"],
+              onlyLinkTo: ["Source"],
+            },
+          ],
+          ignorePatterns: ["\\/node_modules\\/"],
+        },
+        paths: [
+          "/root/src/classes/Entity.ts",
+          "/root/test/classes/Entity.test.ts",
+          "/root/docs/classes/Entity.md",
+          "/root/unknown/file/path.ts",
+        ],
+      });
+
+      assert.deepStrictEqual(
+        linkManager.getAllPathsWithPossibleCreationsEntries(),
+        [
+          [
+            "/root/src/classes/Entity.ts",
+            [
+              {
+                fullPath: "/root/test/classes/Entity.test.ts",
+                icon: "🧪",
+                initialContentSnippet: undefined,
+                name: "Test",
+              },
+            ],
+          ],
+          [
+            "/root/test/classes/Entity.test.ts",
+            [
+              {
+                fullPath: "/root/src/classes/Entity.ts",
+                icon: "💻",
+                initialContentSnippet: undefined,
+                name: "Source",
+              },
+            ],
+          ],
+        ],
+        "correct file creations proposed",
       );
     });
   });

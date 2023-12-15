@@ -17,3 +17,6 @@ coverage/
 .eslintcache
 
 .vitest/
+
+vite.config.mjs.map
+vite.config.mjs
