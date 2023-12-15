@@ -5,5 +5,5 @@
     "rootDir": "src",
     "sourceMap": true
   },
-  "exclude": ["node_modules", "vite.config.ts", "src/scripts/*"]
+  "exclude": ["node_modules", "vite.config.mts", "src/scripts/*"]
 }
