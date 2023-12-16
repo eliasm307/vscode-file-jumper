@@ -1,8 +1,6 @@
 import type FileType from "./classes/FileType";
 import type { CreationPatternConfig } from "./utils/config";
 
-// todo convert this to ts file
-
 export type FileMetaData = {
   fileType: FileType;
   linkedFiles: LinkedFileData[];

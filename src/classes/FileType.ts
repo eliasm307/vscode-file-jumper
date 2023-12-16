@@ -171,7 +171,6 @@ export default class FileType {
    * @remark This assumes the source path is a valid path for this file type
    */
   getPossibleCreationConfigs(sourcePath: string): FileCreationConfig[] {
-    // todo test if multiple creation paths create the same file then only show one
     const uniqueCreationPaths = new Set<string>();
     return this.creationPatterns
       .map((creationPattern) => {

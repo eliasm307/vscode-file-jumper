@@ -114,7 +114,9 @@ export function getIssuesWithMainConfig(mainConfig: MainConfig): string[] {
   return issues;
 }
 
-// todo validate output is a valid path
+/**
+ * @remark This does not verify that the output path is a valid path
+ */
 export function applyPathTransformations({
   sourcePath,
   transformations,
