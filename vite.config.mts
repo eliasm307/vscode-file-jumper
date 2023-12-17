@@ -9,7 +9,6 @@ export default defineConfig({
       "**/out/**/*",
       "**/test/**/*",
       "**/src/test/**/*", // this is more integration tests
-      "**/src/scripts/**",
       "**/src/vscode/*",
     ],
     /** @see https://vitest.dev/api/mock.html#mockrestore */

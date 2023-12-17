@@ -45,7 +45,9 @@
     "sync-readme": "echo 'Syncing README...' && node src/scripts/sync-readme.js"
   },
   "devDependencies": {
+    "@adobe/jsonschema2md": "^7.1.5",
     "@eliasm307/config": "^0.44.4",
+    "@types/json-schema": "^7.0.15",
     "@types/node": "^18.16.18",
     "@types/vscode": "^1.79.0",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
@@ -126,6 +128,7 @@
           "minProperties": 2,
           "patternProperties": {
             ".+": {
+              "title": "File Type",
               "type": "object",
               "additionalProperties": false,
               "properties": {
@@ -170,6 +173,7 @@
                 "creationPatterns": {
                   "type": "array",
                   "items": {
+                    "title": "Creation Pattern",
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
@@ -276,5 +280,8 @@
         }
       }
     }
+  },
+  "dependencies": {
+    "json-schema-to-markdown": "^1.1.1"
   }
 }
