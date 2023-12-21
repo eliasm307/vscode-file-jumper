@@ -1,5 +1,6 @@
 import { describe, it, assert } from "vitest";
-import jsonSchemaToMarkdown, { VSCodeJsonSchema } from "./json-schema-to-markdown";
+import type { VSCodeJsonSchema } from "./json-schema-to-markdown";
+import jsonSchemaToMarkdown from "./json-schema-to-markdown";
 
 describe("json-schema-to-markdown", () => {
   function formatExpectedMarkdown(text: string): string {
@@ -28,20 +29,19 @@ describe("json-schema-to-markdown", () => {
     assert.strictEqual(actual, formatExpectedMarkdown(expectedMarkdown));
   }
 
-  it("can handle object schemas with primitive properties", () => {
-    const actual = jsonSchemaToMarkdown({
-      title: "Root",
-      type: "object",
-      description: "This is a root object.",
-      properties: {
-        string: { type: "string", markdownDescription: "This is a string." },
-        number: { type: "number", description: "This is a number." },
-        boolean: { type: "boolean" },
+  it("can handle object schemas with primitive properties and supports defining an optional description in different ways", () => {
+    assertJsonSchemaToMarkdown({
+      jsonSchema: {
+        title: "Root",
+        type: "object",
+        description: "This is a root object.",
+        properties: {
+          string: { type: "string", markdownDescription: "This is a string." },
+          number: { type: "number", description: "This is a number." },
+          boolean: { type: "boolean" },
+        },
       },
-    });
-    assert.strictEqual(
-      actual,
-      formatExpectedMarkdown(`
+      expectedMarkdown: `
         ## Root
 
         Type: \`object\`
@@ -52,26 +52,98 @@ describe("json-schema-to-markdown", () => {
         - \`string\` (type: \`string\`) - This is a string.
         - \`number\` (type: \`number\`) - This is a number.
         - \`boolean\` (type: \`boolean\`) - [No description provided.]
-      `),
-    );
+      `,
+    });
   });
 
   it('uses "markdownDescription" over "description"', () => {
-    const actual = jsonSchemaToMarkdown({
-      title: "Root",
-      type: "string",
-      description: "This is a string description.",
-      markdownDescription: "This is a string markdownDescription.",
-    });
-    assert.strictEqual(
-      actual,
-      formatExpectedMarkdown(`
+    assertJsonSchemaToMarkdown({
+      jsonSchema: {
+        title: "Root",
+        type: "string",
+        description: "This is a string description.",
+        markdownDescription: "This is a string markdownDescription.",
+      },
+      expectedMarkdown: `
         ## Root
 
         Type: \`string\`
 
         This is a string markdownDescription.
-      `),
-    );
+      `,
+    });
+  });
+
+  it("throws if the root schema has no title", () => {
+    assert.throws(() => {
+      jsonSchemaToMarkdown({
+        type: "object",
+        description: "This is a root object.",
+        properties: {},
+      });
+    });
+  });
+
+  it("throws if the root schema has no description", () => {
+    assert.throws(() => {
+      jsonSchemaToMarkdown({
+        title: "Root",
+        type: "object",
+        properties: {},
+      });
+    });
+  });
+
+  it("throws if a child object schema has no title", () => {
+    assert.throws(() => {
+      jsonSchemaToMarkdown({
+        title: "Root",
+        type: "object",
+        description: "This is a root object.",
+        properties: {
+          child: {
+            type: "object",
+            description: "This is a child object.",
+            properties: {},
+          },
+        },
+      });
+    });
+  });
+
+  it("shows a child objects type in a separate section", () => {
+    assertJsonSchemaToMarkdown({
+      jsonSchema: {
+        title: "Root",
+        type: "object",
+        description: "This is a root object.",
+        properties: {
+          child: {
+            title: "Child",
+            type: "object",
+            description: "This is a child object.",
+            properties: {},
+          },
+        },
+      },
+      expectedMarkdown: `
+        ## Root
+
+        Type: \`object\`
+
+        This is a root object.
+
+        Properties:
+        - \`child\` (type: \`Child\`) - This is a child object.
+
+        ## Child
+
+        Type: \`object\`
+
+        This is a child object.
+
+        Properties:
+      `,
+    });
   });
 });

@@ -14,11 +14,17 @@ export type VSCodeJsonSchema = JSONSchema7 & {
   items?: VSCodeJsonSchema;
 };
 
-export default function jsonSchemaToMarkdown(schema: VSCodeJsonSchema): string {
-  const pendingSchemas = [schema];
-  const sectionsText: string[] = [];
+type VSCodeComplexJsonSchema = VSCodeJsonSchema & {
+  title: string;
+  type: "object" | "array";
+};
 
+export default function jsonSchemaToMarkdown(schema: VSCodeJsonSchema): string {
+  const sectionsText: string[] = [];
+  const pendingSchemas = [schema];
   while (pendingSchemas.length) {
+    console.log("pendingSchemas", pendingSchemas);
+    console.log("sectionsText", sectionsText);
     debugger;
     sectionsText.push(
       serializeSchemaSection(pendingSchemas.pop()!, {
@@ -74,16 +80,13 @@ function getSchemaDescription(schema: VSCodeJsonSchema): string {
 function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): string {
   const { properties, required } = schema;
 
-  const propertySections = Object.entries(properties || {}).map(
-    ([propertyName, propertySchema]) => {
-      const isRequired = required?.includes(propertyName);
-      const propertyTitle = isRequired ? `**\`${propertyName}\`**` : `\`${propertyName}\``;
-      const propertyType = getSchemaTypeText(propertySchema, context);
-      return `- ${propertyTitle} (type: \`${propertyType}\`) - ${getSchemaDescription(
-        propertySchema,
-      )}`;
-    },
-  );
+  const propertyTexts = Object.entries(properties || {}).map(([propertyName, propertySchema]) => {
+    const isRequired = required?.includes(propertyName);
+    const propertyTitle = isRequired ? `**\`${propertyName}\`**` : `\`${propertyName}\``;
+    const propertyType = getSchemaTypeText(propertySchema, context);
+    const description = getSchemaDescription(propertySchema);
+    return `- ${propertyTitle} (type: \`${propertyType}\`) - ${description}`;
+  });
 
   return [
     `Type: \`object\``,
@@ -91,7 +94,7 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
     getSchemaDescription(schema),
     "",
     "Properties:",
-    ...propertySections,
+    ...propertyTexts,
   ].join("\n");
 }
 
@@ -100,19 +103,12 @@ function serializePrimitiveSchema(schema: VSCodeJsonSchema): string {
 }
 
 function getSchemaTypeText(schema: VSCodeJsonSchema, context: Context): string {
-  if (schema.title) {
-    if (isComplexSchema(schema)) {
-      // scheduleSchemaForSerialization(childSchema, context);
-    }
-    return schema.title;
-  }
-
   if (schema.oneOf) {
     return schema.oneOf
       .filter(isTruthy)
       .filter(isObject)
       .map((childSchema) => {
-        if (childSchema.title) {
+        if (isComplexSchema(childSchema)) {
           scheduleSchemaForSerialization(childSchema, context);
           return childSchema.title;
         }
@@ -126,13 +122,18 @@ function getSchemaTypeText(schema: VSCodeJsonSchema, context: Context): string {
       .filter(isTruthy)
       .filter(isObject)
       .map((childSchema) => {
-        if (childSchema.title) {
+        if (isComplexSchema(childSchema)) {
           scheduleSchemaForSerialization(childSchema, context);
           return childSchema.title;
         }
         return childSchema.type;
       })
       .join(" | ");
+  }
+
+  if (isComplexSchema(schema)) {
+    scheduleSchemaForSerialization(schema, context);
+    return schema.title;
   }
 
   if (Array.isArray(schema.type)) {
@@ -142,14 +143,19 @@ function getSchemaTypeText(schema: VSCodeJsonSchema, context: Context): string {
   return schema.type || "Unknown";
 }
 
-function scheduleSchemaForSerialization(schema: VSCodeJsonSchema, context: Context): void {
-  if (schema.title && isComplexSchema(schema)) {
-    context.pendingSchemas.push(schema);
+function scheduleSchemaForSerialization(schema: VSCodeComplexJsonSchema, context: Context): void {
+  if (!schema.title) {
+    throw new Error(`Schema title is undefined}`);
   }
+  context.pendingSchemas.push(schema);
 }
 
-function isComplexSchema(schema: VSCodeJsonSchema): boolean {
-  return schema.type === "object" || schema.type === "array";
+function isComplexSchema(schema: VSCodeJsonSchema): schema is VSCodeComplexJsonSchema {
+  const isComplex = schema.type === "object" || schema.type === "array";
+  if (isComplex && !schema.title) {
+    throw new Error(`Complex schema title is undefined: ${schema.type}`);
+  }
+  return isComplex;
 }
 
 function serializeArraySchema(schema: VSCodeJsonSchema, context: Context): string {
