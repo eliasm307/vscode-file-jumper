@@ -111,7 +111,7 @@ describe("json-schema-to-markdown", () => {
     });
   });
 
-  it("shows a child objects type in a separate section", () => {
+  it("shows complex property types in a separate section", () => {
     assertJsonSchemaToMarkdown({
       jsonSchema: {
         title: "Root",
@@ -122,7 +122,9 @@ describe("json-schema-to-markdown", () => {
             title: "Child",
             type: "object",
             description: "This is a child object.",
-            properties: {},
+            properties: {
+              string: { type: "string" },
+            },
           },
         },
       },
@@ -143,6 +145,59 @@ describe("json-schema-to-markdown", () => {
         This is a child object.
 
         Properties:
+        - \`string\` (type: \`string\`) - [No description provided.]
+      `,
+    });
+  });
+
+  it("shows primitive array types inline", () => {
+    assertJsonSchemaToMarkdown({
+      jsonSchema: {
+        title: "Root",
+        type: "array",
+        description: "This is an array of strings",
+        items: { type: "string" },
+      },
+      expectedMarkdown: `
+        ## Root
+
+        Type: \`string[]\`
+
+        This is an array of strings
+      `,
+    });
+  });
+
+  it("shows complex array item types in a separate section", () => {
+    assertJsonSchemaToMarkdown({
+      jsonSchema: {
+        title: "Root",
+        type: "array",
+        description: "This is an array of objects.",
+        items: {
+          type: "object",
+          title: "Child",
+          description: "This is a child object.",
+          properties: {
+            string: { type: "string" },
+          },
+        },
+      },
+      expectedMarkdown: `
+        ## Root
+
+        Type: \`Child[]\`
+
+        This is an array of objects.
+
+        ## Child
+
+        Type: \`object\`
+
+        This is a child object.
+
+        Properties:
+        - \`string\` (type: \`string\`) - [No description provided.]
       `,
     });
   });
