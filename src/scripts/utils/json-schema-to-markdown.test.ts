@@ -201,4 +201,96 @@ describe("json-schema-to-markdown", () => {
       `,
     });
   });
+
+  it("can show objects with patternProperties", () => {
+    assertJsonSchemaToMarkdown({
+      jsonSchema: {
+        title: "Root",
+        type: "object",
+        description: "This is a root object.",
+        patternProperties: {
+          "^foo": { type: "string", description: "This is a foo." },
+          "^bar": { type: "number", markdownDescription: "This is a bar." },
+          "^baz": { type: "boolean" },
+        },
+      },
+      expectedMarkdown: `
+        ## Root
+
+        Type: \`object\`
+
+        This is a root object.
+
+        Properties:
+        - With name matching regex \`^foo\` (type: \`string\`) - This is a foo.
+        - With name matching regex \`^bar\` (type: \`number\`) - This is a bar.
+        - With name matching regex \`^baz\` (type: \`boolean\`) - [No description provided.]
+      `,
+    });
+  });
+
+  it("shows complex patternProperty types in a separate section", () => {
+    assertJsonSchemaToMarkdown({
+      jsonSchema: {
+        title: "Root",
+        type: "object",
+        description: "This is a root object.",
+        patternProperties: {
+          "^foo": {
+            title: "Foo",
+            type: "object",
+            description: "This is a foo.",
+            properties: {
+              string: { type: "string" },
+            },
+          },
+        },
+      },
+      expectedMarkdown: `
+        ## Root
+
+        Type: \`object\`
+
+        This is a root object.
+
+        Properties:
+        - With name matching regex \`^foo\` (type: \`Foo\`) - This is a foo.
+
+        ## Foo
+
+        Type: \`object\`
+
+        This is a foo.
+
+        Properties:
+        - \`string\` (type: \`string\`) - [No description provided.]
+      `,
+    });
+  });
+
+  it("can show required properties", () => {
+    assertJsonSchemaToMarkdown({
+      jsonSchema: {
+        title: "Root",
+        type: "object",
+        description: "This is a root object.",
+        properties: {
+          string: { type: "string" },
+          number: { type: "number" },
+        },
+        required: ["number"],
+      },
+      expectedMarkdown: `
+        ## Root
+
+        Type: \`object\`
+
+        This is a root object.
+
+        Properties:
+        - \`string\` (type: \`string\`) - [No description provided.]
+        - \`number\` (type: \`number\`) - **REQUIRED** - [No description provided.]
+      `,
+    });
+  });
 });

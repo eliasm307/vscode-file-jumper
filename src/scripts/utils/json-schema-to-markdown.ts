@@ -11,6 +11,7 @@ type Context = {
 export type VSCodeJsonSchema = JSONSchema7 & {
   markdownDescription?: string;
   properties?: Record<string, VSCodeJsonSchema>;
+  patternProperties?: Record<string, VSCodeJsonSchema>;
   items?: VSCodeJsonSchema;
 };
 
@@ -23,8 +24,8 @@ export default function jsonSchemaToMarkdown(schema: VSCodeJsonSchema): string {
   const sectionsText: string[] = [];
   const pendingSchemas = [schema];
   while (pendingSchemas.length) {
-    console.log("pendingSchemas", pendingSchemas);
-    console.log("sectionsText", sectionsText);
+    // console.log("pendingSchemas", pendingSchemas);
+    // console.log("sectionsText", sectionsText);
     debugger;
     sectionsText.push(
       serializeSchemaSection(pendingSchemas.pop()!, {
@@ -82,11 +83,21 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
 
   const propertyTexts = Object.entries(properties || {}).map(([propertyName, propertySchema]) => {
     const isRequired = required?.includes(propertyName);
-    const propertyTitle = isRequired ? `**\`${propertyName}\`**` : `\`${propertyName}\``;
+    const propertyTitle = `\`${propertyName}\``;
     const propertyType = getSchemaTypeText(propertySchema, context);
     const description = getSchemaDescription(propertySchema);
-    return `- ${propertyTitle} (type: \`${propertyType}\`) - ${description}`;
+    const requiredText = isRequired ? " - **REQUIRED**" : "";
+    return `- ${propertyTitle} (type: \`${propertyType}\`)${requiredText} - ${description}`;
   });
+
+  const patternPropertyTexts = Object.entries(schema.patternProperties || {}).map(
+    ([pattern, patternSchema]) => {
+      const propertyTitle = `With name matching regex \`${pattern}\``;
+      const propertyType = getSchemaTypeText(patternSchema, context);
+      const description = getSchemaDescription(patternSchema);
+      return `- ${propertyTitle} (type: \`${propertyType}\`) - ${description}`;
+    },
+  );
 
   return [
     `Type: \`object\``,
@@ -95,6 +106,7 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
     "",
     "Properties:",
     ...propertyTexts,
+    ...patternPropertyTexts,
   ].join("\n");
 }
 
