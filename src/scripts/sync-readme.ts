@@ -1,26 +1,30 @@
 // @ts-check
-/* eslint-disable no-console */
-console.log("START sync-readme.js");
 
-const fs = require("fs");
-const path = require("path");
-const escapeRegExp = require("lodash.escaperegexp");
-const packageJson = require("../../package.json");
+import * as fs from "fs";
+import * as path from "path";
+// @ts-expect-error [no .d.ts]
+import escapeRegExp from "lodash.escaperegexp";
+import type { SpawnOptions } from "child_process";
+import { spawn } from "child_process";
+import type { VSCodeJsonSchema } from "./utils/json-schema-to-markdown";
+import jsonSchemaToMarkdown from "./utils/json-schema-to-markdown";
+import { contributes as vsCodeContributions } from "../../package.json";
+
+/* eslint-disable no-console */
+console.log("START sync-readme.js", { vsCodeContributions });
 
 async function main() {
   const rootDir = path.join(__dirname, "..", "..");
   const readmePath = path.join(rootDir, "README.md");
   const readmeText = fs.readFileSync(readmePath, "utf8");
 
-  const jsonschema2md = await import("json-schema-to-markdown").then((m) => m.default);
-
-  const markdown = jsonschema2md(packageJson.contributes.configuration);
+  const markdown = jsonSchemaToMarkdown(vsCodeContributions.configuration as VSCodeJsonSchema);
   console.log("jsonschema2md", markdown);
 
   fs.writeFileSync(path.join(rootDir, "example.md"), markdown || "", "utf8");
 
   const latestFilesWatcherExcludeConfig = {
-    "files.watcherExclude": packageJson.contributes.configurationDefaults["files.watcherExclude"],
+    "files.watcherExclude": vsCodeContributions.configurationDefaults["files.watcherExclude"],
   };
 
   if (!latestFilesWatcherExcludeConfig || !Object.keys(latestFilesWatcherExcludeConfig).length) {
@@ -62,9 +66,8 @@ async function main() {
   console.log("Changes found, updating README.md...");
   fs.writeFileSync(readmePath, newReadmeText, "utf8");
 
-  const { spawn } = require("child_process");
   // eslint-disable-next-line no-inner-declarations
-  async function runGit(args, options) {
+  async function runGit(args: string[], options: SpawnOptions) {
     return new Promise((resolve, reject) => {
       const git = spawn("git", args, options);
       git.on("close", (code) => {

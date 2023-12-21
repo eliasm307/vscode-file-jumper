@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "out",
     "rootDir": "src",
-    "sourceMap": true
+    "sourceMap": true,
+    "noEmit": false
   },
-  "exclude": ["node_modules", "vite.config.mts", "src/scripts/*"]
+  "exclude": ["node_modules", "vite.config.mts", "src/scripts/*", "**/*.spec.ts", "**/*.test.ts"]
 }

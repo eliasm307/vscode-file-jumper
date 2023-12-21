@@ -42,7 +42,8 @@
     "test": "echo 'Testing...' && vitest run",
     "pretest:changed": "npm run compile",
     "test:changed": "echo 'Testing...' && vitest run --coverage --changed HEAD~1",
-    "sync-readme": "echo 'Syncing README...' && node src/scripts/sync-readme.js"
+    "sync-readme": "echo 'Syncing README...' && ts-node src/scripts/sync-readme.ts",
+    "build:scripts": "echo 'Building scripts...' && tsc -p ./src/scripts/tsconfig.build.json"
   },
   "devDependencies": {
     "@adobe/jsonschema2md": "^7.1.5",
@@ -57,6 +58,7 @@
     "@vscode/vsce": "^2.22.0",
     "eslint": "^8.55.0",
     "lodash.escaperegexp": "^4.1.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "vitest": "^1.0.4"
   },
