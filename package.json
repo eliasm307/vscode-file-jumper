@@ -121,16 +121,22 @@
     "configuration": {
       "type": "object",
       "title": "File Jumper",
+      "description": "Main configuration",
       "additionalProperties": false,
+      "required": [
+        "fileJumper.fileTypes"
+      ],
       "properties": {
         "fileJumper.fileTypes": {
+          "title": "FileTypesMap",
           "markdownDescription": "Defines the file types in a project that will be evaluated for co-location linking.\n\n**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI",
           "scope": "window",
           "type": "object",
           "minProperties": 2,
           "patternProperties": {
             ".+": {
-              "title": "File Type",
+              "title": "FileType",
+              "markdownDescription": "Defines a file type, which represents a group of files that serve a specific purpose, e.g. test files, and different file types can then be linked together.",
               "type": "object",
               "additionalProperties": false,
               "properties": {

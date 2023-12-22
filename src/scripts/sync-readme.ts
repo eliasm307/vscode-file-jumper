@@ -3,7 +3,7 @@
 import * as fs from "fs";
 import * as path from "path";
 // @ts-expect-error [no .d.ts]
-import escapeRegExp from "lodash.escaperegexp";
+import * as escapeRegExp from "lodash.escaperegexp";
 import type { SpawnOptions } from "child_process";
 import { spawn } from "child_process";
 import type { VSCodeJsonSchema } from "./utils/json-schema-to-markdown";
@@ -11,7 +11,7 @@ import jsonSchemaToMarkdown from "./utils/json-schema-to-markdown";
 import { contributes as vsCodeContributions } from "../../package.json";
 
 /* eslint-disable no-console */
-console.log("START sync-readme.js", { vsCodeContributions });
+console.log("START sync-readme.js", { escapeRegExp });
 
 async function main() {
   const rootDir = path.join(__dirname, "..", "..");
