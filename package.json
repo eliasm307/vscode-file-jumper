@@ -183,6 +183,7 @@
                   "markdownDescription": "(**OPTIONAL**) Defines the creation patterns for this file type, which will be used to generate new files.\n\n**NOTE** The creation patterns are evaluated in the order they are defined.",
                   "items": {
                     "title": "Creation Pattern",
+                    "markdownDescription": "Defines a creation pattern, which represents a way to generate new files.",
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
@@ -203,6 +204,8 @@
                         "minItems": 1,
                         "items": {
                           "type": "object",
+                          "title": "Path Transformation",
+                          "markdownDescription": "Defines a path transformation, which represents a way to transform a source file path to generate a new file path.",
                           "additionalProperties": false,
                           "properties": {
                             "testRegex": {

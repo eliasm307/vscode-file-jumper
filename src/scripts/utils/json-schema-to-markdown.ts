@@ -76,7 +76,7 @@ function serializeSchemaSection(schema: VSCodeJsonSchema, context: Context): str
   const sectionHeadingHashes = "#".repeat(context.options.rootHeadingLevel);
   // NOTE: this is to match TS types output
   const sectionTitle = schema.title.replace(/\s/g, "");
-  return [`${sectionHeadingHashes} <ins>${sectionTitle}</ins>`, "", ...sectionText]
+  return [`${sectionHeadingHashes} 🧩 <ins>${sectionTitle}</ins>`, "", ...sectionText]
     .map((text) => text.trim())
     .join("\n");
 }
@@ -158,11 +158,10 @@ function getSchemaTypeText(schema: VSCodeJsonSchema, context: Context): string {
       .filter(isTruthy)
       .filter(isObject)
       .map((childSchema) => {
-        if (isComplexSchema(childSchema, context)) {
-          scheduleSchemaForSerialization(childSchema, context);
-          return childSchema.title;
-        }
-        return childSchema.type;
+        return getSchemaTypeText(childSchema, {
+          ...context,
+          parentPath: [...context.parentPath, "oneOf"],
+        });
       })
       .join(" | ");
   }
@@ -172,18 +171,41 @@ function getSchemaTypeText(schema: VSCodeJsonSchema, context: Context): string {
       .filter(isTruthy)
       .filter(isObject)
       .map((childSchema) => {
-        if (isComplexSchema(childSchema, context)) {
-          scheduleSchemaForSerialization(childSchema, context);
-          return childSchema.title;
-        }
-        return childSchema.type;
+        return getSchemaTypeText(childSchema, {
+          ...context,
+          parentPath: [...context.parentPath, "anyOf"],
+        });
       })
       .join(" | ");
   }
 
+  if (schema.allOf) {
+    return schema.allOf
+      .filter(isTruthy)
+      .filter(isObject)
+      .map((childSchema) => {
+        return getSchemaTypeText(childSchema, {
+          ...context,
+          parentPath: [...context.parentPath, "allOf"],
+        });
+      })
+      .join(" & ");
+  }
+
+  if (schema.type === "array") {
+    if (!schema.items) {
+      throw new Error(`Array schema must have items, at path ${context.parentPath.join(" > ")}`);
+    }
+    const itemType = getSchemaTypeText(schema.items, {
+      ...context,
+      parentPath: [...context.parentPath, "[]"],
+    });
+    return `${itemType}[]`;
+  }
+
   if (isComplexSchema(schema, context)) {
     scheduleSchemaForSerialization(schema, context);
-    return schema.title;
+    return schema.title.replace(/\s/g, ""); // NOTE: this is to match TS types output
   }
 
   if (Array.isArray(schema.type)) {
@@ -224,8 +246,8 @@ function serializeArraySchema(schema: VSCodeJsonSchema, context: Context): strin
     ...context,
     parentPath: [...context.parentPath, "[]"],
   };
-  const itemType = getSchemaTypeText(schema.items, arrayContext);
-  return [`Type: \`${itemType}[]\``, "", getSchemaDescription(schema, arrayContext)];
+  const itemType = getSchemaTypeText(schema, arrayContext);
+  return [`Type: \`${itemType}\``, "", getSchemaDescription(schema, arrayContext)];
 }
 
 function isObject<T>(value: T): value is Extract<T, object> {

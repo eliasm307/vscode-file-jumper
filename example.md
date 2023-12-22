@@ -37,17 +37,19 @@ export interface CreationPattern {
   /**
    * @minItems 1
    */
-  pathTransformations: {
-    testRegex?: string;
-    searchRegex: string;
-    searchRegexFlags?: string;
-    replacementText: string;
-  }[];
+  pathTransformations: PathTransformation[];
   initialContentSnippet?: string | string[];
+}
+
+export interface PathTransformation {
+  testRegex?: string;
+  searchRegex: string;
+  searchRegexFlags?: string;
+  replacementText: string;
 }
 ```
 
-### <ins>FileJumperConfiguration</ins>
+### 🧩 <ins>FileJumperConfiguration</ins>
 
 Type: `object`
 
@@ -69,7 +71,7 @@ Whether to automatically jump to the file when there is only one match
 
 #### Property - `fileJumper.ignorePatterns` (**OPTIONAL**)
 
-Type: `array`
+Type: `string[]`
 
 Defines the RegEx patterns of files to ignore when determining file links
 
@@ -81,7 +83,7 @@ Whether to show logs in the output channel
 
 
 
-### <ins>FileTypesMap</ins>
+### 🧩 <ins>FileTypesMap</ins>
 
 Type: `object`
 
@@ -97,7 +99,7 @@ Defines a file type, which represents a group of files that serve a specific pur
 
 
 
-### <ins>FileType</ins>
+### 🧩 <ins>FileType</ins>
 
 Type: `object`
 
@@ -111,7 +113,7 @@ An icon character (e.g. an emoji) to show as badges in the file explorer on file
 
 #### Property - `patterns` (**REQUIRED**)
 
-Type: `array`
+Type: `string[]`
 
 RegEx patterns (case insensitive) that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the topic).
 
@@ -129,7 +131,7 @@ For structures which repeat folder paths in different locations, a prefix can al
 
 #### Property - `onlyLinkTo` (**OPTIONAL**)
 
-Type: `array`
+Type: `string[]`
 
 (**OPTIONAL**) The names of other file types that this file type produces links to.
 
@@ -139,7 +141,7 @@ By default (ie when not defined), all file types can be linked to all other file
 
 #### Property - `onlyLinkFrom` (**OPTIONAL**)
 
-Type: `array`
+Type: `string[]`
 
 (**OPTIONAL**) The names of other file types that can link to this file type.
 
@@ -159,9 +161,85 @@ By default (when not defined), non-alphanumeric characters are not ignored.
 
 #### Property - `creationPatterns` (**OPTIONAL**)
 
-Type: `array`
+Type: `CreationPattern[]`
 
 (**OPTIONAL**) Defines the creation patterns for this file type, which will be used to generate new files.
 
 **NOTE** The creation patterns are evaluated in the order they are defined.
+
+
+
+### 🧩 <ins>CreationPattern</ins>
+
+Type: `object`
+
+Defines a creation pattern, which represents a way to generate new files.
+
+#### Property - `name` (**REQUIRED**)
+
+Type: `string`
+
+The name of the creation pattern, which will be used in the UI
+
+#### Property - `icon` (**OPTIONAL**)
+
+Type: `string`
+
+(**OPTIONAL**) An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
+
+#### Property - `pathTransformations` (**REQUIRED**)
+
+Type: `PathTransformation[]`
+
+Defines the transformations to apply to the source file path to generate the new file path.
+
+**NOTE** The transformations are applied to the source path in the order they are defined.
+
+#### Property - `initialContentSnippet` (**OPTIONAL**)
+
+Type: `string | string[]`
+
+(**OPTIONAL**) The [VS Code snippet](https://code.visualstudio.com/docs/editor/userdefinedsnippets) used to define the initial content of the new file, where the snippet can be defined as either:
+- An inline snippet, which is defined as an array of lines
+- A reference to an existing snippet, which is defined as a string with the name of the snippet
+
+**NOTE** If the snippet is defined as an inline snippet, it can use any of the available [VS Code Snippet syntax](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_snippet-syntax).
+
+**NOTE** If the snippet is defined as a reference to an existing snippet, the snippet must be defined in your `User Snippets` correctly.
+
+
+
+### 🧩 <ins>PathTransformation</ins>
+
+Type: `object`
+
+Defines a path transformation, which represents a way to transform a source file path to generate a new file path.
+
+#### Property - `testRegex` (**OPTIONAL**)
+
+Type: `string`
+
+A RegEx pattern that will be run against a source file path to determine if this transformation should be used.
+
+#### Property - `searchRegex` (**REQUIRED**)
+
+Type: `string`
+
+A RegEx pattern that will be run against a source file path along with `replacementText` to replace parts of the source file path and generate the new file path.
+
+**NOTE** The pattern is evaluated against the full path, not relative to the workspace root.
+
+#### Property - `searchRegexFlags` (**OPTIONAL**)
+
+Type: `string`
+
+(**OPTIONAL**) The flags to use when evaluating the `searchRegex` pattern
+
+#### Property - `replacementText` (**REQUIRED**)
+
+Type: `string`
+
+The text to replace matched text in the source file path after the `searchRegex` is run, in order to generate the new file path.
+
+The text can include capture groups from the `searchRegex` pattern, which will be replaced with the captured text.
 
