@@ -1,11 +1,14 @@
 import type { JSONSchema7 } from "json-schema";
 import { isTruthy } from "../../utils";
 
-const DEFAULT_DESCRIPTION = "[No description provided.]";
+type Options = {
+  rootHeadingLevel: number;
+};
 
 type Context = {
   pendingSchemas: VSCodeJsonSchema[];
   parentPath: string[];
+  options: Options;
 };
 
 export type VSCodeJsonSchema = JSONSchema7 & {
@@ -20,7 +23,7 @@ type VSCodeComplexJsonSchema = VSCodeJsonSchema & {
   type: "object";
 };
 
-export default function jsonSchemaToMarkdown(schema: VSCodeJsonSchema): string {
+export default function jsonSchemaToMarkdown(schema: VSCodeJsonSchema, options: Options): string {
   const sectionsText: string[] = [];
   const pendingSchemas = [schema];
   while (pendingSchemas.length) {
@@ -28,6 +31,7 @@ export default function jsonSchemaToMarkdown(schema: VSCodeJsonSchema): string {
       serializeSchemaSection(pendingSchemas.pop()!, {
         pendingSchemas,
         parentPath: [],
+        options,
       }),
     );
   }
@@ -44,53 +48,68 @@ function serializeSchemaSection(schema: VSCodeJsonSchema, context: Context): str
   }
 
   let sectionText: string[];
+
+  const sectionContext: Context = {
+    ...context,
+    parentPath: [...context.parentPath, schema.title],
+  };
   switch (schema.type) {
     case "object":
-      sectionText = serializeObjectSchema(schema, {
-        ...context,
-        parentPath: [...context.parentPath, schema.title],
-      });
+      sectionText = serializeObjectSchema(schema, sectionContext);
       break;
 
     case "array":
-      sectionText = serializeArraySchema(schema, {
-        ...context,
-        parentPath: [...context.parentPath, schema.title],
-      });
+      sectionText = serializeArraySchema(schema, sectionContext);
       break;
 
     case "string":
     case "number":
     case "boolean":
     case "null":
-      sectionText = serializePrimitiveSchema(schema);
+      sectionText = serializePrimitiveSchema(schema, sectionContext);
       break;
 
     default:
       throw new Error(`Unknown schema type: ${schema.type}`);
   }
 
-  return [`## ${schema.title}`, "", ...sectionText].map((text) => text.trim()).join("\n");
+  const sectionHeadingHashes = "#".repeat(context.options.rootHeadingLevel);
+  // NOTE: this is to match TS types output
+  const sectionTitle = schema.title.replace(/\s/g, "");
+  return [`${sectionHeadingHashes} <ins>${sectionTitle}</ins>`, "", ...sectionText]
+    .map((text) => text.trim())
+    .join("\n");
 }
 
-function getSchemaDescription(schema: VSCodeJsonSchema): string {
-  return schema.markdownDescription || schema.description || DEFAULT_DESCRIPTION;
+function getSchemaDescription(schema: VSCodeJsonSchema, context: Context): string {
+  const description = schema.markdownDescription || schema.description;
+  if (!description) {
+    throw new Error(
+      `Schema description and markdownDescription is undefined, at path ${context.parentPath.join(
+        " > ",
+      )}`,
+    );
+  }
+  return description;
 }
 
 function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): string[] {
   const { properties, required } = schema;
 
+  const propertyHeadingHashes = "#".repeat(context.options.rootHeadingLevel + 1);
+
   const propertyTexts = Object.entries(properties || {}).map(([propertyName, propertySchema]) => {
     const isRequired = required?.includes(propertyName);
     const propertyTitle = `\`${propertyName}\``;
-    const propertyType = getSchemaTypeText(propertySchema, {
+    const propertyContext: Context = {
       ...context,
       parentPath: [...context.parentPath, propertyName],
-    });
-    const description = getSchemaDescription(propertySchema);
-    const requiredText = isRequired ? "(**REQUIRED**)" : "";
+    };
+    const propertyType = getSchemaTypeText(propertySchema, propertyContext);
+    const description = getSchemaDescription(propertySchema, propertyContext);
+    const requiredText = isRequired ? "(**REQUIRED**)" : "(**OPTIONAL**)";
     return [
-      `### Property - ${propertyTitle} ${requiredText}`,
+      `${propertyHeadingHashes} Property - ${propertyTitle} ${requiredText}`,
       "",
       `Type: \`${propertyType}\``,
       "",
@@ -101,13 +120,14 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
 
   const patternPropertyTexts = Object.entries(schema.patternProperties || {}).map(
     ([pattern, patternSchema]) => {
-      const propertyType = getSchemaTypeText(patternSchema, {
+      const propertyContext: Context = {
         ...context,
         parentPath: [...context.parentPath, pattern],
-      });
-      const description = getSchemaDescription(patternSchema);
+      };
+      const propertyType = getSchemaTypeText(patternSchema, propertyContext);
+      const description = getSchemaDescription(patternSchema, propertyContext);
       return [
-        `### Property with name matching regex \`${pattern}\``,
+        `${propertyHeadingHashes} Property with name matching regex \`${pattern}\``,
         "",
         `Type: \`${propertyType}\``,
         "",
@@ -120,7 +140,7 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
   return [
     `Type: \`object\``,
     "",
-    getSchemaDescription(schema),
+    getSchemaDescription(schema, context),
     "",
     ...propertyTexts,
     ...patternPropertyTexts,
@@ -128,8 +148,8 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
   ].flat();
 }
 
-function serializePrimitiveSchema(schema: VSCodeJsonSchema): string[] {
-  return [`Type: \`${schema.type}\``, "", getSchemaDescription(schema)];
+function serializePrimitiveSchema(schema: VSCodeJsonSchema, context: Context): string[] {
+  return [`Type: \`${schema.type}\``, "", getSchemaDescription(schema, context)];
 }
 
 function getSchemaTypeText(schema: VSCodeJsonSchema, context: Context): string {
@@ -170,7 +190,11 @@ function getSchemaTypeText(schema: VSCodeJsonSchema, context: Context): string {
     return schema.type.join(" | ");
   }
 
-  return schema.type || "Unknown";
+  if (schema.type) {
+    return schema.type;
+  }
+
+  throw new Error(`Schema type is undefined, at path ${context.parentPath.join(" > ")}`);
 }
 
 function scheduleSchemaForSerialization(schema: VSCodeComplexJsonSchema, context: Context): void {
@@ -195,13 +219,13 @@ function serializeArraySchema(schema: VSCodeJsonSchema, context: Context): strin
   if (!schema.items) {
     throw new Error("Array schema must have items");
   }
-  const itemType = getSchemaTypeText(schema.items, {
+
+  const arrayContext: Context = {
     ...context,
     parentPath: [...context.parentPath, "[]"],
-  });
-
-  // return `Type: \`${itemType}[]\`\n\n${markdownDescription || description || DEFAULT_DESCRIPTION}`;
-  return [`Type: \`${itemType}[]\``, "", getSchemaDescription(schema)];
+  };
+  const itemType = getSchemaTypeText(schema.items, arrayContext);
+  return [`Type: \`${itemType}[]\``, "", getSchemaDescription(schema, arrayContext)];
 }
 
 function isObject<T>(value: T): value is Extract<T, object> {

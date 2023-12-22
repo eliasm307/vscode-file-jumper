@@ -46,7 +46,6 @@
     "build:scripts": "echo 'Building scripts...' && tsc -p ./src/scripts/tsconfig.build.json"
   },
   "devDependencies": {
-    "@adobe/jsonschema2md": "^7.1.5",
     "@eliasm307/config": "^0.44.4",
     "@types/json-schema": "^7.0.15",
     "@types/node": "^18.16.18",
@@ -60,7 +59,8 @@
     "lodash.escaperegexp": "^4.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
-    "vitest": "^1.0.4"
+    "vitest": "^1.0.4",
+    "json-schema-to-typescript": "^13.1.1"
   },
   "capabilities": {
     "untrustedWorkspaces": {
@@ -120,7 +120,7 @@
     },
     "configuration": {
       "type": "object",
-      "title": "File Jumper",
+      "title": "File Jumper Configuration",
       "description": "Main configuration",
       "additionalProperties": false,
       "required": [
@@ -180,6 +180,7 @@
                 },
                 "creationPatterns": {
                   "type": "array",
+                  "markdownDescription": "(**OPTIONAL**) Defines the creation patterns for this file type, which will be used to generate new files.\n\n**NOTE** The creation patterns are evaluated in the order they are defined.",
                   "items": {
                     "title": "Creation Pattern",
                     "type": "object",
@@ -288,8 +289,5 @@
         }
       }
     }
-  },
-  "dependencies": {
-    "json-schema-to-markdown": "^1.1.1"
   }
 }

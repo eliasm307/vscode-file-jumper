@@ -6,6 +6,7 @@ import * as path from "path";
 import * as escapeRegExp from "lodash.escaperegexp";
 import type { SpawnOptions } from "child_process";
 import { spawn } from "child_process";
+import { compile } from "json-schema-to-typescript";
 import type { VSCodeJsonSchema } from "./utils/json-schema-to-markdown";
 import jsonSchemaToMarkdown from "./utils/json-schema-to-markdown";
 import { contributes as vsCodeContributions } from "../../package.json";
@@ -18,10 +19,49 @@ async function main() {
   const readmePath = path.join(rootDir, "README.md");
   const readmeText = fs.readFileSync(readmePath, "utf8");
 
-  const markdown = jsonSchemaToMarkdown(vsCodeContributions.configuration as VSCodeJsonSchema);
-  console.log("jsonschema2md", markdown);
+  const markdownDocs = jsonSchemaToMarkdown(vsCodeContributions.configuration as VSCodeJsonSchema, {
+    rootHeadingLevel: 3,
+  });
+  // console.log("jsonSchemaToMarkdown", markdown);
 
-  fs.writeFileSync(path.join(rootDir, "example.md"), markdown || "", "utf8");
+  let overallTsTypesText = await compile(vsCodeContributions.configuration as any, "Settings", {
+    bannerComment: "",
+    format: true,
+    ignoreMinAndMaxItems: true,
+    unreachableDefinitions: true,
+    style: {
+      bracketSpacing: false,
+      printWidth: 120,
+      semi: true,
+      singleQuote: false,
+      tabWidth: 2,
+      trailingComma: "all",
+      useTabs: false,
+    },
+  });
+
+  // add a newline after each type
+  overallTsTypesText = overallTsTypesText.replace(/^}$/gm, "}\n").trim();
+
+  console.log("jsonschema2ts", overallTsTypesText);
+
+  const output = [
+    `## Configuration Overview`,
+    "",
+    // `This is the configuration for the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)`,
+    // "",
+    // `> **Note:** This file is generated from the [package.json](../../package.json) file. Do not edit it directly.`,
+    // "",
+    // `## Settings`,
+    // "",
+    "```ts",
+    overallTsTypesText,
+    "```",
+    "",
+    markdownDocs,
+  ].join("\n");
+
+  fs.writeFileSync(path.join(rootDir, "example.md"), output, "utf8");
 
   const latestFilesWatcherExcludeConfig = {
     "files.watcherExclude": vsCodeContributions.configurationDefaults["files.watcherExclude"],
