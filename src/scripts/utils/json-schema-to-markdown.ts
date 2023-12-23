@@ -109,7 +109,7 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
     const description = getSchemaDescription(propertySchema, propertyContext);
     const requiredText = isRequired ? "(**REQUIRED**)" : "(**OPTIONAL**)";
     return [
-      `${propertyHeadingHashes} Property - ${propertyTitle} ${requiredText}`,
+      `${propertyHeadingHashes} 🅿️ Property - ${propertyTitle} ${requiredText}`,
       "",
       `Type: \`${propertyType}\``,
       "",
