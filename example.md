@@ -81,6 +81,8 @@ Type: `boolean`
 
 Whether to show logs in the output channel
 
+
+
 ### 🧩 <ins>FileTypesMap</ins>
 
 Type: `object`
@@ -94,6 +96,8 @@ Defines the file types in a project that will be evaluated for co-location linki
 Type: `FileType`
 
 Defines a file type, which represents a group of files that serve a specific purpose, e.g. test files, and different file types can then be linked together.
+
+
 
 ### 🧩 <ins>FileType</ins>
 
@@ -116,7 +120,6 @@ RegEx patterns (case insensitive) that should match relevant files and capture t
 The topic capture group is defined as a group named 'topic' (for example `\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`).
 
 **NOTES**
-
 1. This should only match 1 related file type, if multiple can be matched then they should be defined as separate types.
 2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders.
 3. The patterns are evaluated in the order they are defined, so more specific patterns should be defined first.
@@ -164,6 +167,8 @@ Type: `CreationPattern[]`
 
 **NOTE** The creation patterns are evaluated in the order they are defined.
 
+
+
 ### 🧩 <ins>CreationPattern</ins>
 
 Type: `object`
@@ -195,13 +200,14 @@ Defines the transformations to apply to the source file path to generate the new
 Type: `string | string[]`
 
 (**OPTIONAL**) The [VS Code snippet](https://code.visualstudio.com/docs/editor/userdefinedsnippets) used to define the initial content of the new file, where the snippet can be defined as either:
-
 - An inline snippet, which is defined as an array of lines
 - A reference to an existing snippet, which is defined as a string with the name of the snippet
 
 **NOTE** If the snippet is defined as an inline snippet, it can use any of the available [VS Code Snippet syntax](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_snippet-syntax).
 
 **NOTE** If the snippet is defined as a reference to an existing snippet, the snippet must be defined in your `User Snippets` correctly.
+
+
 
 ### 🧩 <ins>PathTransformation</ins>
 
@@ -236,3 +242,4 @@ Type: `string`
 The text to replace matched text in the source file path after the `searchRegex` is run, in order to generate the new file path.
 
 The text can include capture groups from the `searchRegex` pattern, which will be replaced with the captured text.
+
