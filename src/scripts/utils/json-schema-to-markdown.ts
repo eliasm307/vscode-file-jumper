@@ -23,7 +23,10 @@ type VSCodeComplexJsonSchema = VSCodeJsonSchema & {
   type: "object";
 };
 
-export default function jsonSchemaToMarkdown(schema: VSCodeJsonSchema, options: Options): string {
+export default function jsonSchemaToMarkdown(
+  schema: VSCodeJsonSchema,
+  options: Options = { rootHeadingLevel: 1 },
+): string {
   const sectionsText: string[] = [];
   const pendingSchemas = [schema];
   while (pendingSchemas.length) {

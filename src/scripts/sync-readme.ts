@@ -104,7 +104,6 @@ async function main() {
   console.log("Changes found, updating README.md...");
   fs.writeFileSync(readmePath, newReadmeText, "utf8");
 
-  // eslint-disable-next-line no-inner-declarations
   async function runGit(args: string[], options: SpawnOptions) {
     return new Promise((resolve, reject) => {
       const git = spawn("git", args, options);
