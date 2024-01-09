@@ -102,7 +102,7 @@
         {
           "command": "fileJumper.createFileCommand",
           "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithPossibleCreations",
-          "group": "navigation@1"
+          "group": "navigation@2"
         }
       ],
       "editor/title/context": [
@@ -114,7 +114,7 @@
         {
           "command": "fileJumper.createFileCommand",
           "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithPossibleCreations",
-          "group": "1_close@1"
+          "group": "1_close@2"
         }
       ]
     },
