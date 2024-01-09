@@ -12,7 +12,7 @@ import jsonSchemaToMarkdown from "./utils/json-schema-to-markdown";
 import { contributes as vsCodeContributions } from "../../package.json";
 
 /* eslint-disable no-console */
-console.log("START sync-readme.js", { escapeRegExp });
+console.log("START sync-readme.js");
 
 async function main() {
   const rootDir = path.join(__dirname, "..", "..");
@@ -41,9 +41,7 @@ async function main() {
   });
 
   // add a newline after each type
-  overallTsTypesText = overallTsTypesText.replace(/^}$/gm, "}\n").trim();
-
-  console.log("jsonschema2ts", overallTsTypesText);
+  overallTsTypesText = overallTsTypesText.replace(/^}$/gm, "}\n").trim().replaceAll("export ", "");
 
   const output = [
     `## Configuration Overview`,
@@ -81,7 +79,7 @@ async function main() {
   );
 
   if (!regex.test(readmeText)) {
-    console.log("No files.watcherExclude code block found in README.md using regex:\n", regex);
+    console.error("No files.watcherExclude code block found in README.md using regex:\n", regex);
     throw Error("No files.watcherExclude code block found in README.md");
   }
 

@@ -4,14 +4,14 @@
 /**
  * Main configuration
  */
-export interface FileJumperConfiguration {
+interface FileJumperConfiguration {
   "fileJumper.fileTypes": FileTypesMap;
   "fileJumper.autoJump"?: boolean;
   "fileJumper.ignorePatterns"?: string[];
   "fileJumper.showDebugLogs"?: boolean;
 }
 
-export interface FileTypesMap {
+interface FileTypesMap {
   [k: string]: FileType;
 }
 
@@ -19,7 +19,7 @@ export interface FileTypesMap {
  * This interface was referenced by `FileTypesMap`'s JSON-Schema definition
  * via the `patternProperty` ".+".
  */
-export interface FileType {
+interface FileType {
   icon: string;
   /**
    * @minItems 1
@@ -31,7 +31,7 @@ export interface FileType {
   creationPatterns?: CreationPattern[];
 }
 
-export interface CreationPattern {
+interface CreationPattern {
   name: string;
   icon?: string;
   /**
@@ -41,7 +41,7 @@ export interface CreationPattern {
   initialContentSnippet?: string | string[];
 }
 
-export interface PathTransformation {
+interface PathTransformation {
   testRegex?: string;
   searchRegex: string;
   searchRegexFlags?: string;
@@ -55,7 +55,7 @@ Type: `object`
 
 Main configuration
 
-#### Property - `fileJumper.fileTypes` (**REQUIRED**)
+#### 🅿️ Property - `fileJumper.fileTypes` (**REQUIRED**)
 
 Type: `FileTypesMap`
 
@@ -63,25 +63,23 @@ Defines the file types in a project that will be evaluated for co-location linki
 
 **NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI
 
-#### Property - `fileJumper.autoJump` (**OPTIONAL**)
+#### 🅿️ Property - `fileJumper.autoJump` (**OPTIONAL**)
 
 Type: `boolean`
 
 Whether to automatically jump to the file when there is only one match
 
-#### Property - `fileJumper.ignorePatterns` (**OPTIONAL**)
+#### 🅿️ Property - `fileJumper.ignorePatterns` (**OPTIONAL**)
 
 Type: `string[]`
 
 Defines the RegEx patterns of files to ignore when determining file links
 
-#### Property - `fileJumper.showDebugLogs` (**OPTIONAL**)
+#### 🅿️ Property - `fileJumper.showDebugLogs` (**OPTIONAL**)
 
 Type: `boolean`
 
 Whether to show logs in the output channel
-
-
 
 ### 🧩 <ins>FileTypesMap</ins>
 
@@ -97,21 +95,19 @@ Type: `FileType`
 
 Defines a file type, which represents a group of files that serve a specific purpose, e.g. test files, and different file types can then be linked together.
 
-
-
 ### 🧩 <ins>FileType</ins>
 
 Type: `object`
 
 Defines a file type, which represents a group of files that serve a specific purpose, e.g. test files, and different file types can then be linked together.
 
-#### Property - `icon` (**REQUIRED**)
+#### 🅿️ Property - `icon` (**REQUIRED**)
 
 Type: `string`
 
 An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
 
-#### Property - `patterns` (**REQUIRED**)
+#### 🅿️ Property - `patterns` (**REQUIRED**)
 
 Type: `string[]`
 
@@ -120,6 +116,7 @@ RegEx patterns (case insensitive) that should match relevant files and capture t
 The topic capture group is defined as a group named 'topic' (for example `\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`).
 
 **NOTES**
+
 1. This should only match 1 related file type, if multiple can be matched then they should be defined as separate types.
 2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders.
 3. The patterns are evaluated in the order they are defined, so more specific patterns should be defined first.
@@ -129,7 +126,7 @@ The topic capture group is defined as a group named 'topic' (for example `\\/(te
 
 For structures which repeat folder paths in different locations, a prefix can also be captured which will be used for matching related files e.g. `(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`
 
-#### Property - `onlyLinkTo` (**OPTIONAL**)
+#### 🅿️ Property - `onlyLinkTo` (**OPTIONAL**)
 
 Type: `string[]`
 
@@ -139,7 +136,7 @@ By default (ie when not defined), all file types can be linked to all other file
 
 **NOTE** Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it
 
-#### Property - `onlyLinkFrom` (**OPTIONAL**)
+#### 🅿️ Property - `onlyLinkFrom` (**OPTIONAL**)
 
 Type: `string[]`
 
@@ -149,7 +146,7 @@ By default (when not defined), all file types can be linked to all other file ty
 
 **NOTE** Setting this to an empty array will prevent other files from linking to this file type, ie it will not have shortcuts to it but it can have shortcuts to other file types
 
-#### Property - `ignoreNonAlphaNumericCharacters` (**OPTIONAL**)
+#### 🅿️ Property - `ignoreNonAlphaNumericCharacters` (**OPTIONAL**)
 
 Type: `boolean`
 
@@ -159,7 +156,7 @@ By default (when not defined), non-alphanumeric characters are not ignored.
 
 **NOTE** This is useful for matching files with names that include special characters, such as `@` or `-`
 
-#### Property - `creationPatterns` (**OPTIONAL**)
+#### 🅿️ Property - `creationPatterns` (**OPTIONAL**)
 
 Type: `CreationPattern[]`
 
@@ -167,27 +164,25 @@ Type: `CreationPattern[]`
 
 **NOTE** The creation patterns are evaluated in the order they are defined.
 
-
-
 ### 🧩 <ins>CreationPattern</ins>
 
 Type: `object`
 
 Defines a creation pattern, which represents a way to generate new files.
 
-#### Property - `name` (**REQUIRED**)
+#### 🅿️ Property - `name` (**REQUIRED**)
 
 Type: `string`
 
 The name of the creation pattern, which will be used in the UI
 
-#### Property - `icon` (**OPTIONAL**)
+#### 🅿️ Property - `icon` (**OPTIONAL**)
 
 Type: `string`
 
 (**OPTIONAL**) An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
 
-#### Property - `pathTransformations` (**REQUIRED**)
+#### 🅿️ Property - `pathTransformations` (**REQUIRED**)
 
 Type: `PathTransformation[]`
 
@@ -195,11 +190,12 @@ Defines the transformations to apply to the source file path to generate the new
 
 **NOTE** The transformations are applied to the source path in the order they are defined.
 
-#### Property - `initialContentSnippet` (**OPTIONAL**)
+#### 🅿️ Property - `initialContentSnippet` (**OPTIONAL**)
 
 Type: `string | string[]`
 
 (**OPTIONAL**) The [VS Code snippet](https://code.visualstudio.com/docs/editor/userdefinedsnippets) used to define the initial content of the new file, where the snippet can be defined as either:
+
 - An inline snippet, which is defined as an array of lines
 - A reference to an existing snippet, which is defined as a string with the name of the snippet
 
@@ -207,21 +203,19 @@ Type: `string | string[]`
 
 **NOTE** If the snippet is defined as a reference to an existing snippet, the snippet must be defined in your `User Snippets` correctly.
 
-
-
 ### 🧩 <ins>PathTransformation</ins>
 
 Type: `object`
 
 Defines a path transformation, which represents a way to transform a source file path to generate a new file path.
 
-#### Property - `testRegex` (**OPTIONAL**)
+#### 🅿️ Property - `testRegex` (**OPTIONAL**)
 
 Type: `string`
 
 A RegEx pattern that will be run against a source file path to determine if this transformation should be used.
 
-#### Property - `searchRegex` (**REQUIRED**)
+#### 🅿️ Property - `searchRegex` (**REQUIRED**)
 
 Type: `string`
 
@@ -229,17 +223,16 @@ A RegEx pattern that will be run against a source file path along with `replacem
 
 **NOTE** The pattern is evaluated against the full path, not relative to the workspace root.
 
-#### Property - `searchRegexFlags` (**OPTIONAL**)
+#### 🅿️ Property - `searchRegexFlags` (**OPTIONAL**)
 
 Type: `string`
 
 (**OPTIONAL**) The flags to use when evaluating the `searchRegex` pattern
 
-#### Property - `replacementText` (**REQUIRED**)
+#### 🅿️ Property - `replacementText` (**REQUIRED**)
 
 Type: `string`
 
 The text to replace matched text in the source file path after the `searchRegex` is run, in order to generate the new file path.
 
 The text can include capture groups from the `searchRegex` pattern, which will be replaced with the captured text.
-
