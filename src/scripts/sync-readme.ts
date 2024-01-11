@@ -1,5 +1,3 @@
-// @ts-check
-
 import * as fs from "fs";
 import * as path from "path";
 // @ts-expect-error [no .d.ts]
@@ -7,6 +5,7 @@ import * as escapeRegExp from "lodash.escaperegexp";
 import type { SpawnOptions } from "child_process";
 import { spawn } from "child_process";
 import { compile } from "json-schema-to-typescript";
+import { ESLint } from "eslint";
 import type { VSCodeJsonSchema } from "./utils/json-schema-to-markdown";
 import jsonSchemaToMarkdown from "./utils/json-schema-to-markdown";
 import { contributes as vsCodeContributions } from "../../package.json";
@@ -41,7 +40,27 @@ async function main() {
   });
 
   // add a newline after each type
-  overallTsTypesText = overallTsTypesText.replace(/^}$/gm, "}\n").trim().replaceAll("export ", "");
+  overallTsTypesText = overallTsTypesText.replace(/^}$/gm, "}\n").trim();
+
+  // save the generated types to a file
+  const generatedTypesPath = path.join(rootDir, "src/types/config.generated.ts");
+  fs.writeFileSync(
+    generatedTypesPath,
+    [
+      "namespace RawConfig {",
+      "",
+      overallTsTypesText,
+      "",
+      "}",
+      "",
+      "export default RawConfig;",
+    ].join("\n"),
+    "utf8",
+  );
+  await lint(generatedTypesPath);
+
+  // remove the export keywords
+  overallTsTypesText = overallTsTypesText.replaceAll("export ", "");
 
   const output = [
     `## Configuration Overview`,
@@ -104,22 +123,31 @@ async function main() {
   console.log("Changes found, updating README.md...");
   fs.writeFileSync(readmePath, newReadmeText, "utf8");
 
-  async function runGit(args: string[], options: SpawnOptions) {
-    return new Promise((resolve, reject) => {
-      const git = spawn("git", args, options);
-      git.on("close", (code) => {
-        if (code === 0) {
-          resolve(null);
-        } else {
-          reject(new Error(`git exited with code ${code}`));
-        }
-      });
-    });
-  }
-
   console.log("Running git add/commit for README changes...");
   await runGit(["add", "README.md"], { cwd: rootDir });
   await runGit(["commit", "-m", "Auto-Update README"], { cwd: rootDir });
+}
+
+async function runGit(args: string[], options: SpawnOptions) {
+  return new Promise((resolve, reject) => {
+    const git = spawn("git", args, options);
+    git.on("close", (code) => {
+      if (code === 0) {
+        resolve(null);
+      } else {
+        reject(new Error(`git exited with code ${code}`));
+      }
+    });
+  });
+}
+
+async function lint(filePath: string) {
+  const eslint = new ESLint({ fix: true });
+  const results = await eslint.lintFiles(filePath);
+  await ESLint.outputFixes(results);
+  const formatter = await eslint.loadFormatter("stylish");
+  const resultText = formatter.format(results);
+  console.log(resultText);
 }
 
 main()

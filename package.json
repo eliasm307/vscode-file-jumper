@@ -56,11 +56,11 @@
     "@vscode/test-electron": "^2.3.8",
     "@vscode/vsce": "^2.22.0",
     "eslint": "^8.55.0",
+    "json-schema-to-typescript": "^13.1.1",
     "lodash.escaperegexp": "^4.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
-    "vitest": "^1.0.4",
-    "json-schema-to-typescript": "^13.1.1"
+    "vitest": "^1.0.4"
   },
   "capabilities": {
     "untrustedWorkspaces": {
@@ -292,5 +292,8 @@
         }
       }
     }
+  },
+  "dependencies": {
+    "@types/eslint": "^8.56.2"
   }
 }
