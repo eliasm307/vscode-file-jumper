@@ -1,5 +1,5 @@
-import type FileType from "./classes/FileType";
-import type { CreationPatternConfig } from "./utils/config";
+import type FileType from "../classes/FileType";
+import type { CreationPatternConfig } from "../utils/config";
 
 export type FileMetaData = {
   fileType: FileType;
