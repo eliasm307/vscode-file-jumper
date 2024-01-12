@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-// @ts-expect-error [no .d.ts]
-import * as escapeRegExp from "lodash.escaperegexp";
+import escapeRegExp from "lodash/escaperegexp";
 import type { SpawnOptions } from "child_process";
 import { spawn } from "child_process";
 import { compile } from "json-schema-to-typescript";
