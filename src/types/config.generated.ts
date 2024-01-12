@@ -1,8 +1,15 @@
 namespace RawConfig {
+
+/**
+ * This interface was referenced by `GroupFormats`'s JSON-Schema definition
+ * via the `patternProperty` ".+".
+ */
+export type FormatType = "lowercase" | "UPPERCASE" | "PascalCase" | "camelCase" | "snake_case" | "kebab-case";
+
 /**
  * Main configuration
  */
-export type FileJumperConfiguration = {
+export type FileJumper = {
   "fileJumper.fileTypes": FileTypesMap;
   "fileJumper.autoJump"?: boolean;
   "fileJumper.ignorePatterns"?: string[];
@@ -41,8 +48,12 @@ export type PathTransformation = {
   testRegex?: string;
   searchRegex: string;
   searchRegexFlags?: string;
-  replacementText: string;
+  replacementText?: string;
+  groupFormats?: GroupFormats;
 };
+
+export type GroupFormats = Record<string, FormatType>;
+
 }
 
 export default RawConfig;

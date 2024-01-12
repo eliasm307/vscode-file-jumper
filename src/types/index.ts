@@ -1,5 +1,6 @@
 import type FileType from "../classes/FileType";
 import type { CreationPatternConfig } from "../utils/config";
+import type RawConfig from "./config.generated";
 
 export type FileMetaData = {
   fileType: FileType;
@@ -36,15 +37,18 @@ export type DecorationData = {
   tooltip: string;
 };
 
+type OmitStrict<T, K extends keyof T> = Omit<T, K>;
+
 /**
  * VS Code seems to provide paths with varying cases for the root C directory (e.g. "C:\...", "c:\...")
  * so we need to make sure to normalise them in some cases to make sure they match
  */
 export type NormalisedPath = string & { __normalisedPath: never };
 
-export type PathTransformation = {
+export type PathTransformation = OmitStrict<
+  RawConfig.PathTransformation,
+  "searchRegex" | "testRegex"
+> & {
   searchRegex: RegExp;
-  searchRegexFlags?: string;
-  replacementText: string;
   testRegex?: RegExp;
 };
