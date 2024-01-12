@@ -22,10 +22,10 @@
   "activationEvents": [
     "onStartupFinished"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/main.js",
   "scripts": {
     "vscode:package": "echo 'Packaging...' && vsce package",
-    "vscode:prepublish": "npm run sync-readme && npm run lint && npm run test && npm run compile",
+    "vscode:prepublish": "npm run sync-readme && npm run lint && npm run test && npm run build",
     "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --allow-missing-repository --no-yarn",
     "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --allow-missing-repository --no-yarn",
     "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --allow-missing-repository --no-yarn",
@@ -37,6 +37,9 @@
     "vscode:list-publishers": "vsce ls-publishers",
     "precompile": "echo 'Cleaning old output...' && rm -rf ./out",
     "compile": "echo 'Compiling...' && tsc -build ./tsconfig.build.json",
+    "typecheck": "tsc -noEmit -p ./tsconfig.build.json",
+    "build": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "watch": "tsc -watch -p ./tsconfig.build.json",
     "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",
     "test": "echo 'Testing...' && vitest run",
@@ -58,6 +61,7 @@
     "@vitest/coverage-v8": "^1.0.4",
     "@vscode/test-electron": "^2.3.8",
     "@vscode/vsce": "^2.22.0",
+    "esbuild": "^0.19.11",
     "eslint": "^8.55.0",
     "json-schema-to-typescript": "^13.1.1",
     "ts-node": "^10.9.2",

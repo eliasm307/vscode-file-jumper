@@ -24,3 +24,5 @@ coverage/**
 vite.config.*
 README_TEMPLATE.md
 CHANGELOG_TBC.md
+node_modules/**
+example.md
