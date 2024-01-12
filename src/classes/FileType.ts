@@ -70,14 +70,20 @@ export default class FileType {
   }
 
   private parseCreationPatternConfigs(
-    creationPatterns: CreationPatternConfig[] | undefined = [],
+    creationPatternConfigs: CreationPatternConfig[] | undefined = [],
   ): CreationPattern[] {
-    return creationPatterns.map((creationPattern) => ({
-      ...creationPattern,
-      pathTransformations: creationPattern.pathTransformations.map((transformation) => ({
+    return creationPatternConfigs.map((creationPatternConfig) => ({
+      ...creationPatternConfig,
+      pathTransformations: creationPatternConfig.pathTransformations.map((transformation) => ({
         ...transformation,
         // NOTE: we assume this will only be used for string replace, so stateful regex flags should not cause issues when regex is reused
-        searchRegex: new RegExp(transformation.searchRegex, transformation.searchRegexFlags),
+        searchRegex: new RegExp(
+          transformation.searchRegex,
+          `${transformation.searchRegexFlags || ""}${
+            // NOTE: we need the "d" flag so we get indices for the replacement
+            transformation.searchRegexFlags?.includes("d") ? "" : "d"
+          }`,
+        ),
         testRegex: transformation.testRegex ? new RegExp(transformation.testRegex) : undefined,
       })),
     }));

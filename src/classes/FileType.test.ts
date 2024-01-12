@@ -441,7 +441,7 @@ describe("FileType", () => {
             pathTransformations: [
               {
                 searchRegex: "C:\\/",
-                replacementText: "",
+                replacementText: "", // NOTE: also tests handling for falsy replacement text
               },
             ],
           },
@@ -543,6 +543,81 @@ describe("FileType", () => {
           },
         ],
         "only the second transformation should be applied",
+      );
+    });
+
+    it("can apply group formats and replacement separately", () => {
+      fileType = new FileType({
+        name: "Source",
+        icon: "🧪",
+        patterns: ["\\/src\\/"],
+        creationPatterns: [
+          {
+            name: "file1",
+            icon: "⭐",
+            pathTransformations: [
+              {
+                searchRegex: "\\/(.+)\\.ts$",
+                searchRegexFlags: "d", // also tests can handle this being defined explicitly
+                groupFormats: {
+                  1: "kebab-case",
+                },
+              },
+              {
+                searchRegex: "\\.ts$",
+                replacementText: ".css",
+              },
+            ],
+          },
+        ],
+      });
+
+      assert.deepStrictEqual(
+        fileType.getPossibleCreationConfigs("C:/user/src/components/MenuButton.ts"),
+        [
+          {
+            name: "file1",
+            icon: "⭐",
+            fullPath: "C:/user/src/components/menu-button.css",
+            initialContentSnippet: undefined,
+          },
+        ],
+      );
+    });
+
+    it("can apply group formats and replacement at the same time", () => {
+      fileType = new FileType({
+        name: "Source",
+        icon: "🧪",
+        patterns: ["\\/src\\/"],
+        creationPatterns: [
+          {
+            name: "file1",
+            icon: "⭐",
+            pathTransformations: [
+              {
+                searchRegex: "\\/(.+)\\.ts$",
+                // also tests can handle "d" flag not being defined explicitly
+                replacementText: "/$1.css",
+                groupFormats: {
+                  1: "kebab-case",
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      assert.deepStrictEqual(
+        fileType.getPossibleCreationConfigs("C:/user/src/components/MenuButton.ts"),
+        [
+          {
+            name: "file1",
+            icon: "⭐",
+            fullPath: "C:/user/src/components/menu-button.css",
+            initialContentSnippet: undefined,
+          },
+        ],
       );
     });
   });
