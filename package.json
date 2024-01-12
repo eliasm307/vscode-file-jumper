@@ -45,6 +45,9 @@
     "sync-readme": "echo 'Syncing README...' && ts-node src/scripts/sync-readme.ts",
     "build:scripts": "echo 'Building scripts...' && tsc -p ./src/scripts/tsconfig.build.json"
   },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
   "devDependencies": {
     "@eliasm307/config": "^0.44.4",
     "@types/json-schema": "^7.0.15",
@@ -57,7 +60,6 @@
     "@vscode/vsce": "^2.22.0",
     "eslint": "^8.55.0",
     "json-schema-to-typescript": "^13.1.1",
-    "lodash.escaperegexp": "^4.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "vitest": "^1.0.4"
@@ -120,7 +122,7 @@
     },
     "configuration": {
       "type": "object",
-      "title": "File Jumper Configuration",
+      "title": "File Jumper",
       "description": "Main configuration",
       "additionalProperties": false,
       "required": [
@@ -227,11 +229,30 @@
                               "markdownDescription": "The text to replace matched text in the source file path after the `searchRegex` is run, in order to generate the new file path.\n\nThe text can include capture groups from the `searchRegex` pattern, which will be replaced with the captured text.",
                               "type": "string",
                               "minLength": 1
+                            },
+                            "groupFormats": {
+                              "title": "Group Formats",
+                              "markdownDescription": "(**OPTIONAL**) Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.\n\nKeys are the group names and the values are the format to apply to each group\n\n**NOTE** This does not support named capture groups.",
+                              "type": "object",
+                              "patternProperties": {
+                                ".+": {
+                                  "title": "Format Type",
+                                  "markdownDescription": "The standard format to apply to the capture group",
+                                  "type": "string",
+                                  "enum": [
+                                    "lowercase",
+                                    "UPPERCASE",
+                                    "PascalCase",
+                                    "camelCase",
+                                    "snake_case",
+                                    "kebab-case"
+                                  ]
+                                }
+                              }
                             }
                           },
                           "required": [
-                            "searchRegex",
-                            "replacementText"
+                            "searchRegex"
                           ]
                         }
                       },
@@ -292,8 +313,5 @@
         }
       }
     }
-  },
-  "dependencies": {
-    "@types/eslint": "^8.56.2"
   }
 }
