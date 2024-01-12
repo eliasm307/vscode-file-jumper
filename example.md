@@ -2,9 +2,15 @@
 
 ```ts
 /**
+ * This interface was referenced by `GroupFormats`'s JSON-Schema definition
+ * via the `patternProperty` ".+".
+ */
+type FormatType = "lowercase" | "UPPERCASE" | "PascalCase" | "camelCase" | "snake_case" | "kebab-case";
+
+/**
  * Main configuration
  */
-interface FileJumperConfiguration {
+interface FileJumper {
   "fileJumper.fileTypes": FileTypesMap;
   "fileJumper.autoJump"?: boolean;
   "fileJumper.ignorePatterns"?: string[];
@@ -45,11 +51,16 @@ interface PathTransformation {
   testRegex?: string;
   searchRegex: string;
   searchRegexFlags?: string;
-  replacementText: string;
+  replacementText?: string;
+  groupFormats?: GroupFormats;
+}
+
+interface GroupFormats {
+  [k: string]: FormatType;
 }
 ```
 
-### 🧩 <ins>FileJumperConfiguration</ins>
+### 🧩 <ins>FileJumper</ins>
 
 Type: `object`
 
@@ -235,11 +246,39 @@ Type: `string`
 
 (**OPTIONAL**) The flags to use when evaluating the `searchRegex` pattern
 
-#### 🅿️ Property - `replacementText` (**REQUIRED**)
+#### 🅿️ Property - `replacementText` (**OPTIONAL**)
 
 Type: `string`
 
 The text to replace matched text in the source file path after the `searchRegex` is run, in order to generate the new file path.
 
 The text can include capture groups from the `searchRegex` pattern, which will be replaced with the captured text.
+
+#### 🅿️ Property - `groupFormats` (**OPTIONAL**)
+
+Type: `GroupFormats`
+
+(**OPTIONAL**) Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.
+
+Keys are the group names and the values are the format to apply to each group
+
+**NOTE** This does not support named capture groups.
+
+
+
+### 🧩 <ins>GroupFormats</ins>
+
+Type: `object`
+
+(**OPTIONAL**) Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.
+
+Keys are the group names and the values are the format to apply to each group
+
+**NOTE** This does not support named capture groups.
+
+#### Property with name matching regex `.+`
+
+Type: `string`
+
+The standard format to apply to the capture group
 
