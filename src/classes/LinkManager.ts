@@ -3,9 +3,8 @@ import { normalisePath } from "../utils";
 import { mainConfigsAreEqual } from "../utils/config";
 import FileType from "./FileType";
 import Logger from "./Logger";
-
 import type { FileCreationData, DecorationData, LinkedFileData, NormalisedPath } from "../types";
-import type { MainConfig } from "../utils/config";
+import type { RawMainConfig } from "../utils/config";
 
 type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => Promise<void>;
 
@@ -26,7 +25,7 @@ export default class LinkManager {
    */
   #pathsWithKnownTypeMap = new Map<NormalisedPath, string>();
 
-  private config: MainConfig | undefined;
+  private config: RawMainConfig | undefined;
 
   private fileTypes: FileType[] = [];
 
@@ -187,7 +186,7 @@ export default class LinkManager {
    * We need to do a full refresh here as the config change could also change what files we consider "relevant"
    * so we need to re-evaluate the entire workspace
    */
-  setContext(newContext: { config: MainConfig; paths: string[] }) {
+  setContext(newContext: { config: RawMainConfig; paths: string[] }) {
     const configHasChanged = !mainConfigsAreEqual(this.config, newContext.config);
     if (!configHasChanged) {
       return;
@@ -210,7 +209,7 @@ export default class LinkManager {
     this.onFileLinksUpdatedHandler = handler;
   }
 
-  private applyConfig(config: MainConfig): void {
+  private applyConfig(config: RawMainConfig): void {
     Logger.info("#applyConfig", config);
     this.config = this.formatConfig(config);
     this.fileTypes.forEach((fileType) => fileType.dispose());
@@ -237,7 +236,7 @@ export default class LinkManager {
     this.fileTypes.forEach((fileType) => fileType.removePaths(paths));
   }
 
-  private formatConfig(config: MainConfig): MainConfig {
+  private formatConfig(config: RawMainConfig): RawMainConfig {
     return {
       ...config,
       fileTypes: config.fileTypes.map((fileTypeConfig) => ({

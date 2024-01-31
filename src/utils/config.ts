@@ -47,7 +47,7 @@ export type CreationPatternConfig = RawConfig.CreationPattern & {
 //   replacementText: string;
 // };
 
-export type MainConfig = {
+export type RawMainConfig = {
   fileTypes: FileTypeConfig[];
   ignorePatterns: string[];
   showDebugLogs?: RawConfig.FileJumper["fileJumper.showDebugLogs"];
@@ -61,9 +61,9 @@ export function formatRawFileTypesConfig(
    *
    * @key file type name
    */
-  rawConfig: RawConfig.FileJumper["fileJumper.fileTypes"] | undefined,
+  rawFileTypesConfig: RawConfig.FileJumper["fileJumper.fileTypes"] | undefined,
 ): FileTypeConfig[] {
-  if (!rawConfig) {
+  if (!rawFileTypesConfig) {
     // apply default config
     // ! don't define this in the "default" for the JSON schema, as this means it will be merged into the custom user config
     // ! we only want to apply this default config if the user has not defined any config
@@ -82,10 +82,14 @@ export function formatRawFileTypesConfig(
       },
     ];
   }
-  return Object.entries(rawConfig).map(([name, rawFileTypeConfig]) => {
+
+  return Object.entries(rawFileTypesConfig).map(([name, rawFileTypeConfig]) => {
     return {
       ...rawFileTypeConfig,
       name, // name is not in the raw config, so we add it here
+      // we expect these to be defined but we add defaults just in case, as the JSON schema does not enforce them
+      icon: rawFileTypeConfig.icon ?? "❓",
+      patterns: rawFileTypeConfig.patterns ?? [],
     };
   });
 }
@@ -99,7 +103,10 @@ export function formatRawIgnorePatternsConfig(
   return rawConfig;
 }
 
-export function mainConfigsAreEqual(a: MainConfig | undefined, b: MainConfig | undefined): boolean {
+export function mainConfigsAreEqual(
+  a: RawMainConfig | undefined,
+  b: RawMainConfig | undefined,
+): boolean {
   return !!a && JSON.stringify(a) === JSON.stringify(b);
 }
 
@@ -109,7 +116,7 @@ export function mainConfigsAreEqual(a: MainConfig | undefined, b: MainConfig | u
  * @remark This produces a clearer message in the editor about an issue which prevents the extension working
  * compared to the JSON schema warnings shown only when the settings are open
  */
-export function getIssuesWithMainConfig(mainConfig: MainConfig): string[] {
+export function getIssuesWithMainConfig(mainConfig: RawMainConfig): string[] {
   const issues: string[] = [];
 
   if (mainConfig.fileTypes.length < 2) {
@@ -194,7 +201,9 @@ function createGroupPlaceholderMarkers(index: number): { start: string; end: str
   };
 }
 
-function applyFormat(rawText: string, targetFormat: RawConfig.FormatType): string {
+type FormatType = RawConfig.GroupFormats[string];
+
+function applyFormat(rawText: string, targetFormat: FormatType): string {
   // NOTE: rawText could be multiple segments of a path, so we need to apply the format to each segment to maintain the path structure
   return rawText.replace(/\w+/g, (segment) => {
     switch (targetFormat) {

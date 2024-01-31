@@ -7,12 +7,12 @@ import { afterEach, assert, describe, it, vitest } from "vitest";
 import LinkManager from "./LinkManager";
 
 import type { DecorationData, LinkedFileData } from "../types";
-import type { MainConfig } from "../utils/config";
+import type { RawMainConfig } from "../utils/config";
 
 describe("LinkManager", () => {
   let linkManager: LinkManager;
 
-  const TEST_MAIN_CONFIG: MainConfig = {
+  const TEST_MAIN_CONFIG: RawMainConfig = {
     fileTypes: [
       {
         name: "Source",
@@ -1146,7 +1146,7 @@ describe("LinkManager", () => {
   });
 
   describe("performance", () => {
-    const config: MainConfig = {
+    const config: RawMainConfig = {
       fileTypes: [
         {
           name: "Source",

@@ -1,5 +1,5 @@
 import { assert, describe, it } from "vitest";
-import type { MainConfig } from "./config";
+import type { RawMainConfig } from "./config";
 import {
   getIssuesWithMainConfig,
   formatRawIgnorePatternsConfig,
@@ -94,7 +94,7 @@ describe("config utils", () => {
 
   describe("#mainConfigsAreEqual", () => {
     it("returns true when configs are equal", () => {
-      const a: MainConfig = {
+      const a: RawMainConfig = {
         fileTypes: [
           {
             name: "Source",
@@ -110,7 +110,7 @@ describe("config utils", () => {
         ignorePatterns: ["\\/node_modules\\/"],
         showDebugLogs: false,
       };
-      const b: MainConfig = {
+      const b: RawMainConfig = {
         fileTypes: [
           {
             name: "Source",
@@ -130,7 +130,7 @@ describe("config utils", () => {
     });
 
     it("returns false when configs are not equal", () => {
-      const a: MainConfig = {
+      const a: RawMainConfig = {
         fileTypes: [
           {
             name: "Source",
@@ -146,7 +146,7 @@ describe("config utils", () => {
         ignorePatterns: ["\\/node_modules\\/"],
         showDebugLogs: false,
       };
-      const b: MainConfig = {
+      const b: RawMainConfig = {
         fileTypes: [
           {
             name: "Source",

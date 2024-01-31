@@ -61,7 +61,7 @@ export type PathTransformation = {
 };
 
 /**
- * Keys are the searchRegex capture group names and the values are the format to apply to each group
+ * Keys are the searchRegex capture group numbers (named capture groups not supported) and the values are the standard format to apply to each group
  */
 export type GroupFormats = Record<string, "lowercase" | "UPPERCASE" | "PascalCase" | "camelCase" | "snake_case" | "kebab-case">;
 

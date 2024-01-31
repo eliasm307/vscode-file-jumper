@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { formatRawFileTypesConfig, formatRawIgnorePatternsConfig } from "../utils/config";
-import type { MainConfig } from "../utils/config";
+import type { RawMainConfig } from "../utils/config";
 import Logger, { EXTENSION_KEY } from "../classes/Logger";
 import type { FileCreationData } from "../types";
 import { isTruthy } from "../utils";
@@ -33,7 +33,7 @@ export async function getWorkspaceFoldersChildPaths(folders: readonly vscode.Wor
   return paths;
 }
 
-export function getMainConfig(): MainConfig {
+export function getMainConfig(): RawMainConfig {
   const extensionConfig = vscode.workspace.getConfiguration("fileJumper");
 
   return {

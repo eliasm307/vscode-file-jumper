@@ -41,7 +41,7 @@ export default function jsonSchemaToMarkdown(
     );
   }
 
-  return sectionsText.join("\n\n");
+  return sectionsText.join("\n\n").trim();
 }
 
 function serializeSchemaSection(schema: VSCodeJsonSchema, context: Context): string {
@@ -88,6 +88,8 @@ function serializeSchemaSection(schema: VSCodeJsonSchema, context: Context): str
     "",
     sectionText,
     "",
+    serialiseSchemaDefault(schema),
+    "",
     serialiseSchemaExample(schema),
   ]);
 }
@@ -133,17 +135,17 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
         parentPath: [...context.parentPath, propertyName],
       };
       const propertyType = getSchemaTypeText(propertySchema, propertyContext);
-      const description = getSchemaDescription(propertySchema, propertyContext);
       const requiredText = isRequired ? "(**REQUIRED**)" : "(**OPTIONAL**)";
-      const examplesText = serialiseSchemaExample(propertySchema);
       return join([
         `${propertyHeadingHashes} 🅿️ Property - ${propertyTitle} ${requiredText}`,
         "",
         `Type: \`${propertyType}\``,
         "",
-        description,
+        getSchemaDescription(propertySchema, propertyContext),
         "",
-        examplesText,
+        serialiseSchemaDefault(propertySchema),
+        "",
+        serialiseSchemaExample(propertySchema),
       ]);
     })
     .join("\n\n");
@@ -156,16 +158,16 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
         parentPath: [...context.parentPath, pattern],
       };
       const propertyType = getSchemaTypeText(patternPropertySchema, propertyContext);
-      const description = getSchemaDescription(patternPropertySchema, propertyContext);
-      const examplesText = serialiseSchemaExample(patternPropertySchema);
       return join([
-        `${propertyHeadingHashes} Property with name matching regex \`${pattern}\``,
+        `${propertyHeadingHashes} Any property with key matching regex \`${pattern}\``,
         "",
         `Type: \`${propertyType}\``,
         "",
-        description,
+        getSchemaDescription(patternPropertySchema, propertyContext),
         "",
-        examplesText,
+        serialiseSchemaDefault(patternPropertySchema),
+        "",
+        serialiseSchemaExample(patternPropertySchema),
       ]);
     })
     .join("\n\n");
@@ -191,6 +193,8 @@ function serializePrimitiveSchema(schema: VSCodeJsonSchema, context: Context): s
     `Type: \`${type}\``,
     "",
     getSchemaDescription(schema, context),
+    "",
+    serialiseSchemaDefault(schema),
     "",
     serialiseSchemaExample(schema),
   ]);
@@ -303,5 +307,13 @@ function serialiseSchemaExample(schema: VSCodeJsonSchema): string {
     return "";
   }
 
-  return join([`**Example(s)**`, "", "```json", JSON.stringify(schema.examples, null, 2), "```"]);
+  return join([`**Example**`, "", "```json", JSON.stringify(schema.examples, null, 2), "```"]);
+}
+
+function serialiseSchemaDefault(schema: VSCodeJsonSchema): string {
+  if (schema.default === undefined) {
+    return "";
+  }
+
+  return join([`**Default**`, "", "```json", JSON.stringify(schema.default, null, 2), "```"]);
 }

@@ -10,7 +10,7 @@ import {
   getPossibleFileCreations,
   logAndShowIssuesWithConfig,
 } from "./vscode/utils";
-import type { MainConfig } from "./utils/config";
+import type { RawMainConfig } from "./utils/config";
 import registerNavigateCommand from "./vscode/registerNavigateCommand";
 import registerFileSystemWatcher from "./vscode/registerFileSystemWatcher";
 import registerConfigurationWatcher from "./vscode/registerConfigurationWatcher";
@@ -19,7 +19,7 @@ import registerCreateFileCommand from "./vscode/registerCreateFileCommand";
 // todo generate readme from extension config in package.json, e.g. get descriptions of config options, generate types etc
 
 export async function activate(context: vscode.ExtensionContext) {
-  let mainConfig: MainConfig;
+  let mainConfig: RawMainConfig;
   try {
     // I don't think its worth adding a JSON schema validator package for this, we can just catch the error and show it to the user
     mainConfig = getMainConfig();

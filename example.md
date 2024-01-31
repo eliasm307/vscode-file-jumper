@@ -127,7 +127,7 @@ Defines the RegEx patterns of files to ignore when determining file links
 ]
 ```
 
-**Example(s)**
+**Example**
 
 ```json
 {
@@ -178,12 +178,6 @@ Type: `string`
 
 An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
 
-**Default**
-
-```json
-""
-```
-
 #### 🅿️ Property - `FileType.patterns` (**REQUIRED**)
 
 Type: `string[]`
@@ -205,13 +199,7 @@ The topic capture group is defined as a group named 'topic' (for example `\\/(te
 
 For project structures which repeat prefix folder paths in different locations (e.g. `.../projectA/src/components/Button.ts` linking to `.../projectA/tests/components/Button.test.ts` where the `.../projectA` folder path is repeated but should not link to files in `.../projectB`), a prefix can also be captured which will be used for matching related files e.g. `(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`
 
-**Default**
-
-```json
-[]
-```
-
-**Example(s)**
+**Example**
 
 ```json
 {
@@ -296,12 +284,6 @@ Type: `string`
 
 An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
 
-**Default**
-
-```json
-""
-```
-
 #### 🅿️ Property - `CreationPattern.testRegex` (**OPTIONAL**)
 
 Type: `string`
@@ -357,12 +339,6 @@ Type: `string`
 
 The flags to use when evaluating the `searchRegex` pattern
 
-**Default**
-
-```json
-""
-```
-
 #### 🅿️ Property - `PathTransformation.replacementText` (**OPTIONAL**)
 
 Type: `string`
@@ -381,7 +357,7 @@ Keys are the `searchRegex` capture group names and the values are the format to 
 
 **NOTE** This does not support named capture groups.
 
-**Example(s)**
+**Example**
 
 ```json
 {
@@ -409,7 +385,7 @@ Type: `string`
 
 The standard format to apply to the capture group
 
-**Example(s)**
+**Example**
 
 ```json
 {

@@ -8,76 +8,47 @@ import { ESLint } from "eslint";
 import type { VSCodeJsonSchema } from "./utils/json-schema-to-markdown";
 import jsonSchemaToMarkdown from "./utils/json-schema-to-markdown";
 import { contributes as vsCodeContributions } from "../../package.json";
+// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+// @ts-ignore [missing declaration]
+import prettierConfig from "../../.prettierrc.cjs";
 
 /* eslint-disable no-console */
-console.log("START sync-readme.js");
+console.log("START sync-readme.js", { prettierConfig });
+
+const ROOT_DIR = path.join(__dirname, "..", "..");
+const readmePath = path.join(ROOT_DIR, "README.md");
 
 async function main() {
-  const rootDir = path.join(__dirname, "..", "..");
-  const readmePath = path.join(rootDir, "README.md");
   const readmeText = fs.readFileSync(readmePath, "utf8");
-
-  const markdownDocs = jsonSchemaToMarkdown(vsCodeContributions.configuration as VSCodeJsonSchema, {
-    rootHeadingLevel: 3,
-  });
-  // console.log("jsonSchemaToMarkdown", markdown);
-
-  let overallTsTypesText = await compile(vsCodeContributions.configuration as any, "Settings", {
-    bannerComment: "",
-    format: true,
-    ignoreMinAndMaxItems: true,
-    unreachableDefinitions: true,
-    style: {
-      bracketSpacing: false,
-      printWidth: 120,
-      semi: true,
-      singleQuote: false,
-      tabWidth: 2,
-      trailingComma: "all",
-      useTabs: false,
-    },
-  });
-
-  // add a newline after each type
-  overallTsTypesText = overallTsTypesText.replace(/^}$/gm, "}\n").trim();
+  const { documentationTypes, sourceCodeTypes } = await generateTypesFromConfig();
 
   // save the generated types to a file
-  const generatedTypesPath = path.join(rootDir, "src/types/config.generated.ts");
+  await writeSourceCodeTypesFile(sourceCodeTypes);
+
   fs.writeFileSync(
-    generatedTypesPath,
+    path.join(ROOT_DIR, "example.md"),
     [
-      "namespace RawConfig {",
+      `# FileJumper Configuration`,
       "",
-      overallTsTypesText,
+      `## Types Summary`,
       "",
-      "}",
+      // `This is the configuration for the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)`,
+      // "",
+      // `> **Note:** This file is generated from the [package.json](../../package.json) file. Do not edit it directly.`,
+      // "",
+      // `## Settings`,
+      // "",
+      "```ts",
+      documentationTypes,
+      "```",
       "",
-      "export default RawConfig;",
+      `## Details`,
+      "",
+      generateMarkdownDocs(),
+      "", // should end with new line
     ].join("\n"),
     "utf8",
   );
-  await lint(generatedTypesPath);
-
-  // remove the export keywords
-  overallTsTypesText = overallTsTypesText.replaceAll("export ", "");
-
-  const output = [
-    `## Configuration Overview`,
-    "",
-    // `This is the configuration for the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)`,
-    // "",
-    // `> **Note:** This file is generated from the [package.json](../../package.json) file. Do not edit it directly.`,
-    // "",
-    // `## Settings`,
-    // "",
-    "```ts",
-    overallTsTypesText,
-    "```",
-    "",
-    markdownDocs,
-  ].join("\n");
-
-  fs.writeFileSync(path.join(rootDir, "example.md"), output, "utf8");
 
   const latestFilesWatcherExcludeConfig = {
     "files.watcherExclude": vsCodeContributions.configurationDefaults["files.watcherExclude"],
@@ -123,8 +94,8 @@ async function main() {
   fs.writeFileSync(readmePath, newReadmeText, "utf8");
 
   console.log("Running git add/commit for README changes...");
-  await runGit(["add", "README.md"], { cwd: rootDir });
-  await runGit(["commit", "-m", "Auto-Update README"], { cwd: rootDir });
+  await runGit(["add", "README.md"], { cwd: ROOT_DIR });
+  await runGit(["commit", "-m", "Auto-Update README"], { cwd: ROOT_DIR });
 }
 
 async function runGit(args: string[], options: SpawnOptions) {
@@ -155,3 +126,73 @@ main()
     console.error("ERROR sync-readme.js", error);
     process.exit(1);
   });
+
+function generateMarkdownDocs() {
+  const rootHeadingLevel = 3;
+  const extensionConfiguration = jsonSchemaToMarkdown(
+    vsCodeContributions.configuration as VSCodeJsonSchema,
+    {
+      rootHeadingLevel,
+    },
+  );
+  const watcherExcludeConfigurationDocs = jsonSchemaToMarkdown(
+    {
+      type: "object",
+      title: "files.watcherExclude",
+      markdownDescription: [
+        "For handling file system changes, the extension uses the VSCode file watcher to watch files in a workspace, however this can be resource intensive if there are a lot of files.",
+        "",
+        "This setting defines the files and folders to exclude from the file watcher, to improve performance. Note, this is a native VS Code setting and is not specific to this extension. See the defaults for this option in the [VS Code Default Config](https://code.visualstudio.com/docs/getstarted/settings#_default-settings).",
+        "",
+        "The option format is an object where the keys are glob patterns to ignore and the keys are booleans defining whether to ignore the patterns.",
+        "",
+      ].join("\n"),
+      patternProperties: {
+        ".*": {
+          description: "Whether the file watcher should ignore the pattern.",
+          type: "boolean",
+        },
+      },
+      default: vsCodeContributions.configurationDefaults["files.watcherExclude"],
+    } as VSCodeJsonSchema,
+    {
+      rootHeadingLevel,
+    },
+  );
+
+  return [extensionConfiguration, watcherExcludeConfigurationDocs].join("\n\n").trim();
+}
+
+async function generateTypesFromConfig() {
+  let documentationTypes = await compile(vsCodeContributions.configuration as any, "Settings", {
+    bannerComment: "",
+    format: true,
+    ignoreMinAndMaxItems: true,
+    unreachableDefinitions: true,
+    style: prettierConfig,
+  });
+
+  // add a newline after each type
+  documentationTypes = documentationTypes.replace(/^}$/gm, "}\n").trim();
+
+  const sourceCodeTypes = [
+    "namespace RawConfig {",
+    "",
+    documentationTypes,
+    "",
+    "}",
+    "",
+    "export default RawConfig;",
+  ].join("\n");
+
+  // remove the export keywords
+  documentationTypes = documentationTypes.replaceAll("export ", "");
+
+  return { documentationTypes, sourceCodeTypes };
+}
+
+async function writeSourceCodeTypesFile(code: string) {
+  const generatedTypesPath = path.join(ROOT_DIR, "src/types/config.generated.ts");
+  fs.writeFileSync(generatedTypesPath, code, "utf8");
+  await lint(generatedTypesPath);
+}
