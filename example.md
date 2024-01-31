@@ -2,12 +2,6 @@
 
 ```ts
 /**
- * This interface was referenced by `GroupFormats`'s JSON-Schema definition
- * via the `patternProperty` ".+".
- */
-type FormatType = "lowercase" | "UPPERCASE" | "PascalCase" | "camelCase" | "snake_case" | "kebab-case";
-
-/**
  * Main configuration
  */
 interface FileJumper {
@@ -22,16 +16,29 @@ interface FileTypesMap {
 }
 
 /**
+ * Defines a file type, which represents a group of files that serve a specific purpose, e.g. test files, and different file types can then be linked together.
+ *
  * This interface was referenced by `FileTypesMap`'s JSON-Schema definition
  * via the `patternProperty` ".+".
  */
 interface FileType {
+  /**
+   * An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
+   */
   icon: string;
   /**
+   * An array of RegEx patterns (case insensitive) to match relevant files and capture the topic and/or a prefix.
+   *
    * @minItems 1
    */
   patterns: string[];
+  /**
+   * Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types.
+   */
   onlyLinkTo?: string[];
+  /**
+   * Array of other file types that can link to this file type. By default, all file types can be linked to all other file types.
+   */
   onlyLinkFrom?: string[];
   ignoreNonAlphaNumericCharacters?: boolean;
   creationPatterns?: CreationPattern[];
@@ -56,8 +63,17 @@ interface PathTransformation {
   groupFormats?: GroupFormats;
 }
 
+/**
+ * Keys are the searchRegex capture group names and the values are the format to apply to each group
+ */
 interface GroupFormats {
-  [k: string]: FormatType;
+  /**
+   * The standard format to apply to the capture group
+   *
+   * This interface was referenced by `GroupFormats`'s JSON-Schema definition
+   * via the `patternProperty` ".+".
+   */
+  [k: string]: "lowercase" | "UPPERCASE" | "PascalCase" | "camelCase" | "snake_case" | "kebab-case";
 }
 ```
 
@@ -65,43 +81,60 @@ interface GroupFormats {
 
 Type: `object`
 
-Main configuration
+Main configuration.
 
-#### 🅿️ Property - `fileJumper.fileTypes` (**REQUIRED**)
+**NOTE**: Due to a [limitation with VS Code](https://github.com/microsoft/vscode/issues/80243) settings either need to be defined as local settings for each workspace or globally in the user settings for all workspaces, not both. This is because VS Code does not allow the user settings to be overridden by workspace settings and instead deep merges workspace settings into the user settings, which might cause unexpected behavior.
+
+If you want to use custom settings for this extension in each workspace, you will need to remove the the user settings.
+
+#### 🅿️ Property - `FileJumper.fileJumper.fileTypes` (**REQUIRED**)
 
 Type: `FileTypesMap`
 
-Defines the file types in a project that will be evaluated for co-location linking.
+An object that defines the file types in a project that will be evaluated for automatic linking.
 
-**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI
+**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI. The values are objects that define the file type's behavior.
 
-#### 🅿️ Property - `fileJumper.autoJump` (**OPTIONAL**)
+**NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
+
+#### 🅿️ Property - `FileJumper.fileJumper.autoJump` (**OPTIONAL**)
 
 Type: `boolean`
 
-Whether to automatically jump to the file when there is only one match
+Defines whether the extension should automatically jump to the related file when only one related file is found.
 
-#### 🅿️ Property - `fileJumper.ignorePatterns` (**OPTIONAL**)
+#### 🅿️ Property - `FileJumper.fileJumper.ignorePatterns` (**OPTIONAL**)
 
 Type: `string[]`
 
 Defines the RegEx patterns of files to ignore when determining file links
 
-#### 🅿️ Property - `fileJumper.showDebugLogs` (**OPTIONAL**)
+**Example(s)**
+
+```json
+{
+  "fileJumper.ignorePatterns": [
+    "\\/node_modules\\/",
+    "\\/dist\\/"
+  ]
+}
+```
+
+#### 🅿️ Property - `FileJumper.fileJumper.showDebugLogs` (**OPTIONAL**)
 
 Type: `boolean`
 
 Whether to show logs in the output channel
 
-
-
 ### 🧩 <ins>FileTypesMap</ins>
 
 Type: `object`
 
-Defines the file types in a project that will be evaluated for co-location linking.
+An object that defines the file types in a project that will be evaluated for automatic linking.
 
-**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI
+**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI. The values are objects that define the file type's behavior.
+
+**NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
 
 #### Property with name matching regex `.+`
 
@@ -109,77 +142,99 @@ Type: `FileType`
 
 Defines a file type, which represents a group of files that serve a specific purpose, e.g. test files, and different file types can then be linked together.
 
-
-
 ### 🧩 <ins>FileType</ins>
 
 Type: `object`
 
 Defines a file type, which represents a group of files that serve a specific purpose, e.g. test files, and different file types can then be linked together.
 
-#### 🅿️ Property - `icon` (**REQUIRED**)
+#### 🅿️ Property - `FileType.icon` (**REQUIRED**)
 
 Type: `string`
 
 An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
 
-#### 🅿️ Property - `patterns` (**REQUIRED**)
+#### 🅿️ Property - `FileType.patterns` (**REQUIRED**)
 
 Type: `string[]`
 
 RegEx patterns (case insensitive) that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the topic).
 
+This extension uses RegEx for matching file paths, instead of glob patterns, to allow for more flexibility in the rules that can be defined.
+
 The topic capture group is defined as a group named 'topic' (for example `\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`).
 
 **NOTES**
+
 1. This should only match 1 related file type, if multiple can be matched then they should be defined as separate types.
 2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders.
 3. The patterns are evaluated in the order they are defined, so more specific patterns should be defined first.
 4. The patterns are evaluated against the full path, not relative to the workspace root.
-5. The patterns are case sensitive, so `(?i)` is not required.
+5. The patterns are case sensitive.
 6. Paths are normalised to use "/".
 
-For structures which repeat folder paths in different locations, a prefix can also be captured which will be used for matching related files e.g. `(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`
+For project structures which repeat prefix folder paths in different locations (e.g. `.../projectA/src/components/Button.ts` linking to `.../projectA/tests/components/Button.test.ts` where the `.../projectA` folder path is repeated but should not link to files in `.../projectB`), a prefix can also be captured which will be used for matching related files e.g. `(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`
 
-#### 🅿️ Property - `onlyLinkTo` (**OPTIONAL**)
+**Example(s)**
+
+```json
+{
+  "fileJumper.fileTypes": {
+    "Test": {
+      "icon": "🧪",
+      "patterns": [
+        "(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.(test|spec)\\.ts$"
+      ]
+    },
+    "Source": {
+      "icon": "📄",
+      "patterns": [
+        "(?<prefix>.+)\\/src\\/(?<topic>.+)\\.ts$"
+      ]
+    }
+  }
+}
+```
+
+#### 🅿️ Property - `FileType.onlyLinkTo` (**OPTIONAL**)
 
 Type: `string[]`
 
-(**OPTIONAL**) The names of other file types that this file type produces links to.
+The names of other file types that this file type produces links to.
 
 By default (ie when not defined), all file types can be linked to all other file types.
 
 **NOTE** Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it
 
-#### 🅿️ Property - `onlyLinkFrom` (**OPTIONAL**)
+#### 🅿️ Property - `FileType.onlyLinkFrom` (**OPTIONAL**)
 
 Type: `string[]`
 
-(**OPTIONAL**) The names of other file types that can link to this file type.
+The names of other file types that can link to this file type.
 
 By default (when not defined), all file types can be linked to all other file types.
 
 **NOTE** Setting this to an empty array will prevent other files from linking to this file type, ie it will not have shortcuts to it but it can have shortcuts to other file types
 
-#### 🅿️ Property - `ignoreNonAlphaNumericCharacters` (**OPTIONAL**)
+#### 🅿️ Property - `FileType.ignoreNonAlphaNumericCharacters` (**OPTIONAL**)
 
 Type: `boolean`
 
-(**OPTIONAL**) Whether to ignore non-alphanumeric characters when matching file name topics.
+Whether to ignore non-alphanumeric characters when matching file name `topic` capture groups.
 
 By default (when not defined), non-alphanumeric characters are not ignored.
 
 **NOTE** This is useful for matching files with names that include special characters, such as `@` or `-`
 
-#### 🅿️ Property - `creationPatterns` (**OPTIONAL**)
+This is useful for matching files with the same name but different naming styles (e.g. `kebab-case`, `camelCase`, `snake_case`).
+
+#### 🅿️ Property - `FileType.creationPatterns` (**OPTIONAL**)
 
 Type: `CreationPattern[]`
 
-(**OPTIONAL**) Defines the creation patterns for this file type, which will be used to generate new files.
+Defines the creation patterns for this file type, which will be used to generate new files.
 
 **NOTE** The creation patterns are evaluated in the order they are defined.
-
-
 
 ### 🧩 <ins>CreationPattern</ins>
 
@@ -187,19 +242,19 @@ Type: `object`
 
 Defines a creation pattern, which represents a way to generate new files.
 
-#### 🅿️ Property - `name` (**REQUIRED**)
+#### 🅿️ Property - `CreationPattern.name` (**REQUIRED**)
 
 Type: `string`
 
 The name of the creation pattern, which will be used in the UI
 
-#### 🅿️ Property - `icon` (**OPTIONAL**)
+#### 🅿️ Property - `CreationPattern.icon` (**OPTIONAL**)
 
 Type: `string`
 
-(**OPTIONAL**) An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
+An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
 
-#### 🅿️ Property - `testRegex` (**OPTIONAL**)
+#### 🅿️ Property - `CreationPattern.testRegex` (**OPTIONAL**)
 
 Type: `string`
 
@@ -207,7 +262,7 @@ A RegEx pattern that will be run against a source file path to determine if this
 
 **NOTE** RegEx is case insensitive
 
-#### 🅿️ Property - `pathTransformations` (**REQUIRED**)
+#### 🅿️ Property - `CreationPattern.pathTransformations` (**REQUIRED**)
 
 Type: `PathTransformation[]`
 
@@ -215,11 +270,12 @@ Defines the transformations to apply to the source file path to generate the new
 
 **NOTE** The transformations are applied to the source path in the order they are defined.
 
-#### 🅿️ Property - `initialContentSnippet` (**OPTIONAL**)
+#### 🅿️ Property - `CreationPattern.initialContentSnippet` (**OPTIONAL**)
 
 Type: `string | string[]`
 
-(**OPTIONAL**) The [VS Code snippet](https://code.visualstudio.com/docs/editor/userdefinedsnippets) used to define the initial content of the new file, where the snippet can be defined as either:
+The [VS Code snippet](https://code.visualstudio.com/docs/editor/userdefinedsnippets) used to define the initial content of the new file, where the snippet can be defined as either:
+
 - An inline snippet, which is defined as an array of lines
 - A reference to an existing snippet, which is defined as a string with the name of the snippet
 
@@ -227,21 +283,19 @@ Type: `string | string[]`
 
 **NOTE** If the snippet is defined as a reference to an existing snippet, the snippet must be defined in your `User Snippets` correctly.
 
-
-
 ### 🧩 <ins>PathTransformation</ins>
 
 Type: `object`
 
 Defines a path transformation, which represents a way to transform a source file path to generate a new file path.
 
-#### 🅿️ Property - `testRegex` (**OPTIONAL**)
+#### 🅿️ Property - `PathTransformation.testRegex` (**OPTIONAL**)
 
 Type: `string`
 
 A RegEx pattern that will be run against a source file path to determine if this transformation should be used.
 
-#### 🅿️ Property - `searchRegex` (**REQUIRED**)
+#### 🅿️ Property - `PathTransformation.searchRegex` (**REQUIRED**)
 
 Type: `string`
 
@@ -249,13 +303,13 @@ A RegEx pattern that will be run against a source file path along with `replacem
 
 **NOTE** The pattern is evaluated against the full path, not relative to the workspace root.
 
-#### 🅿️ Property - `searchRegexFlags` (**OPTIONAL**)
+#### 🅿️ Property - `PathTransformation.searchRegexFlags` (**OPTIONAL**)
 
 Type: `string`
 
-(**OPTIONAL**) The flags to use when evaluating the `searchRegex` pattern
+The flags to use when evaluating the `searchRegex` pattern
 
-#### 🅿️ Property - `replacementText` (**OPTIONAL**)
+#### 🅿️ Property - `PathTransformation.replacementText` (**OPTIONAL**)
 
 Type: `string`
 
@@ -263,25 +317,35 @@ The text to replace matched text in the source file path after the `searchRegex`
 
 The text can include capture groups from the `searchRegex` pattern, which will be replaced with the captured text.
 
-#### 🅿️ Property - `groupFormats` (**OPTIONAL**)
+#### 🅿️ Property - `PathTransformation.groupFormats` (**OPTIONAL**)
 
 Type: `GroupFormats`
 
-(**OPTIONAL**) Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.
+Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.
 
-Keys are the group names and the values are the format to apply to each group
+Keys are the `searchRegex` capture group names and the values are the format to apply to each group
 
 **NOTE** This does not support named capture groups.
 
+**Example(s)**
 
+```json
+{
+  "searchRegex": "src\\/.+\\/(\\w+)\\/.ts$",
+  "groupFormats": {
+    "1": "PascalCase",
+    "2": "snake_case"
+  }
+}
+```
 
 ### 🧩 <ins>GroupFormats</ins>
 
 Type: `object`
 
-(**OPTIONAL**) Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.
+Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.
 
-Keys are the group names and the values are the format to apply to each group
+Keys are the `searchRegex` capture group names and the values are the format to apply to each group
 
 **NOTE** This does not support named capture groups.
 
@@ -291,3 +355,14 @@ Type: `string`
 
 The standard format to apply to the capture group
 
+**Example(s)**
+
+```json
+{
+  "searchRegex": "src\\/.+\\/(\\w+)\\/.ts$",
+  "groupFormats": {
+    "1": "PascalCase",
+    "2": "snake_case"
+  }
+}
+```
