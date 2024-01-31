@@ -25,27 +25,7 @@ The extension will automatically detect changes to the configuration and update 
 
 ![Example of extension reacting to configuration updates](images/Code_vnZxRMrpTg.gif)
 
-## fileJumper.fileTypes
-
-An object that defines the file types in a project that will be evaluated for automatic linking.
-
-The object keys represent the file type names. The values are objects that define the file type's behavior. The following properties are supported:
-
-- `icon`: (**Required**) An icon character (e.g. an emoji) displayed as a badge in the file explorer on files related to this file type.
-- `patterns`: (**Required**) An array of RegEx patterns (case insensitive) to match relevant files and capture the topic and/or a prefix. More detail below.
-- `onlyLinkTo`: (**OPTIONAL**) Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types. Defaults to being able to link to all other file types.
-- `onlyLinkFrom`: (**OPTIONAL**) Array of other file types that can link to this file type. By default, all file types can be linked to all other file types. Defaults to all files being able to link to this file type.
-- `ignoreNonAlphaNumericCharacters`: (**OPTIONAL**) Boolean to ignore non-alphanumeric characters when comparing the "topic" in file paths. This is useful for matching files with the same name but different naming styles (e.g. `kebab-case`, `camelCase`, `snake_case`). Defaults to `false`.
-
-**NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
-
-**NOTE**: Due to a [limitation with VS Code](https://github.com/microsoft/vscode/issues/80243) settings either need to be defined as local settings for each workspace or globally in the user settings for all workspaces, not both. This is because VS Code does not allow the user settings to be overridden by workspace settings and instead deep merges workspace settings into the user settings, which might cause unexpected behavior.
-
-If you want to use custom settings for this extension in each workspace, you will need to remove the the user settings.
-
 ### **Patterns and Links**
-
-The extension uses RegEx for matching file paths, instead of glob patterns, to allow for more flexibility in the rules that can be defined.
 
 The extension requires defined RegEx patterns to capture specific named groups from file paths which will be used to determine if files of different types are related. The named groups that can be matched are:
 
@@ -59,46 +39,6 @@ The extension will automatically link all files of different types that resolve 
 **NOTE**: Path comparisons are case-insensitive.
 
 **NOTE**: For building Regex patterns easily try [RegExr](https://regexr.com/) which has a handy cheat sheet, live evaluation, and lets you test your patterns against multiple strings (paths) at the same time.
-
-### **Example configuration**:
-
-```json
-"fileJumper.fileTypes": {
-  "Test": {
-    "icon": "🧪",
-    "patterns": [
-      "(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.(test|spec)\\.ts$"
-    ]
-  },
-  "Source": {
-    "icon": "📄",
-    "patterns": [
-      "(?<prefix>.+)\\/src\\/(?<topic>.+)\\.ts$"
-    ]
-  }
-}
-```
-
-## fileJumper.ignorePatterns
-
-Defines the RegEx patterns of files to ignore when determining file links.
-
-**Default**: `["\\/node_modules\\/"]`
-
-### **Example configuration**:
-
-```json
-"fileJumper.ignorePatterns": [
-  "\\/node_modules\\/",
-  "\\/dist\\/"
-]
-```
-
-## fileJumper.autoJump
-
-Defines whether the extension should automatically jump to the related file when only one file is found.
-
-**Default**: `true`
 
 ## files.watcherExclude
 
