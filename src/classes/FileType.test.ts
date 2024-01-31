@@ -454,7 +454,8 @@ describe("FileType", () => {
       );
     });
 
-    it("does not produce duplicate creation paths if multiple creation patterns create the same file", () => {
+    // NOTE: we allow this as the creation pattern content could be different but the path is the same
+    it("produces duplicate creation paths if multiple creation patterns create the same file", () => {
       fileType = new FileType({
         name: "test",
         icon: "🧪",
@@ -490,6 +491,12 @@ describe("FileType", () => {
           icon: "⭐",
           fullPath: "C:/User/tests/some.test-file.ts",
           initialContentSnippet: undefined,
+        },
+        {
+          name: "file2",
+          icon: "😀",
+          fullPath: "C:/User/tests/some.test-file.ts",
+          initialContentSnippet: ["content"],
         },
       ]);
     });

@@ -181,7 +181,6 @@ export default class FileType {
    * @remark This assumes the source path is a valid path for this file type
    */
   getPossibleCreationConfigs(sourcePath: string): FileCreationConfig[] {
-    const uniqueCreationPaths = new Set<string>();
     return this.creationPatterns
       .filter((creationPattern) => creationPattern.testRegex?.test(sourcePath) ?? true)
       .map((creationPattern) => {
@@ -190,8 +189,8 @@ export default class FileType {
           transformations: creationPattern.pathTransformations,
         });
 
-        if (creationPath === sourcePath || uniqueCreationPaths.has(creationPath)) {
-          return; // creation not possible or creation path already exists
+        if (creationPath === sourcePath) {
+          return; // creation not possible, no path transformation applied
         }
 
         // assert creation path is valid path, ie the user has not made a made a mistake with the path
@@ -203,7 +202,6 @@ export default class FileType {
           throw new Error(error);
         }
 
-        uniqueCreationPaths.add(creationPath);
         return {
           name: creationPattern.name,
           icon: creationPattern.icon || "",
