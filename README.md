@@ -19,51 +19,11 @@ Install the extension from the [VSCode Marketplace](https://marketplace.visualst
 
 # Configuration
 
-Customize the extension's behavior by modifying the following settings in your VSCode `settings.json`.
+Customize the extension's behavior by modifying the settings [documented here](#) in your VSCode `settings.json`.
 
 The extension will automatically detect changes to the configuration and update the file links accordingly.
 
 ![Example of extension reacting to configuration updates](images/Code_vnZxRMrpTg.gif)
-
-### **Patterns and Links**
-
-The extension requires defined RegEx patterns to capture specific named groups from file paths which will be used to determine if files of different types are related. The named groups that can be matched are:
-
-- `topic`: This represents the part of the file path that is repeated for related files. For example, a file `src/components/Button.ts`, the topic could be `components/Button` which could be used to match a test file `test/components/Button.test.ts`. The example configuration below shows example file type definitions that can achieve this link.
-- `prefix`: (**OPTIONAL**) This represents the the root path and can be used to differentiate between files with a similar structure but from different root folders (e.g. a mono-repo) e.g. `packages/PackageA/src/components/Button.ts` and `packages/PackageB/test/components/Button.test.ts` would have a link if a prefix capture group is not defined. If your project does not have this structure, you can omit this capture group.
-
-Multiple patterns can be defined and these are evaluated in the given order, where the first match is used. This allows for more complex folder structures and exceptions to rules to be supported. This means more specific patterns should be defined first so they can match their specific cases before more general patterns are evaluated.
-
-The extension will automatically link all files of different types that resolve to the same topic and prefix (if defined). You can customise which files can link to/from other files by using the `onlyLinkTo` and `onlyLinkFrom` properties.
-
-**NOTE**: Path comparisons are case-insensitive.
-
-**NOTE**: For building Regex patterns easily try [RegExr](https://regexr.com/) which has a handy cheat sheet, live evaluation, and lets you test your patterns against multiple strings (paths) at the same time.
-
-## files.watcherExclude
-
-**Default**:
-
-<!-- START AUTO-GENERATED: files.watcherExclude default code block -->
-
-```json
-{
-  "files.watcherExclude": {
-    "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true,
-    "**/.hg/store/**": true,
-    "**/node_modules/**": true,
-    "**/dist/**": true,
-    "**/out/**": true,
-    "**/build/**": true,
-    "**/coverage/**": true,
-    "**/.next/**": true,
-    "**/.yarn/**": true
-  }
-}
-```
-
-<!-- END AUTO-GENERATED: files.watcherExclude default code block -->
 
 # Usage
 

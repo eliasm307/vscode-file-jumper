@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import escapeRegExp from "lodash/escaperegexp";
 import type { SpawnOptions } from "child_process";
 import { spawn } from "child_process";
 import { compile } from "json-schema-to-typescript";
@@ -13,89 +12,50 @@ import { contributes as vsCodeContributions } from "../../package.json";
 import prettierConfig from "../../.prettierrc.cjs";
 
 /* eslint-disable no-console */
-console.log("START sync-readme.js", { prettierConfig });
+console.log("START sync-readme.js");
 
 const ROOT_DIR = path.join(__dirname, "..", "..");
-const readmePath = path.join(ROOT_DIR, "README.md");
+const docsPath = path.join(ROOT_DIR, "example.md");
 
 async function main() {
-  const readmeText = fs.readFileSync(readmePath, "utf8");
+  const docsText = fs.readFileSync(docsPath, "utf8");
   const { documentationTypes, sourceCodeTypes } = await generateTypesFromConfig();
 
   // save the generated types to a file
   await writeSourceCodeTypesFile(sourceCodeTypes);
 
-  fs.writeFileSync(
-    path.join(ROOT_DIR, "example.md"),
-    [
-      `# FileJumper Configuration`,
-      "",
-      `## Types Summary`,
-      "",
-      // `This is the configuration for the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)`,
-      // "",
-      // `> **Note:** This file is generated from the [package.json](../../package.json) file. Do not edit it directly.`,
-      // "",
-      // `## Settings`,
-      // "",
-      "```ts",
-      documentationTypes,
-      "```",
-      "",
-      `## Details`,
-      "",
-      generateMarkdownDocs(),
-      "", // should end with new line
-    ].join("\n"),
-    "utf8",
-  );
+  const newDocsText = [
+    `# FileJumper Configuration`,
+    "",
+    `## Types Summary`,
+    "",
+    // `This is the configuration for the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)`,
+    // "",
+    // `> **Note:** This file is generated from the [package.json](../../package.json) file. Do not edit it directly.`,
+    // "",
+    // `## Settings`,
+    // "",
+    "```ts",
+    documentationTypes,
+    "```",
+    "",
+    `## Details`,
+    "",
+    generateMarkdownDocs(),
+    "", // should end with new line
+  ].join("\n");
 
-  const latestFilesWatcherExcludeConfig = {
-    "files.watcherExclude": vsCodeContributions.configurationDefaults["files.watcherExclude"],
-  };
-
-  if (!latestFilesWatcherExcludeConfig || !Object.keys(latestFilesWatcherExcludeConfig).length) {
-    throw Error("No files.watcherExclude config found in package.json");
-  }
-
-  const BLOCK_START_COMMENT =
-    "<!-- START AUTO-GENERATED: files.watcherExclude default code block -->";
-  const BLOCK_END_COMMENT = "<!-- END AUTO-GENERATED: files.watcherExclude default code block -->";
-
-  const regex = new RegExp(
-    `${escapeRegExp(BLOCK_START_COMMENT)}.+${escapeRegExp(BLOCK_END_COMMENT)}`,
-    "s",
-  );
-
-  if (!regex.test(readmeText)) {
-    console.error("No files.watcherExclude code block found in README.md using regex:\n", regex);
-    throw Error("No files.watcherExclude code block found in README.md");
-  }
-
-  const newReadmeText = readmeText.replace(
-    regex,
-    [
-      BLOCK_START_COMMENT,
-      "",
-      "```json",
-      JSON.stringify(latestFilesWatcherExcludeConfig, null, 2),
-      "```",
-      "",
-      BLOCK_END_COMMENT,
-    ].join("\n"),
-  );
-
-  if (newReadmeText === readmeText) {
-    console.log("No changes to README.md");
+  if (newDocsText === docsText) {
+    console.log("No changes to documentation");
     return;
   }
 
-  console.log("Changes found, updating README.md...");
-  fs.writeFileSync(readmePath, newReadmeText, "utf8");
+  console.log("Changes found, updating documentation...");
+  fs.writeFileSync(docsPath, newDocsText, "utf8");
 
   console.log("Running git add/commit for README changes...");
-  await runGit(["add", "README.md"], { cwd: ROOT_DIR });
-  await runGit(["commit", "-m", "Auto-Update README"], { cwd: ROOT_DIR });
+  await runGit(["add", path.relative(ROOT_DIR, docsPath)], { cwd: ROOT_DIR });
+  await runGit(["commit", "-m", "Auto-Update documentation"], { cwd: ROOT_DIR });
 }
 
 async function runGit(args: string[], options: SpawnOptions) {
