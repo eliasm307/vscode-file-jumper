@@ -194,7 +194,7 @@ The topic capture group is defined as a group named 'topic' (for example `\\/(te
 2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders.
 3. The patterns are evaluated in the order they are defined, so more specific patterns should be defined first.
 4. The patterns are evaluated against the full path, not relative to the workspace root.
-5. The patterns are case sensitive.
+5. The patterns and comparisons between paths are case insensitive.
 6. Paths are normalised to use "/".
 
 For project structures which repeat prefix folder paths in different locations (e.g. `.../projectA/src/components/Button.ts` linking to `.../projectA/tests/components/Button.test.ts` where the `.../projectA` folder path is repeated but should not link to files in `.../projectB`), a prefix can also be captured which will be used for matching related files e.g. `(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`
@@ -210,9 +210,7 @@ Multiple patterns can be defined and these are evaluated in the given order, whe
 
 The extension will automatically link all files of different types that resolve to the same topic and prefix (if defined). You can customise which files can link to/from other files by using the `onlyLinkTo` and `onlyLinkFrom` properties.
 
-**NOTE**: Path comparisons are case-insensitive.
-
-**NOTE**: For building Regex patterns easily try [RegExr](https://regexr.com/) which has a handy cheat sheet, live evaluation, and lets you test your patterns against multiple strings (paths) at the same time.
+For building Regex patterns easily try [RegExr](https://regexr.com/) which has a handy cheat sheet, live evaluation, and lets you test your patterns against multiple strings (paths) at the same time.
 
 **Example**
 
