@@ -55,18 +55,18 @@
     "@eliasm307/config": "^0.44.4",
     "@types/json-schema": "^7.0.15",
     "@types/node": "^18.16.18",
-    "@types/vscode": "^1.79.0",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
-    "@vitest/coverage-v8": "^1.0.4",
-    "@vscode/test-electron": "^2.3.8",
-    "@vscode/vsce": "^2.22.0",
-    "esbuild": "^0.19.11",
-    "eslint": "^8.55.0",
-    "json-schema-to-typescript": "^13.1.1",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "@vitest/coverage-v8": "^1.2.2",
+    "@vscode/test-electron": "^2.3.9",
+    "@vscode/vsce": "^2.23.0",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.56.0",
+    "json-schema-to-typescript": "^13.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
-    "vitest": "^1.0.4"
+    "vitest": "^1.2.2"
   },
   "capabilities": {
     "untrustedWorkspaces": {
