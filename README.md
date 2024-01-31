@@ -42,12 +42,6 @@ The extension will automatically link all files of different types that resolve 
 
 ## files.watcherExclude
 
-For handling file system changes, the extension uses the VSCode file watcher to watch files in a workspace, however this can be resource intensive if there are a lot of files.
-
-This setting defines the files and folders to exclude from the file watcher, to improve performance. Note, this is a native VS Code setting and is not specific to this extension. See the defaults for this option in the [VS Code Default Config](https://code.visualstudio.com/docs/getstarted/settings#_default-settings).
-
-The option format is an object where the keys are glob patterns to ignore and the keys are booleans defining whether to ignore the patterns.
-
 **Default**:
 
 <!-- START AUTO-GENERATED: files.watcherExclude default code block -->
