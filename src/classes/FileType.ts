@@ -23,6 +23,7 @@ export type PathKey = string & { __brand: "pathKey" };
 type CreationPattern = {
   name: string;
   icon?: string;
+  testRegex?: RegExp;
   pathTransformations: PathTransformation[];
   /**
    * Either a string as an existing snippet name
@@ -74,6 +75,9 @@ export default class FileType {
   ): CreationPattern[] {
     return creationPatternConfigs.map((creationPatternConfig) => ({
       ...creationPatternConfig,
+      testRegex: creationPatternConfig.testRegex
+        ? new RegExp(creationPatternConfig.testRegex)
+        : undefined,
       pathTransformations: creationPatternConfig.pathTransformations.map((transformation) => ({
         ...transformation,
         // NOTE: we assume this will only be used for string replace, so stateful regex flags should not cause issues when regex is reused
@@ -179,6 +183,7 @@ export default class FileType {
   getPossibleCreationConfigs(sourcePath: string): FileCreationConfig[] {
     const uniqueCreationPaths = new Set<string>();
     return this.creationPatterns
+      .filter((creationPattern) => creationPattern.testRegex?.test(sourcePath) ?? true)
       .map((creationPattern) => {
         const creationPath = applyPathTransformations({
           sourcePath,

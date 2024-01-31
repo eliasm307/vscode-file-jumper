@@ -40,6 +40,7 @@ interface FileType {
 interface CreationPattern {
   name: string;
   icon?: string;
+  testRegex?: string;
   /**
    * @minItems 1
    */
@@ -197,6 +198,14 @@ The name of the creation pattern, which will be used in the UI
 Type: `string`
 
 (**OPTIONAL**) An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
+
+#### 🅿️ Property - `testRegex` (**OPTIONAL**)
+
+Type: `string`
+
+A RegEx pattern that will be run against a source file path to determine if this transformation should be used.
+
+**NOTE** RegEx is case insensitive
 
 #### 🅿️ Property - `pathTransformations` (**REQUIRED**)
 

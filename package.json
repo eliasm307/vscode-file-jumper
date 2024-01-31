@@ -204,6 +204,11 @@
                         "default": "",
                         "maxLength": 1
                       },
+                      "testRegex": {
+                        "markdownDescription": "A RegEx pattern that will be run against a source file path to determine if this transformation should be used.\n\n**NOTE** RegEx is case insensitive",
+                        "type": "string",
+                        "minLength": 1
+                      },
                       "pathTransformations": {
                         "markdownDescription": "Defines the transformations to apply to the source file path to generate the new file path.\n\n**NOTE** The transformations are applied to the source path in the order they are defined.",
                         "type": "array",

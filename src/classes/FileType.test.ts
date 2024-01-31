@@ -620,5 +620,32 @@ describe("FileType", () => {
         ],
       );
     });
+
+    it("does not apply creation pattern if the test regex does not match", () => {
+      fileType = new FileType({
+        name: "test",
+        icon: "🧪",
+        patterns: ["\\.test\\.ts"],
+        creationPatterns: [
+          {
+            name: "with-icon",
+            icon: "⭐",
+            testRegex: "other",
+            pathTransformations: [
+              {
+                searchRegex: ".+", // ie matches everything
+                replacementText: ".transformed.",
+              },
+            ],
+          },
+        ],
+      });
+
+      assert.deepStrictEqual(
+        fileType.getPossibleCreationConfigs("C:/User/tests/some.test.ts"),
+        [],
+        "no transformation suggested",
+      );
+    });
   });
 });

@@ -37,6 +37,7 @@ export type FileType = {
 export type CreationPattern = {
   name: string;
   icon?: string;
+  testRegex?: string;
   /**
    * @minItems 1
    */
