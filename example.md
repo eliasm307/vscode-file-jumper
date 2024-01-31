@@ -1,4 +1,6 @@
-## Configuration Overview
+# FileJumper Configuration
+
+## Types Summary
 
 ```ts
 /**
@@ -64,18 +66,20 @@ interface PathTransformation {
 }
 
 /**
- * Keys are the searchRegex capture group names and the values are the format to apply to each group
+ * Keys are the searchRegex capture group numbers (named capture groups not supported) and the values are the standard format to apply to each group
  */
 interface GroupFormats {
   /**
    * The standard format to apply to the capture group
    *
    * This interface was referenced by `GroupFormats`'s JSON-Schema definition
-   * via the `patternProperty` ".+".
+   * via the `patternProperty` "\d+".
    */
   [k: string]: "lowercase" | "UPPERCASE" | "PascalCase" | "camelCase" | "snake_case" | "kebab-case";
 }
 ```
+
+## Details
 
 ### 🧩 <ins>FileJumper</ins>
 
@@ -103,11 +107,25 @@ Type: `boolean`
 
 Defines whether the extension should automatically jump to the related file when only one related file is found.
 
+**Default**
+
+```json
+true
+```
+
 #### 🅿️ Property - `FileJumper.fileJumper.ignorePatterns` (**OPTIONAL**)
 
 Type: `string[]`
 
 Defines the RegEx patterns of files to ignore when determining file links
+
+**Default**
+
+```json
+[
+  "\\/node_modules\\/"
+]
+```
 
 **Example(s)**
 
@@ -126,6 +144,12 @@ Type: `boolean`
 
 Whether to show logs in the output channel
 
+**Default**
+
+```json
+false
+```
+
 ### 🧩 <ins>FileTypesMap</ins>
 
 Type: `object`
@@ -136,7 +160,7 @@ An object that defines the file types in a project that will be evaluated for au
 
 **NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
 
-#### Property with name matching regex `.+`
+#### Any property with key matching regex `.+`
 
 Type: `FileType`
 
@@ -153,6 +177,12 @@ Defines a file type, which represents a group of files that serve a specific pur
 Type: `string`
 
 An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
+
+**Default**
+
+```json
+""
+```
 
 #### 🅿️ Property - `FileType.patterns` (**REQUIRED**)
 
@@ -174,6 +204,12 @@ The topic capture group is defined as a group named 'topic' (for example `\\/(te
 6. Paths are normalised to use "/".
 
 For project structures which repeat prefix folder paths in different locations (e.g. `.../projectA/src/components/Button.ts` linking to `.../projectA/tests/components/Button.test.ts` where the `.../projectA` folder path is repeated but should not link to files in `.../projectB`), a prefix can also be captured which will be used for matching related files e.g. `(?<prefix>.*)\\/(test|tests)\\/(?<topic>.+)\\.test\\.ts$`
+
+**Default**
+
+```json
+[]
+```
 
 **Example(s)**
 
@@ -228,6 +264,12 @@ By default (when not defined), non-alphanumeric characters are not ignored.
 
 This is useful for matching files with the same name but different naming styles (e.g. `kebab-case`, `camelCase`, `snake_case`).
 
+**Default**
+
+```json
+false
+```
+
 #### 🅿️ Property - `FileType.creationPatterns` (**OPTIONAL**)
 
 Type: `CreationPattern[]`
@@ -253,6 +295,12 @@ The name of the creation pattern, which will be used in the UI
 Type: `string`
 
 An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file
+
+**Default**
+
+```json
+""
+```
 
 #### 🅿️ Property - `CreationPattern.testRegex` (**OPTIONAL**)
 
@@ -309,6 +357,12 @@ Type: `string`
 
 The flags to use when evaluating the `searchRegex` pattern
 
+**Default**
+
+```json
+""
+```
+
 #### 🅿️ Property - `PathTransformation.replacementText` (**OPTIONAL**)
 
 Type: `string`
@@ -349,7 +403,7 @@ Keys are the `searchRegex` capture group names and the values are the format to 
 
 **NOTE** This does not support named capture groups.
 
-#### Property with name matching regex `.+`
+#### Any property with key matching regex `\d+`
 
 Type: `string`
 
@@ -366,3 +420,38 @@ The standard format to apply to the capture group
   }
 }
 ```
+
+### 🧩 <ins>files.watcherExclude</ins>
+
+Type: `object`
+
+For handling file system changes, the extension uses the VSCode file watcher to watch files in a workspace, however this can be resource intensive if there are a lot of files.
+
+This setting defines the files and folders to exclude from the file watcher, to improve performance. Note, this is a native VS Code setting and is not specific to this extension. See the defaults for this option in the [VS Code Default Config](https://code.visualstudio.com/docs/getstarted/settings#_default-settings).
+
+The option format is an object where the keys are glob patterns to ignore and the keys are booleans defining whether to ignore the patterns.
+
+#### Any property with key matching regex `.*`
+
+Type: `boolean`
+
+Whether the file watcher should ignore the pattern.
+
+**Default**
+
+```json
+{
+  "**/.git/objects/**": true,
+  "**/.git/subtree-cache/**": true,
+  "**/.hg/store/**": true,
+  "**/node_modules/**": true,
+  "**/dist/**": true,
+  "**/out/**": true,
+  "**/build/**": true,
+  "**/coverage/**": true,
+  "**/.next/**": true,
+  "**/.yarn/**": true
+}
+```
+
+

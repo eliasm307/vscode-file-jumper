@@ -153,7 +153,6 @@
                 "icon": {
                   "description": "An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
                   "type": "string",
-                  "default": "",
                   "maxLength": 1
                 },
                 "patterns": {
@@ -181,7 +180,6 @@
                     "minLength": 1
                   },
                   "minItems": 1,
-                  "default": [],
                   "uniqueItems": true
                 },
                 "onlyLinkTo": {
@@ -224,7 +222,6 @@
                       "icon": {
                         "markdownDescription": "An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
                         "type": "string",
-                        "default": "",
                         "maxLength": 1
                       },
                       "testRegex": {
@@ -254,8 +251,7 @@
                             },
                             "searchRegexFlags": {
                               "markdownDescription": "The flags to use when evaluating the `searchRegex` pattern",
-                              "type": "string",
-                              "default": ""
+                              "type": "string"
                             },
                             "replacementText": {
                               "markdownDescription": "The text to replace matched text in the source file path after the `searchRegex` is run, in order to generate the new file path.\n\nThe text can include capture groups from the `searchRegex` pattern, which will be replaced with the captured text.",
@@ -264,11 +260,11 @@
                             },
                             "groupFormats": {
                               "title": "Group Formats",
-                              "description": "Keys are the searchRegex capture group names and the values are the format to apply to each group",
+                              "description": "Keys are the searchRegex capture group numbers (named capture groups not supported) and the values are the standard format to apply to each group",
                               "markdownDescription": "Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.\n\nKeys are the `searchRegex` capture group names and the values are the format to apply to each group\n\n**NOTE** This does not support named capture groups.",
                               "type": "object",
                               "patternProperties": {
-                                ".+": {
+                                "\\d+": {
                                   "description": "The standard format to apply to the capture group",
                                   "type": "string",
                                   "enum": [
