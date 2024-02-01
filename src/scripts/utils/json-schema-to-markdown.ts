@@ -184,7 +184,6 @@ function serializeObjectSchema(schema: VSCodeJsonSchema, context: Context): stri
 }
 
 function serializePrimitiveSchema(schema: VSCodeJsonSchema, context: Context): string {
-  // eslint-disable-next-line prefer-destructuring
   let type: string | string[] = schema.type!;
   if (schema.type === "string" && schema.enum) {
     type = schema.enum.join(" | ");
