@@ -155,6 +155,7 @@ async function writeSourceCodeTypesFile(newTypesText: string): Promise<boolean> 
     return false;
   }
 
+  console.log("Changes found, updating types...");
   await fs.writeFile(GENERATED_TYPES_FILE_PATH, newTypesText, "utf8");
   await lint(GENERATED_TYPES_FILE_PATH);
   return true;
