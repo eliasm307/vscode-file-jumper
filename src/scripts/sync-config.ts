@@ -31,13 +31,17 @@ async function main() {
   const newConfigDocsText = generateConfigMarkdownDocumentation({ documentationTypes });
 
   // save the generated content to a files
-  const results = await Promise.all([
+  await Promise.all([
     writeSourceCodeTypesFile(sourceCodeTypes),
     writeConfigDocumentationFile(newConfigDocsText),
   ]);
 
-  if (!results.some(Boolean)) {
-    console.log("No changes to documentation or types");
+  const gitIsClean = await runGit(["diff", "--quiet"], { cwd: ROOT_DIR }).then(
+    () => true,
+    () => false,
+  );
+  if (gitIsClean) {
+    console.log("No changes to generated files, skipping git add/commit");
     return;
   }
 
@@ -148,45 +152,19 @@ async function generateTypesFromConfig() {
   return { documentationTypes, sourceCodeTypes };
 }
 
-async function writeSourceCodeTypesFile(newTypesText: string): Promise<boolean> {
-  const currentTypesText = await getFileContents(GENERATED_TYPES_FILE_PATH);
-  if (newTypesText === currentTypesText) {
-    console.log("No changes to types");
-    return false;
-  }
-
-  console.log("Changes found, updating types...");
+async function writeSourceCodeTypesFile(newTypesText: string): Promise<void> {
   await fs.writeFile(GENERATED_TYPES_FILE_PATH, newTypesText, "utf8");
-  await lint(GENERATED_TYPES_FILE_PATH);
-  return true;
+  await lintWithFixes(GENERATED_TYPES_FILE_PATH);
 }
 
-async function lint(filePath: string) {
+async function lintWithFixes(filePath: string) {
   const eslint = new ESLint({ fix: true });
   const results = await eslint.lintFiles(filePath);
   await ESLint.outputFixes(results);
   const formatter = await eslint.loadFormatter("stylish");
-  const resultText = formatter.format(results);
-  console.log(resultText);
+  await formatter.format(results);
 }
 
-async function writeConfigDocumentationFile(newConfigDocsText: string): Promise<boolean> {
-  const currentConfigDocsText = await getFileContents(CONFIGURATION_DOCS_FILE_PATH);
-  if (newConfigDocsText === currentConfigDocsText) {
-    console.log("No changes to documentation");
-    return false;
-  }
-
-  console.log("Changes found, updating documentation...");
+async function writeConfigDocumentationFile(newConfigDocsText: string): Promise<void> {
   await fs.writeFile(CONFIGURATION_DOCS_FILE_PATH, newConfigDocsText, "utf8");
-  return true;
-}
-
-async function getFileContents(filePath: string): Promise<string> {
-  try {
-    const content = await fs.readFile(filePath, "utf8");
-    return content;
-  } catch (error) {
-    return "";
-  }
 }
