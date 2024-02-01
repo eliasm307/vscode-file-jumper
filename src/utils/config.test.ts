@@ -1,11 +1,13 @@
 import { assert, describe, it } from "vitest";
-import type { MainConfig } from "./config";
+import type { RawMainConfig } from "./config";
 import {
   getIssuesWithMainConfig,
   formatRawIgnorePatternsConfig,
   formatRawFileTypesConfig,
   mainConfigsAreEqual,
+  applyPathTransformations,
 } from "./config";
+import type { PathTransformation } from "../types";
 
 describe("config utils", () => {
   describe("#formatRawFileTypesConfig", () => {
@@ -54,7 +56,9 @@ describe("config utils", () => {
         {
           name: "Source",
           icon: "💻",
-          patterns: ["(?<prefix>.+)\\/src\\/(?!\\.test\\.|\\.spec\\.)(?<topic>.+)\\.(js|jsx|ts|tsx)$"],
+          patterns: [
+            "(?<prefix>.+)\\/src\\/(?!\\.test\\.|\\.spec\\.)(?<topic>.+)\\.(js|jsx|ts|tsx)$",
+          ],
         },
         {
           name: "Test",
@@ -62,7 +66,11 @@ describe("config utils", () => {
           patterns: ["(?<prefix>.+)\\/test\\/(?<topic>.+)\\.(test|spec)\\.(js|jsx|ts|tsx)$"],
         },
       ];
-      assert.deepStrictEqual(actual, expectedDefault, "returns the defaults when config is not defined");
+      assert.deepStrictEqual(
+        actual,
+        expectedDefault,
+        "returns the defaults when config is not defined",
+      );
     });
   });
 
@@ -76,13 +84,17 @@ describe("config utils", () => {
     it("returns the default ignore patterns when config is not defined", () => {
       const actual = formatRawIgnorePatternsConfig(undefined);
       const expectedDefault = ["\\/node_modules\\/"];
-      assert.deepStrictEqual(actual, expectedDefault, "returns the defaults when config is not defined");
+      assert.deepStrictEqual(
+        actual,
+        expectedDefault,
+        "returns the defaults when config is not defined",
+      );
     });
   });
 
   describe("#mainConfigsAreEqual", () => {
     it("returns true when configs are equal", () => {
-      const a: MainConfig = {
+      const a: RawMainConfig = {
         fileTypes: [
           {
             name: "Source",
@@ -98,7 +110,7 @@ describe("config utils", () => {
         ignorePatterns: ["\\/node_modules\\/"],
         showDebugLogs: false,
       };
-      const b: MainConfig = {
+      const b: RawMainConfig = {
         fileTypes: [
           {
             name: "Source",
@@ -118,7 +130,7 @@ describe("config utils", () => {
     });
 
     it("returns false when configs are not equal", () => {
-      const a: MainConfig = {
+      const a: RawMainConfig = {
         fileTypes: [
           {
             name: "Source",
@@ -134,7 +146,7 @@ describe("config utils", () => {
         ignorePatterns: ["\\/node_modules\\/"],
         showDebugLogs: false,
       };
-      const b: MainConfig = {
+      const b: RawMainConfig = {
         fileTypes: [
           {
             name: "Source",
@@ -188,6 +200,85 @@ describe("config utils", () => {
         actual,
         ["There must be at least 2 file types defined"],
         "returns an array of issues when config is invalid",
+      );
+    });
+  });
+
+  describe("applyPathTransformations", () => {
+    it("should apply path transformations correctly", () => {
+      const sourcePath = "/path/to/source/file.js";
+      const transformations: PathTransformation[] = [
+        {
+          searchRegex: /source/,
+          replacementText: "target",
+        },
+        {
+          searchRegex: /file/,
+          replacementText: "newfile",
+        },
+      ];
+
+      const expected = "/path/to/target/newfile.js";
+      const actual = applyPathTransformations({ sourcePath, transformations });
+
+      assert.strictEqual(actual, expected, "should apply path transformations correctly");
+    });
+
+    it("should not apply transformation if testRegex does not match", () => {
+      const sourcePath = "/path/to/source/file.js";
+      const transformations: PathTransformation[] = [
+        {
+          searchRegex: /source/,
+          replacementText: "target",
+          testRegex: /other/,
+        },
+        {
+          searchRegex: /file/,
+          replacementText: "newfile",
+        },
+      ];
+
+      assert.strictEqual(
+        applyPathTransformations({ sourcePath, transformations }),
+        "/path/to/source/newfile.js",
+        "should not apply transformation if testRegex does not match",
+      );
+    });
+
+    it("should apply group formats correctly", () => {
+      const sourcePath = "/path/to/some_source/file.js";
+      const transformations: PathTransformation[] = [
+        {
+          searchRegex: /\/(\w+)\/(\w+)\.js$/d,
+          groupFormats: {
+            1: "PascalCase",
+            2: "UPPERCASE",
+          },
+        },
+      ];
+
+      assert.strictEqual(
+        applyPathTransformations({ sourcePath, transformations }),
+        "/path/to/SomeSource/FILE.js",
+        "should apply group formats correctly",
+      );
+    });
+
+    it("maintains special characters when applying group formats", () => {
+      const sourcePath = "/path.to/some_source/file-name.js";
+      const transformations: PathTransformation[] = [
+        {
+          searchRegex: /^(.+)$/d,
+          groupFormats: {
+            1: "PascalCase",
+          },
+        },
+      ];
+
+      assert.strictEqual(
+        applyPathTransformations({ sourcePath, transformations }),
+        "/Path.To/SomeSource/File-Name.Js",
+        "should apply group formats correctly",
       );
     });
   });

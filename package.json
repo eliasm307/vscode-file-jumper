@@ -8,7 +8,7 @@
   },
   "publisher": "ecm",
   "description": "A VS Code extension to define links and navigate easily between files in your project.",
-  "version": "2.2.0",
+  "version": "2.3.8",
   "engines": {
     "vscode": "^1.79.0"
   },
@@ -22,39 +22,54 @@
   "activationEvents": [
     "onStartupFinished"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/main.js",
   "scripts": {
     "vscode:package": "echo 'Packaging...' && vsce package",
-    "vscode:prepublish": "npm run lint && npm run test && npm run compile && npm run sync-readme",
+    "vscode:prepublish": "npm run sync-config && npm run lint && npm run test && npm run build",
     "vscode:publish:patch": "echo 'Publishing patch version...' && vsce publish patch --allow-missing-repository --no-yarn",
     "vscode:publish:minor": "echo 'Publishing minor version...' && vsce publish minor --allow-missing-repository --no-yarn",
     "vscode:publish:major": "echo 'Publishing major version...' && vsce publish major --allow-missing-repository --no-yarn",
+    "vscode:publish:patch-pre-release": "echo 'Publishing patch version (pre-release)...' && vsce publish patch --allow-missing-repository --no-yarn --pre-release",
+    "vscode:publish:minor-pre-release": "echo 'Publishing minor version (pre-release)...' && vsce publish minor --allow-missing-repository --no-yarn --pre-release",
     "vscode:login": "vsce login ecm",
-    "vscode:help": "vsce help",
+    "vscode:help": "vsce help publish",
     "vscode:list-files": "vsce ls --no-yarn",
     "vscode:list-publishers": "vsce ls-publishers",
     "precompile": "echo 'Cleaning old output...' && rm -rf ./out",
     "compile": "echo 'Compiling...' && tsc -build ./tsconfig.build.json",
+    "typecheck": "tsc -noEmit -p ./tsconfig.build.json",
+    "build": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "watch": "tsc -watch -p ./tsconfig.build.json",
     "lint": "echo 'Linting...' && eslint src --ext ts --fix --cache --report-unused-disable-directives",
-    "test": "echo 'Testing...' && vitest run --coverage -- ",
+    "test": "echo 'Testing...' && vitest run",
     "pretest:changed": "npm run compile",
     "test:changed": "echo 'Testing...' && vitest run --coverage --changed HEAD~1",
-    "sync-readme": "echo 'Syncing README...' && node src/scripts/sync-readme.js"
+    "sync-config": "echo 'Syncing configuration...' && ts-node src/scripts/sync-config.ts",
+    "build:scripts": "echo 'Building scripts...' && tsc -p ./src/scripts/tsconfig.build.json"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@eliasm307/config": "^0.28.0",
+    "@eliasm307/config": "^0.44.4",
+    "@types/json-schema": "^7.0.15",
     "@types/node": "^18.16.18",
-    "@types/vscode": "^1.79.1",
-    "@typescript-eslint/eslint-plugin": "^5.60.1",
-    "@typescript-eslint/parser": "^5.60.1",
-    "@vitest/coverage-v8": "^0.32.2",
-    "@vscode/test-electron": "^2.3.3",
-    "@vscode/vsce": "^2.19.0",
-    "eslint": "^8.44.0",
-    "lodash.escaperegexp": "^4.1.2",
-    "typescript": "^5.1.6",
-    "vitest": "^0.32.2"
+    "@types/vscode": "1.79.0",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "@vitest/coverage-v8": "^1.2.2",
+    "@vscode/test-electron": "^2.3.9",
+    "@vscode/vsce": "^2.23.0",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.56.0",
+    "json-schema-to-typescript": "^13.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  },
+  "devDependenciesNotes": {
+    "@types/vscode": "Fixed to 1.79.0 to support older versions"
   },
   "capabilities": {
     "untrustedWorkspaces": {
@@ -80,6 +95,10 @@
       {
         "command": "fileJumper.navigateCommand",
         "title": "Jump to..."
+      },
+      {
+        "command": "fileJumper.createFileCommand",
+        "title": "Create..."
       }
     ],
     "menus": {
@@ -88,6 +107,11 @@
           "command": "fileJumper.navigateCommand",
           "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithLinks",
           "group": "navigation@1"
+        },
+        {
+          "command": "fileJumper.createFileCommand",
+          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithPossibleCreations",
+          "group": "navigation@2"
         }
       ],
       "editor/title/context": [
@@ -95,41 +119,72 @@
           "command": "fileJumper.navigateCommand",
           "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithLinks",
           "group": "1_close@1"
+        },
+        {
+          "command": "fileJumper.createFileCommand",
+          "when": "isFileSystemResource && !explorerResourceIsFolder && resourcePath in fileJumper.filePathsWithPossibleCreations",
+          "group": "1_close@2"
         }
       ]
     },
     "configuration": {
       "type": "object",
-      "title": "File ",
+      "title": "File Jumper",
+      "description": "Main configuration",
+      "markdownDescription": "Main configuration.\n\n**NOTE**: Due to a [limitation with VS Code](https://github.com/microsoft/vscode/issues/80243) settings either need to be defined as local settings for each workspace or globally in the user settings for all workspaces, not both. This is because VS Code does not allow the user settings to be overridden by workspace settings and instead deep merges workspace settings into the user settings, which might cause unexpected behavior.\n\nIf you want to use custom settings for this extension in each workspace, you will need to remove the the user settings.",
+      "additionalProperties": false,
+      "required": [
+        "fileJumper.fileTypes"
+      ],
       "properties": {
         "fileJumper.fileTypes": {
-          "markdownDescription": "Defines the file types in a project that will be evaluated for co-location linking.\n\n**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI",
+          "title": "FileTypesMap",
+          "markdownDescription": "An object that defines the file types in a project that will be evaluated for automatic linking.\n\n**NOTE** The property keys are the names of the file type matched by the pattern, which will be used in the UI. The values are objects that define the file type's behavior.\n\n**NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.",
           "scope": "window",
           "type": "object",
           "minProperties": 2,
           "patternProperties": {
             ".+": {
+              "title": "FileType",
+              "description": "Defines a file type, which represents a group of files that serve a specific purpose, e.g. test files, and different file types can then be linked together.",
               "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "icon": {
                   "description": "An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
                   "type": "string",
-                  "default": "",
                   "maxLength": 1
                 },
                 "patterns": {
-                  "markdownDescription": "RegEx patterns (case insensitive) that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the topic).\n\nThe topic capture group is defined as a group named 'topic' (for example `\\\\/(test|tests)\\\\/(?<topic>.+)\\\\.test\\\\.ts$`).\n\n**NOTES**\n1. This should only match 1 related file type, if multiple can be matched then they should be defined as separate types.\n2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders.\n3. The patterns are evaluated in the order they are defined, so more specific patterns should be defined first.\n4. The patterns are evaluated against the full path, not relative to the workspace root.\n5. The patterns are case sensitive, so `(?i)` is not required.\n6. Paths are normalised to use \"/\".\n\nFor structures which repeat folder paths in different locations, a prefix can also be captured which will be used for matching related files e.g. `(?<prefix>.*)\\\\/(test|tests)\\\\/(?<topic>.+)\\\\.test\\\\.ts$`",
+                  "description": "An array of RegEx patterns (case insensitive) to match relevant files and capture the topic and/or a prefix.",
+                  "markdownDescription": "RegEx patterns (case insensitive) that should match relevant files and capture the part of the path that will be constant for sibling pattern group items (aka the topic).\n\nThis extension uses RegEx for matching file paths, instead of glob patterns, to allow for more flexibility in the rules that can be defined.\n\nThe topic capture group is defined as a group named 'topic' (for example `\\\\/(test|tests)\\\\/(?<topic>.+)\\\\.test\\\\.ts$`).\n\n**NOTES**\n\n1. This should only match 1 related file type, if multiple can be matched then they should be defined as separate types.\n2. This will be used to evaluate files and also folder paths, so an extension should be included if possible to prevent matching folders.\n3. The patterns are evaluated in the order they are defined, so more specific patterns should be defined first.\n4. The patterns are evaluated against the full path, not relative to the workspace root.\n5. The patterns and comparisons between paths are case insensitive.\n6. Paths are normalised to use \"/\".\n\nFor project structures which repeat prefix folder paths in different locations (e.g. `.../projectA/src/components/Button.ts` linking to `.../projectA/tests/components/Button.test.ts` where the `.../projectA` folder path is repeated but should not link to files in `.../projectB`), a prefix can also be captured which will be used for matching related files e.g. `(?<prefix>.*)\\\\/(test|tests)\\\\/(?<topic>.+)\\\\.test\\\\.ts$`\n\n**Patterns and Links**\n\nThe extension requires defined RegEx patterns to capture specific named groups from file paths which will be used to determine if files of different types are related. The named groups that can be matched are:\n\n- `topic`: This represents the part of the file path that is repeated for related files. For example, a file `src/components/Button.ts`, the topic could be `components/Button` which could be used to match a test file `test/components/Button.test.ts`. The example configuration below shows example file type definitions that can achieve this link.\n- `prefix`: (**OPTIONAL**) This represents the the root path and can be used to differentiate between files with a similar structure but from different root folders (e.g. a mono-repo) e.g. `packages/PackageA/src/components/Button.ts` and `packages/PackageB/test/components/Button.test.ts` would have a link if a prefix capture group is not defined. If your project does not have this structure, you can omit this capture group.\n\nMultiple patterns can be defined and these are evaluated in the given order, where the first match is used. This allows for more complex folder structures and exceptions to rules to be supported. This means more specific patterns should be defined first so they can match their specific cases before more general patterns are evaluated.\n\nThe extension will automatically link all files of different types that resolve to the same topic and prefix (if defined). You can customise which files can link to/from other files by using the `onlyLinkTo` and `onlyLinkFrom` properties.\n\nFor building Regex patterns easily try [RegExr](https://regexr.com/) which has a handy cheat sheet, live evaluation, and lets you test your patterns against multiple strings (paths) at the same time.",
+                  "examples": {
+                    "fileJumper.fileTypes": {
+                      "Test": {
+                        "icon": "🧪",
+                        "patterns": [
+                          "(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.(test|spec)\\.ts$"
+                        ]
+                      },
+                      "Source": {
+                        "icon": "📄",
+                        "patterns": [
+                          "(?<prefix>.+)\\/src\\/(?<topic>.+)\\.ts$"
+                        ]
+                      }
+                    }
+                  },
                   "type": "array",
                   "items": {
                     "type": "string",
                     "minLength": 1
                   },
                   "minItems": 1,
-                  "default": [],
                   "uniqueItems": true
                 },
                 "onlyLinkTo": {
-                  "markdownDescription": "(**OPTIONAL**) The names of other file types that this file type produces links to.\n\nBy default (ie when not defined), all file types can be linked to all other file types.\n\n**NOTE** Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it",
+                  "description": "Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types.",
+                  "markdownDescription": "The names of other file types that this file type produces links to.\n\nBy default (ie when not defined), all file types can be linked to all other file types.\n\n**NOTE** Setting this to an empty array will prevent this file type from being related to any other file types, ie it will not have shortcuts from it but other file types can have shortcuts to it",
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -137,7 +192,8 @@
                   "uniqueItems": true
                 },
                 "onlyLinkFrom": {
-                  "markdownDescription": "(**OPTIONAL**) The names of other file types that can link to this file type.\n\nBy default (when not defined), all file types can be linked to all other file types.\n\n**NOTE** Setting this to an empty array will prevent other files from linking to this file type, ie it will not have shortcuts to it but it can have shortcuts to other file types",
+                  "description": "Array of other file types that can link to this file type. By default, all file types can be linked to all other file types.",
+                  "markdownDescription": "The names of other file types that can link to this file type.\n\nBy default (when not defined), all file types can be linked to all other file types.\n\n**NOTE** Setting this to an empty array will prevent other files from linking to this file type, ie it will not have shortcuts to it but it can have shortcuts to other file types",
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -145,9 +201,118 @@
                   "uniqueItems": true
                 },
                 "ignoreNonAlphaNumericCharacters": {
-                  "markdownDescription": "(**OPTIONAL**) Whether to ignore non-alphanumeric characters when matching file name topics.\n\nBy default (when not defined), non-alphanumeric characters are not ignored.\n\n**NOTE** This is useful for matching files with names that include special characters, such as `@` or `-`",
+                  "markdownDescription": "Whether to ignore non-alphanumeric characters when matching file name `topic` capture groups.\n\nBy default (when not defined), non-alphanumeric characters are not ignored.\n\n**NOTE** This is useful for matching files with names that include special characters, such as `@` or `-`\n\nThis is useful for matching files with the same name but different naming styles (e.g. `kebab-case`, `camelCase`, `snake_case`).",
                   "type": "boolean",
                   "default": false
+                },
+                "creationPatterns": {
+                  "type": "array",
+                  "markdownDescription": "Defines the creation patterns for this file type, which will be used to generate new files.\n\n**NOTE** The creation patterns are evaluated in the order they are defined.",
+                  "items": {
+                    "title": "Creation Pattern",
+                    "markdownDescription": "Defines a creation pattern, which represents a way to generate new files.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "markdownDescription": "The name of the creation pattern, which will be used in the UI",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "icon": {
+                        "markdownDescription": "An icon character (e.g. an emoji) to show as badges in the file explorer on files related to this type of file",
+                        "type": "string",
+                        "maxLength": 1
+                      },
+                      "testRegex": {
+                        "markdownDescription": "A RegEx pattern that will be run against a source file path to determine if this transformation should be used.\n\n**NOTE** RegEx is case insensitive",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "pathTransformations": {
+                        "markdownDescription": "Defines the transformations to apply to the source file path to generate the new file path.\n\n**NOTE** The transformations are applied to the source path in the order they are defined.",
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                          "type": "object",
+                          "title": "Path Transformation",
+                          "markdownDescription": "Defines a path transformation, which represents a way to transform a source file path to generate a new file path.",
+                          "additionalProperties": false,
+                          "properties": {
+                            "testRegex": {
+                              "markdownDescription": "A RegEx pattern that will be run against a source file path to determine if this transformation should be used.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "searchRegex": {
+                              "markdownDescription": "A RegEx pattern that will be run against a source file path along with `replacementText` to replace parts of the source file path and generate the new file path.\n\n**NOTE** The pattern is evaluated against the full path, not relative to the workspace root.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "searchRegexFlags": {
+                              "markdownDescription": "The flags to use when evaluating the `searchRegex` pattern",
+                              "type": "string"
+                            },
+                            "replacementText": {
+                              "markdownDescription": "The text to replace matched text in the source file path after the `searchRegex` is run, in order to generate the new file path.\n\nThe text can include capture groups from the `searchRegex` pattern, which will be replaced with the captured text.",
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "groupFormats": {
+                              "title": "Group Formats",
+                              "description": "Keys are the searchRegex capture group numbers (named capture groups not supported) and the values are the standard format to apply to each group",
+                              "markdownDescription": "Defines the formats to apply to the capture groups from the `searchRegex` pattern, which will be used to replace the capture groups before being used in the `replacementText`.\n\nKeys are the `searchRegex` capture group names and the values are the format to apply to each group\n\n**NOTE** This does not support named capture groups.",
+                              "type": "object",
+                              "patternProperties": {
+                                "\\d+": {
+                                  "description": "The standard format to apply to the capture group",
+                                  "type": "string",
+                                  "enum": [
+                                    "lowercase",
+                                    "UPPERCASE",
+                                    "PascalCase",
+                                    "camelCase",
+                                    "snake_case",
+                                    "kebab-case"
+                                  ]
+                                }
+                              },
+                              "examples": {
+                                "searchRegex": "src\\/.+\\/(\\w+)\\/.ts$",
+                                "groupFormats": {
+                                  "1": "PascalCase",
+                                  "2": "snake_case"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "searchRegex"
+                          ]
+                        }
+                      },
+                      "initialContentSnippet": {
+                        "markdownDescription": "The [VS Code snippet](https://code.visualstudio.com/docs/editor/userdefinedsnippets) used to define the initial content of the new file, where the snippet can be defined as either:\n\n- An inline snippet, which is defined as an array of lines\n- A reference to an existing snippet, which is defined as a string with the name of the snippet\n\n**NOTE** If the snippet is defined as an inline snippet, it can use any of the available [VS Code Snippet syntax](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_snippet-syntax).\n\n**NOTE** If the snippet is defined as a reference to an existing snippet, the snippet must be defined in your `User Snippets` correctly.\n\n",
+                        "oneOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "pathTransformations"
+                    ]
+                  }
                 }
               },
               "required": [
@@ -155,35 +320,39 @@
                 "patterns"
               ]
             }
-          },
-          "additionalProperties": false
+          }
         },
         "fileJumper.autoJump": {
-          "description": "Whether to automatically jump to the file when there is only one match",
+          "markdownDescription": "Defines whether the extension should automatically jump to the related file when only one related file is found.",
           "scope": "window",
           "type": "boolean",
           "default": true
         },
         "fileJumper.ignorePatterns": {
-          "description": "Defines the RegEx patterns of files to ignore when determining file links",
+          "markdownDescription": "Defines the RegEx patterns of files to ignore when determining file links",
           "scope": "window",
           "type": "array",
           "default": [
             "\\/node_modules\\/"
           ],
+          "examples": {
+            "fileJumper.ignorePatterns": [
+              "\\/node_modules\\/",
+              "\\/dist\\/"
+            ]
+          },
           "items": {
             "type": "string"
           },
           "additionalProperties": false
         },
         "fileJumper.showDebugLogs": {
-          "description": "Whether to show logs in the output channel",
+          "markdownDescription": "Whether to show logs in the output channel",
           "scope": "window",
           "type": "boolean",
           "default": false
         }
-      },
-      "additionalProperties": false
+      }
     }
   }
 }

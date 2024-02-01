@@ -21,6 +21,8 @@ vsc-extension-quickstart.md
 coverage/**
 .yarn/**
 .vitest/**
-vite.config.js
+vite.config.*
 README_TEMPLATE.md
 CHANGELOG_TBC.md
+node_modules/**
+example.md

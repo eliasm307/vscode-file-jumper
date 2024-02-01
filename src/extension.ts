@@ -3,16 +3,25 @@ import LinkManager from "./classes/LinkManager";
 import Logger, { EXTENSION_KEY } from "./classes/Logger";
 import { getIssuesWithMainConfig } from "./utils/config";
 import DecorationProviderManager from "./vscode/DecorationProviderManager";
-import { createUri, getAllWorkspacePaths, getMainConfig, logAndShowIssuesWithConfig } from "./vscode/utils";
-import type { MainConfig } from "./utils/config";
+import {
+  createUri,
+  getAllWorkspacePaths,
+  getMainConfig,
+  getPossibleFileCreations,
+  logAndShowIssuesWithConfig,
+} from "./vscode/utils";
+import type { RawMainConfig } from "./utils/config";
 import registerNavigateCommand from "./vscode/registerNavigateCommand";
 import registerFileSystemWatcher from "./vscode/registerFileSystemWatcher";
 import registerConfigurationWatcher from "./vscode/registerConfigurationWatcher";
+import registerCreateFileCommand from "./vscode/registerCreateFileCommand";
+
+// todo generate readme from extension config in package.json, e.g. get descriptions of config options, generate types etc
 
 export async function activate(context: vscode.ExtensionContext) {
-  let mainConfig: MainConfig;
+  let mainConfig: RawMainConfig;
   try {
-    // I dont think its worth adding a JSON schema validator package for this, we can just catch the error and show it to the user
+    // I don't think its worth adding a JSON schema validator package for this, we can just catch the error and show it to the user
     mainConfig = getMainConfig();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -48,16 +57,39 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   linkManager.setOnFileLinksUpdatedHandler(async (affectedPaths) => {
-    // need to use FS paths for context key so they work with menu items conditions (they dont have an option to use the normalised path)
-    const fsPathsWithLinks = linkManager.getAllPathsWithOutgoingLinks().map((normalisedPath) => createUri(normalisedPath).fsPath);
+    Logger.info("START onFileLinksUpdated handler called with affectedPaths:", affectedPaths);
 
-    const FS_PATHS_WITH_LINKS_CONTEXT_KEY = "fileJumper.filePathsWithLinks";
-    // this is used to show the context menu item conditionally on files we know have links
-    await vscode.commands.executeCommand("setContext", FS_PATHS_WITH_LINKS_CONTEXT_KEY, fsPathsWithLinks);
+    try {
+      // need to use FS paths for context key so they work (ie match) with menu items conditions (they don't have an option to use the normalised path)
+      const fsPathsWithLinks = linkManager
+        .getAllPathsWithOutgoingLinks()
+        .map((normalisedPath) => createUri(normalisedPath).fsPath);
 
-    // notify decorators of changes
-    Logger.info("onFileLinksUpdated handler called with affectedPaths:", affectedPaths);
-    decorationProviderManager.notifyFileDecorationsChanged(affectedPaths);
+      // this is used to show the context menu item conditionally on files we know have links
+      await vscode.commands.executeCommand(
+        "setContext",
+        "fileJumper.filePathsWithLinks", // key, used in Extension commands conditions
+        fsPathsWithLinks,
+      );
+
+      // this is used to show the context menu item conditionally on files we know can create other files
+      const fsPathsThatCanCreateFiles = await getFsPathsWithPossibleFileCreations(linkManager);
+      await vscode.commands.executeCommand(
+        "setContext",
+        "fileJumper.filePathsWithPossibleCreations", // key, used in Extension commands conditions
+        fsPathsThatCanCreateFiles,
+      );
+
+      // notify decorators of changes
+      Logger.info("onFileLinksUpdated handler called with affectedPaths:", affectedPaths);
+      Logger.info(
+        "onFileLinksUpdated handler called, possibleCreationFsPaths:",
+        fsPathsThatCanCreateFiles,
+      );
+      decorationProviderManager.notifyFileDecorationsChanged(affectedPaths);
+    } catch (e) {
+      Logger.error("Error in onFileLinksUpdated handler", e);
+    }
   });
 
   // should trigger notification after setting the file links updated handler so initial setup is handled
@@ -73,11 +105,30 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     { dispose: () => linkManager.revertToInitial() },
-    { dispose: () => decorationProviderManager.dispose() },
+    decorationProviderManager,
     registerNavigateCommand(linkManager),
+    registerCreateFileCommand(linkManager),
     registerFileSystemWatcher(linkManager),
     registerConfigurationWatcher({ linkManager, decorationProviderManager }),
   );
 
   Logger.info("🚀 Extension activated");
+}
+
+async function getFsPathsWithPossibleFileCreations(linkManager: LinkManager) {
+  const possibleCreationsMap = linkManager.getAllPathsWithPossibleCreationsEntries();
+  return (
+    (
+      await Promise.all(
+        // remove creations for files that already exist
+        possibleCreationsMap.map(
+          async ([path, allCreations]) =>
+            [path, await getPossibleFileCreations(allCreations)] as const,
+        ),
+      )
+    )
+      // remove paths that have no possible creations
+      .filter(([, possibleCreations]) => possibleCreations.length)
+      .map(([path]) => createUri(path).fsPath)
+  );
 }

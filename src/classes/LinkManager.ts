@@ -3,9 +3,8 @@ import { normalisePath } from "../utils";
 import { mainConfigsAreEqual } from "../utils/config";
 import FileType from "./FileType";
 import Logger from "./Logger";
-
-import type { DecorationData, LinkedFileData, NormalisedPath } from "../types";
-import type { MainConfig } from "../utils/config";
+import type { FileCreationData, DecorationData, LinkedFileData, NormalisedPath } from "../types";
+import type { RawMainConfig } from "../utils/config";
 
 type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => Promise<void>;
 
@@ -17,16 +16,16 @@ type PathData = {
 };
 
 export default class LinkManager {
-  private readonly pathDataCache: Map<NormalisedPath, PathData | null> = new Map();
+  private readonly pathDataCache = new Map<NormalisedPath, PathData | null>();
 
   /**
    * This represents all the relevant paths the link manager is aware of that are of a known type
    *
    * @value is the original un-normalised path
    */
-  #pathsWithKnownTypeMap: Map<NormalisedPath, string> = new Map();
+  #pathsWithKnownTypeMap = new Map<NormalisedPath, string>();
 
-  private config: MainConfig | undefined;
+  private config: RawMainConfig | undefined;
 
   private fileTypes: FileType[] = [];
 
@@ -45,6 +44,28 @@ export default class LinkManager {
     );
     stopTimer();
     return paths;
+  }
+
+  /**
+   * @remark Returns entries as that is the most convenient format for the use case, so we avoid returning an object and having to use Object.entries
+   */
+  getAllPathsWithPossibleCreationsEntries(): (readonly [string, FileCreationData[]])[] {
+    const stopTimer = Logger.startTimer("LinkManager#getAllPathsWithPossibleCreations");
+
+    const pathToPossibleCreations = [...this.#pathsWithKnownTypeMap.values()]
+      .map((path) => [path, this.getAllFileCreationsFrom(path)] as const)
+      .filter(([, allCreations]) => allCreations.length);
+
+    stopTimer();
+    return pathToPossibleCreations;
+  }
+
+  getAllFileCreationsFrom(path: string): FileCreationData[] {
+    const stopTimer = Logger.startTimer("LinkManager#getCreationPathsFrom", path);
+    const pathData = this.getPathData(path);
+    const creationData = pathData?.file.type.getPossibleCreationConfigs(path) || [];
+    stopTimer();
+    return creationData;
   }
 
   /**
@@ -165,7 +186,7 @@ export default class LinkManager {
    * We need to do a full refresh here as the config change could also change what files we consider "relevant"
    * so we need to re-evaluate the entire workspace
    */
-  setContext(newContext: { config: MainConfig; paths: string[] }) {
+  setContext(newContext: { config: RawMainConfig; paths: string[] }) {
     const configHasChanged = !mainConfigsAreEqual(this.config, newContext.config);
     if (!configHasChanged) {
       return;
@@ -188,7 +209,7 @@ export default class LinkManager {
     this.onFileLinksUpdatedHandler = handler;
   }
 
-  private applyConfig(config: MainConfig): void {
+  private applyConfig(config: RawMainConfig): void {
     Logger.info("#applyConfig", config);
     this.config = this.formatConfig(config);
     this.fileTypes.forEach((fileType) => fileType.dispose());
@@ -215,7 +236,7 @@ export default class LinkManager {
     this.fileTypes.forEach((fileType) => fileType.removePaths(paths));
   }
 
-  private formatConfig(config: MainConfig): MainConfig {
+  private formatConfig(config: RawMainConfig): RawMainConfig {
     return {
       ...config,
       fileTypes: config.fileTypes.map((fileTypeConfig) => ({

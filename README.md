@@ -19,117 +19,11 @@ Install the extension from the [VSCode Marketplace](https://marketplace.visualst
 
 # Configuration
 
-Customize the extension's behavior by modifying the following settings in your VSCode `settings.json`.
+Customize the extension's behavior by modifying the settings [documented here](CONFIGURATION.md) in your VSCode `settings.json`.
 
 The extension will automatically detect changes to the configuration and update the file links accordingly.
 
 ![Example of extension reacting to configuration updates](images/Code_vnZxRMrpTg.gif)
-
-## fileJumper.fileTypes
-
-An object that defines the file types in a project that will be evaluated for automatic linking.
-
-The object keys represent the file type names. The values are objects that define the file type's behavior. The following properties are supported:
-
-- `icon`: (**Required**) An icon character (e.g. an emoji) displayed as a badge in the file explorer on files related to this file type.
-- `patterns`: (**Required**) An array of RegEx patterns (case insensitive) to match relevant files and capture the topic and/or a prefix. More detail below.
-- `onlyLinkTo`: (**OPTIONAL**) Array of other file types that this file type produces links to. By default, all file types can be linked to all other file types. Defaults to being able to link to all other file types.
-- `onlyLinkFrom`: (**OPTIONAL**) Array of other file types that can link to this file type. By default, all file types can be linked to all other file types. Defaults to all files being able to link to this file type.
-- `ignoreNonAlphaNumericCharacters`: (**OPTIONAL**) Boolean to ignore non-alphanumeric characters when comparing the "topic" in file paths. This is useful for matching files with the same name but different naming styles (e.g. `kebab-case`, `camelCase`, `snake_case`). Defaults to `false`.
-
-**NOTE**: A Minimum of 2 file type definitions (properties) is required to be able to show links between files.
-
-**NOTE**: Due to a [limitation with VS Code](https://github.com/microsoft/vscode/issues/80243) settings either need to be defined as local settings for each workspace or globally in the user settings for all workspaces, not both. This is because VS Code does not allow the user settings to be overridden by workspace settings and instead deep merges workspace settings into the user settings, which might cause unexpected behavior.
-
-If you want to use custom settings for this extension in each workspace, you will need to remove the the user settings.
-
-### **Patterns and Links**
-
-The extension uses RegEx for matching file paths, instead of glob patterns, to allow for more flexibility in the rules that can be defined.
-
-The extension requires defined RegEx patterns to capture specific named groups from file paths which will be used to determine if files of different types are related. The named groups that can be matched are:
-
-- `topic`: This represents the part of the file path that is repeated for related files. For example, a file `src/components/Button.ts`, the topic could be `components/Button` which could be used to match a test file `test/components/Button.test.ts`. The example configuration below shows example file type definitions that can achieve this link.
-- `prefix`: (**OPTIONAL**) This represents the the root path and can be used to differentiate between files with a similar structure but from different root folders (e.g. a mono-repo) e.g. `packages/PackageA/src/components/Button.ts` and `packages/PackageB/test/components/Button.test.ts` would have a link if a prefix capture group is not defined. If your project does not have this structure, you can omit this capture group.
-
-Multiple patterns can be defined and these are evaluated in the given order, where the first match is used. This allows for more complex folder structures and exceptions to rules to be supported. This means more specific patterns should be defined first so they can match their specific cases before more general patterns are evaluated.
-
-The extension will automatically link all files of different types that resolve to the same topic and prefix (if defined). You can customise which files can link to/from other files by using the `onlyLinkTo` and `onlyLinkFrom` properties.
-
-**NOTE**: Path comparisons are case-insensitive.
-
-**NOTE**: For building Regex patterns easily try [RegExr](https://regexr.com/) which has a handy cheat sheet, live evaluation, and lets you test your patterns against multiple strings (paths) at the same time.
-
-### **Example configuration**:
-
-```json
-"fileJumper.fileTypes": {
-  "Test": {
-    "icon": "🧪",
-    "patterns": [
-      "(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.(test|spec)\\.ts$"
-    ]
-  },
-  "Source": {
-    "icon": "📄",
-    "patterns": [
-      "(?<prefix>.+)\\/src\\/(?<topic>.+)\\.ts$"
-    ]
-  }
-}
-```
-
-## fileJumper.ignorePatterns
-
-Defines the RegEx patterns of files to ignore when determining file links.
-
-**Default**: `["\\/node_modules\\/"]`
-
-### **Example configuration**:
-
-```json
-"fileJumper.ignorePatterns": [
-  "\\/node_modules\\/",
-  "\\/dist\\/"
-]
-```
-
-## fileJumper.autoJump
-
-Defines whether the extension should automatically jump to the related file when only one file is found.
-
-**Default**: `true`
-
-## files.watcherExclude
-
-For handling file system changes, the extension uses the VSCode file watcher to watch files in a workspace, however this can be resource intensive if there are a lot of files.
-
-This setting defines the files and folders to exclude from the file watcher, to improve performance. Note, this is a native VS Code setting and is not specific to this extension. See the defaults for this option in the [VS Code Default Config](https://code.visualstudio.com/docs/getstarted/settings#_default-settings).
-
-The option format is an object where the keys are glob patterns to ignore and the keys are booleans defining whether to ignore the patterns.
-
-**Default**:
-
-<!-- START AUTO-GENERATED: files.watcherExclude default code block -->
-
-```json
-{
-  "files.watcherExclude": {
-    "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true,
-    "**/.hg/store/**": true,
-    "**/node_modules/**": true,
-    "**/dist/**": true,
-    "**/out/**": true,
-    "**/build/**": true,
-    "**/coverage/**": true,
-    "**/.next/**": true,
-    "**/.yarn/**": true
-  }
-}
-```
-
-<!-- END AUTO-GENERATED: files.watcherExclude default code block -->
 
 # Usage
 

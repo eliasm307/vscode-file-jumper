@@ -4,7 +4,6 @@ node_modules
 .vscode-test/
 *.vsix
 
-.vscode/
 .yarn/
 
 coverage/
@@ -18,3 +17,6 @@ coverage/
 .eslintcache
 
 .vitest/
+
+vite.config.mjs.map
+vite.config.mjs

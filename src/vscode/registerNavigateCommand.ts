@@ -1,23 +1,37 @@
 import * as vscode from "vscode";
 import type LinkManager from "../classes/LinkManager";
-import Logger from "../classes/Logger";
+import Logger, { EXTENSION_KEY } from "../classes/Logger";
 import { shortenPath } from "../utils";
 import { openFileInNewTab, getWorkspaceRelativePath } from "./utils";
 
 export default function registerNavigateCommand(linkManager: LinkManager) {
   // command is conditionally triggered based on context:
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
-  return vscode.commands.registerCommand("fileJumper.navigateCommand", async (fromUri: vscode.Uri) => {
-    Logger.info("navigateCommand called with uri:", fromUri.path);
+  return vscode.commands.registerCommand(
+    "fileJumper.navigateCommand",
+    async (fromUri: vscode.Uri) => {
+      Logger.info("navigateCommand called with uri:", fromUri.path);
 
-    const selectedPath = await getPathToNavigateToFromOptions({ linkManager, fromUri });
-    if (selectedPath) {
-      await openFileInNewTab(selectedPath);
-    }
-  });
+      try {
+        const selectedPath = await getTargetPathFromUser({ linkManager, fromUri });
+        if (selectedPath) {
+          await openFileInNewTab(selectedPath);
+        }
+        // else user canceled the selection
+      } catch (e) {
+        // todo test it can handle errors
+        Logger.error("Error in navigateCommand handler", e);
+        await vscode.window.showErrorMessage(
+          `${EXTENSION_KEY} Error navigating to file: ${
+            e instanceof Error ? e.message : String(e)
+          }`,
+        );
+      }
+    },
+  );
 }
 
-async function getPathToNavigateToFromOptions({
+async function getTargetPathFromUser({
   fromUri,
   linkManager,
 }: {

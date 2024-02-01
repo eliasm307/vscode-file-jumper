@@ -1,14 +1,29 @@
-import type FileType from "./classes/FileType";
+import type FileType from "../classes/FileType";
+import type { CreationPatternConfig } from "../utils/config";
+import type RawConfig from "./config.generated";
 
 export type FileMetaData = {
   fileType: FileType;
   linkedFiles: LinkedFileData[];
 };
 
+/**
+ * Data for a file that is linked to from a file
+ */
 export type LinkedFileData = {
   typeName: string;
   icon: string;
   fullPath: string;
+};
+
+/**
+ * Data for a file that can be created from a file
+ */
+export type FileCreationData = {
+  name: string;
+  icon: string;
+  fullPath: string;
+  initialContentSnippet: CreationPatternConfig["initialContentSnippet"];
 };
 
 export type DecorationData = {
@@ -22,8 +37,18 @@ export type DecorationData = {
   tooltip: string;
 };
 
+type OmitStrict<T, K extends keyof T> = Omit<T, K>;
+
 /**
  * VS Code seems to provide paths with varying cases for the root C directory (e.g. "C:\...", "c:\...")
  * so we need to make sure to normalise them in some cases to make sure they match
  */
 export type NormalisedPath = string & { __normalisedPath: never };
+
+export type PathTransformation = OmitStrict<
+  RawConfig.PathTransformation,
+  "searchRegex" | "testRegex"
+> & {
+  searchRegex: RegExp;
+  testRegex?: RegExp;
+};

@@ -8,7 +8,9 @@ export default class DecorationProvider implements vscode.FileDecorationProvider
     },
   ) {}
 
-  private onDidChangeFileDecorationsEmitter = new vscode.EventEmitter<vscode.Uri | vscode.Uri[] | undefined>();
+  private onDidChangeFileDecorationsEmitter = new vscode.EventEmitter<
+    vscode.Uri | vscode.Uri[] | undefined
+  >();
 
   onDidChangeFileDecorations = this.onDidChangeFileDecorationsEmitter.event;
 
