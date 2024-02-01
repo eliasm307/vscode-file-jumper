@@ -1,4 +1,8 @@
+<!-- **Note:** This file is generated from the `package.json` file. Do not edit this manually, instead update package.json.-->
+
 # FileJumper Configuration
+
+This is documentation for the configuration for the [FileJumper VSCode extension](https://marketplace.visualstudio.com/items?itemName=ecm.file-jumper)
 
 ## Types Summary
 
@@ -122,14 +126,19 @@ Defines the RegEx patterns of files to ignore when determining file links
 **Default**
 
 ```json
-["\\/node_modules\\/"]
+[
+  "\\/node_modules\\/"
+]
 ```
 
 **Example**
 
 ```json
 {
-  "fileJumper.ignorePatterns": ["\\/node_modules\\/", "\\/dist\\/"]
+  "fileJumper.ignorePatterns": [
+    "\\/node_modules\\/",
+    "\\/dist\\/"
+  ]
 }
 ```
 
@@ -214,17 +223,19 @@ For building Regex patterns easily try [RegExr](https://regexr.com/) which has a
   "fileJumper.fileTypes": {
     "Test": {
       "icon": "🧪",
-      "patterns": ["(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.(test|spec)\\.ts$"]
+      "patterns": [
+        "(?<prefix>.+)\\/(test|tests)\\/(?<topic>.+)\\.(test|spec)\\.ts$"
+      ]
     },
     "Source": {
       "icon": "📄",
-      "patterns": ["(?<prefix>.+)\\/src\\/(?<topic>.+)\\.ts$"]
+      "patterns": [
+        "(?<prefix>.+)\\/src\\/(?<topic>.+)\\.ts$"
+      ]
     }
   }
 }
 ```
-
-<!-- prettier-ignore-start -->
 
 #### 🅿️ Property - `FileType.onlyLinkTo` (**OPTIONAL**)
 

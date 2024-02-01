@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "fs/promises";
 import * as path from "path";
 import type { SpawnOptions } from "child_process";
 import { spawn } from "child_process";
@@ -15,47 +15,35 @@ import prettierConfig from "../../.prettierrc.cjs";
 console.log("START sync-readme.js");
 
 const ROOT_DIR = path.join(__dirname, "..", "..");
-const docsPath = path.join(ROOT_DIR, "example.md");
+const CONFIGURATION_DOCS_FILE_PATH = path.join(ROOT_DIR, "CONFIGURATION.md");
+const GENERATED_TYPES_FILE_PATH = path.join(ROOT_DIR, "src/types/config.generated.ts");
+
+main()
+  .then(() => console.log("END sync-readme.js"))
+  .catch((error) => {
+    console.error("ERROR sync-readme.js", error);
+    process.exit(1);
+  });
 
 async function main() {
-  const docsText = fs.readFileSync(docsPath, "utf8");
+  // generate types and documentation from the configuration
   const { documentationTypes, sourceCodeTypes } = await generateTypesFromConfig();
+  const newConfigDocsText = generateConfigMarkdownDocumentation({ documentationTypes });
 
-  // save the generated types to a file
-  await writeSourceCodeTypesFile(sourceCodeTypes);
+  // save the generated content to a files
+  const results = await Promise.all([
+    writeSourceCodeTypesFile(sourceCodeTypes),
+    writeConfigDocumentationFile(newConfigDocsText),
+  ]);
 
-  const newDocsText = [
-    `# FileJumper Configuration`,
-    "",
-    `## Types Summary`,
-    "",
-    // `This is the configuration for the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)`,
-    // "",
-    // `> **Note:** This file is generated from the [package.json](../../package.json) file. Do not edit it directly.`,
-    // "",
-    // `## Settings`,
-    // "",
-    "```ts",
-    documentationTypes,
-    "```",
-    "",
-    `## Details`,
-    "",
-    generateMarkdownDocs(),
-    "", // should end with new line
-  ].join("\n");
-
-  if (newDocsText === docsText) {
-    console.log("No changes to documentation");
+  if (!results.some(Boolean)) {
+    console.log("No changes to documentation or types");
     return;
   }
 
-  console.log("Changes found, updating documentation...");
-  fs.writeFileSync(docsPath, newDocsText, "utf8");
-
-  console.log("Running git add/commit for README changes...");
-  await runGit(["add", path.relative(ROOT_DIR, docsPath)], { cwd: ROOT_DIR });
-  await runGit(["commit", "-m", "Auto-Update documentation"], { cwd: ROOT_DIR });
+  console.log("Running git add/commit for generated file changes...");
+  await runGit(["add", "."], { cwd: ROOT_DIR });
+  await runGit(["commit", "-m", "Re-generate files"], { cwd: ROOT_DIR });
 }
 
 async function runGit(args: string[], options: SpawnOptions) {
@@ -71,21 +59,30 @@ async function runGit(args: string[], options: SpawnOptions) {
   });
 }
 
-async function lint(filePath: string) {
-  const eslint = new ESLint({ fix: true });
-  const results = await eslint.lintFiles(filePath);
-  await ESLint.outputFixes(results);
-  const formatter = await eslint.loadFormatter("stylish");
-  const resultText = formatter.format(results);
-  console.log(resultText);
+function generateConfigMarkdownDocumentation({
+  documentationTypes,
+}: {
+  documentationTypes: string;
+}) {
+  return [
+    "<!-- **Note:** This file is generated from the `package.json` file. Do not edit this manually, instead update package.json.-->",
+    "",
+    `# FileJumper Configuration`,
+    "",
+    `This is documentation for the configuration for the [FileJumper VSCode extension](https://marketplace.visualstudio.com/items?itemName=ecm.file-jumper)`,
+    "",
+    `## Types Summary`,
+    "",
+    "```ts",
+    documentationTypes,
+    "```",
+    "",
+    `## Details`,
+    "",
+    generateMarkdownDocs(),
+    "", // should end with new line
+  ].join("\n");
 }
-
-main()
-  .then(() => console.log("END sync-readme.js"))
-  .catch((error) => {
-    console.error("ERROR sync-readme.js", error);
-    process.exit(1);
-  });
 
 function generateMarkdownDocs() {
   const rootHeadingLevel = 3;
@@ -151,8 +148,44 @@ async function generateTypesFromConfig() {
   return { documentationTypes, sourceCodeTypes };
 }
 
-async function writeSourceCodeTypesFile(code: string) {
-  const generatedTypesPath = path.join(ROOT_DIR, "src/types/config.generated.ts");
-  fs.writeFileSync(generatedTypesPath, code, "utf8");
-  await lint(generatedTypesPath);
+async function writeSourceCodeTypesFile(newTypesText: string): Promise<boolean> {
+  const currentTypesText = await getFileContents(GENERATED_TYPES_FILE_PATH);
+  if (newTypesText === currentTypesText) {
+    console.log("No changes to types");
+    return false;
+  }
+
+  await fs.writeFile(GENERATED_TYPES_FILE_PATH, newTypesText, "utf8");
+  await lint(GENERATED_TYPES_FILE_PATH);
+  return true;
+}
+
+async function lint(filePath: string) {
+  const eslint = new ESLint({ fix: true });
+  const results = await eslint.lintFiles(filePath);
+  await ESLint.outputFixes(results);
+  const formatter = await eslint.loadFormatter("stylish");
+  const resultText = formatter.format(results);
+  console.log(resultText);
+}
+
+async function writeConfigDocumentationFile(newConfigDocsText: string): Promise<boolean> {
+  const currentConfigDocsText = await getFileContents(CONFIGURATION_DOCS_FILE_PATH);
+  if (newConfigDocsText === currentConfigDocsText) {
+    console.log("No changes to documentation");
+    return false;
+  }
+
+  console.log("Changes found, updating documentation...");
+  await fs.writeFile(CONFIGURATION_DOCS_FILE_PATH, newConfigDocsText, "utf8");
+  return true;
+}
+
+async function getFileContents(filePath: string): Promise<string> {
+  try {
+    const content = await fs.readFile(filePath, "utf8");
+    return content;
+  } catch (error) {
+    return "";
+  }
 }

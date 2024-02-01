@@ -19,7 +19,7 @@ Install the extension from the [VSCode Marketplace](https://marketplace.visualst
 
 # Configuration
 
-Customize the extension's behavior by modifying the settings [documented here](#) in your VSCode `settings.json`.
+Customize the extension's behavior by modifying the settings [documented here](CONFIGURATION.md) in your VSCode `settings.json`.
 
 The extension will automatically detect changes to the configuration and update the file links accordingly.
 
