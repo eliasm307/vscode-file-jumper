@@ -12,16 +12,16 @@ import { contributes as vsCodeContributions } from "../../package.json";
 import prettierConfig from "../../.prettierrc.cjs";
 
 /* eslint-disable no-console */
-console.log("START sync-readme.js");
+console.log("START", __filename);
 
 const ROOT_DIR = path.join(__dirname, "..", "..");
 const CONFIGURATION_DOCS_FILE_PATH = path.join(ROOT_DIR, "CONFIGURATION.md");
 const GENERATED_TYPES_FILE_PATH = path.join(ROOT_DIR, "src/types/config.generated.ts");
 
 main()
-  .then(() => console.log("END sync-readme.js"))
+  .then(() => console.log("END", __filename))
   .catch((error) => {
-    console.error("ERROR sync-readme.js", error);
+    console.error("ERROR", __filename, error);
     process.exit(1);
   });
 

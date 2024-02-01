@@ -45,7 +45,7 @@
     "test": "echo 'Testing...' && vitest run",
     "pretest:changed": "npm run compile",
     "test:changed": "echo 'Testing...' && vitest run --coverage --changed HEAD~1",
-    "sync-docs": "echo 'Syncing README...' && ts-node src/scripts/sync-readme.ts",
+    "sync-config": "echo 'Syncing README...' && ts-node src/scripts/sync-config.ts",
     "build:scripts": "echo 'Building scripts...' && tsc -p ./src/scripts/tsconfig.build.json"
   },
   "dependencies": {
