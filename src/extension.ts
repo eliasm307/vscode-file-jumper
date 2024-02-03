@@ -26,7 +26,11 @@ export async function activate(context: vscode.ExtensionContext) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     Logger.error("Error getting main config:", message);
-    return vscode.window.showErrorMessage(`${EXTENSION_KEY} Configuration issue: ${message}`);
+    // we dont know if the user doesn't want notifications so we show it anyway
+    await vscode.window.showErrorMessage(
+      `${EXTENSION_KEY} Could not read extension configuration: ${message}`,
+    );
+    return;
   }
 
   if (mainConfig.showDebugLogs) {
@@ -43,8 +47,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const configIssues = getIssuesWithMainConfig(mainConfig);
   if (configIssues.length) {
-    await logAndShowIssuesWithConfig(configIssues);
     Logger.info("Extension not activated due to config issues");
+    await logAndShowIssuesWithConfig({
+      issues: configIssues,
+      notificationsAllowed: mainConfig.allowNotifications,
+    });
     return;
   }
 

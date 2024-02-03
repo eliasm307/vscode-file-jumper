@@ -21,11 +21,13 @@ export default function registerNavigateCommand(linkManager: LinkManager) {
       } catch (e) {
         // todo test it can handle errors
         Logger.error("Error in navigateCommand handler", e);
-        await vscode.window.showErrorMessage(
-          `${EXTENSION_KEY} Error navigating to file: ${
-            e instanceof Error ? e.message : String(e)
-          }`,
-        );
+
+        if (linkManager.notificationsAllowed) {
+          const message = e instanceof Error ? e.message : String(e);
+          await vscode.window.showErrorMessage(
+            `${EXTENSION_KEY} Error navigating to file: ${message}`,
+          );
+        }
       }
     },
   );

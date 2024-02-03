@@ -351,6 +351,12 @@
           "scope": "window",
           "type": "boolean",
           "default": false
+        },
+        "fileJumper.allowNotifications": {
+          "description": "Whether the extension can show relevant messages as notifications in the editor",
+          "scope": "window",
+          "type": "boolean",
+          "default": false
         }
       }
     }

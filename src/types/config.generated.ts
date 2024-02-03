@@ -8,6 +8,10 @@ export type FileJumper = {
   "fileJumper.autoJump"?: boolean;
   "fileJumper.ignorePatterns"?: string[];
   "fileJumper.showDebugLogs"?: boolean;
+  /**
+   * Whether the extension can show relevant messages as notifications in the editor
+   */
+  "fileJumper.allowNotifications"?: boolean;
 };
 
 export type FileTypesMap = Record<string, FileType>;

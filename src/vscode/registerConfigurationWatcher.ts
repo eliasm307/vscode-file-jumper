@@ -23,8 +23,13 @@ export default function registerConfigurationWatcher({
 
         const newConfigIssues = getIssuesWithMainConfig(newMainConfig);
         if (newConfigIssues.length) {
-          await logAndShowIssuesWithConfig(newConfigIssues);
-          Logger.info(`config change not applied due to config issues: [ ${newConfigIssues.join(", ")} ]`);
+          await logAndShowIssuesWithConfig({
+            issues: newConfigIssues,
+            notificationsAllowed: linkManager.notificationsAllowed,
+          });
+          Logger.info(
+            `config change not applied due to config issues: [ ${newConfigIssues.join(", ")} ]`,
+          );
           return;
         }
 
@@ -40,7 +45,13 @@ export default function registerConfigurationWatcher({
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         Logger.error("onDidChangeConfiguration", message, error);
-        await vscode.window.showErrorMessage(`${EXTENSION_KEY} Issue handling configuration change: ${message}`);
+
+        if (linkManager.notificationsAllowed) {
+          await vscode.window.showErrorMessage(
+            `${EXTENSION_KEY} Issue handling configuration change: ${message}`,
+          );
+        }
+
         throw error;
       }
     }),

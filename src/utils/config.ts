@@ -52,6 +52,7 @@ export type RawMainConfig = {
   ignorePatterns: string[];
   showDebugLogs?: RawConfig.FileJumper["fileJumper.showDebugLogs"];
   autoJump?: RawConfig.FileJumper["fileJumper.autoJump"];
+  allowNotifications?: RawConfig.FileJumper["fileJumper.allowNotifications"];
 };
 
 export function formatRawFileTypesConfig(

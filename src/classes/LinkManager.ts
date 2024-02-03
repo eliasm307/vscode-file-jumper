@@ -37,6 +37,10 @@ export default class LinkManager {
     return !!this.config?.autoJump;
   }
 
+  get notificationsAllowed(): boolean {
+    return !!this.config?.allowNotifications;
+  }
+
   getAllPathsWithOutgoingLinks(): string[] {
     const stopTimer = Logger.startTimer("LinkManager#getAllPathsWithOutgoingLinks");
     const paths = [...this.#pathsWithKnownTypeMap.values()].filter(

@@ -56,11 +56,13 @@ export default function registerCreateFileCommand(linkManager: LinkManager) {
               }
             } catch (e) {
               Logger.error("Error in createFileCommand process", e);
-              await vscode.window.showErrorMessage(
-                `${EXTENSION_KEY} Error creating file(s) from "${getWorkspaceRelativePath(
-                  fromUri,
-                )}": ${String(e)}`,
-              );
+
+              if (linkManager.notificationsAllowed) {
+                const fromPath = getWorkspaceRelativePath(fromUri);
+                await vscode.window.showErrorMessage(
+                  `${EXTENSION_KEY} Error creating file(s) from "${fromPath}": ${String(e)}`,
+                );
+              }
             } finally {
               progress.report({ increment: 100 });
             }
@@ -69,11 +71,13 @@ export default function registerCreateFileCommand(linkManager: LinkManager) {
       } catch (e) {
         // todo test it can handle errors
         Logger.error("Error in createFileCommand handler", e);
-        await vscode.window.showErrorMessage(
-          `${EXTENSION_KEY} Error creating file(s) from "${getWorkspaceRelativePath(
-            fromUri,
-          )}": ${String(e)}`,
-        );
+
+        if (linkManager.notificationsAllowed) {
+          const fromPath = getWorkspaceRelativePath(fromUri);
+          await vscode.window.showErrorMessage(
+            `${EXTENSION_KEY} Error creating file(s) from "${fromPath}": ${String(e)}`,
+          );
+        }
       }
     },
   );

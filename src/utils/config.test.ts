@@ -1,5 +1,5 @@
 import { assert, describe, it } from "vitest";
-import type { RawMainConfig } from "./config";
+import type { FileTypeConfig, RawMainConfig } from "./config";
 import {
   getIssuesWithMainConfig,
   formatRawIgnorePatternsConfig,
@@ -28,7 +28,7 @@ describe("config utils", () => {
         },
       });
 
-      const expected = [
+      const expected: FileTypeConfig[] = [
         {
           name: "Source",
           icon: "💻",

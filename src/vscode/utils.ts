@@ -33,7 +33,7 @@ export async function getWorkspaceFoldersChildPaths(folders: readonly vscode.Wor
   return paths;
 }
 
-export function getMainConfig(): RawMainConfig {
+export function getMainConfig(): Required<RawMainConfig> {
   const extensionConfig = vscode.workspace.getConfiguration("fileJumper");
 
   return {
@@ -41,6 +41,7 @@ export function getMainConfig(): RawMainConfig {
     ignorePatterns: formatRawIgnorePatternsConfig(extensionConfig.get("ignorePatterns")),
     showDebugLogs: extensionConfig.get("showDebugLogs") ?? false,
     autoJump: extensionConfig.get("autoJump") ?? true,
+    allowNotifications: extensionConfig.get("allowNotifications") ?? false,
   };
 }
 
@@ -74,10 +75,18 @@ export async function resolvePathsFromUris(uris: readonly vscode.Uri[]): Promise
   return resolvedUris.flat().map(uriToPath);
 }
 
-export async function logAndShowIssuesWithConfig(issues: string[]): Promise<void> {
+export async function logAndShowIssuesWithConfig({
+  issues,
+  notificationsAllowed,
+}: {
+  issues: string[];
+  notificationsAllowed: boolean;
+}): Promise<void> {
   for (const issue of issues) {
     Logger.info(`Configuration issue: ${issue}`);
-    await vscode.window.showErrorMessage(`${EXTENSION_KEY} Configuration issue: ${issue}`);
+    if (notificationsAllowed) {
+      await vscode.window.showErrorMessage(`${EXTENSION_KEY} Configuration issue: ${issue}`);
+    }
   }
 }
 

@@ -15,6 +15,10 @@ interface FileJumper {
   "fileJumper.autoJump"?: boolean;
   "fileJumper.ignorePatterns"?: string[];
   "fileJumper.showDebugLogs"?: boolean;
+  /**
+   * Whether the extension can show relevant messages as notifications in the editor
+   */
+  "fileJumper.allowNotifications"?: boolean;
 }
 
 interface FileTypesMap {
@@ -147,6 +151,18 @@ Defines the RegEx patterns of files to ignore when determining file links
 Type: `boolean`
 
 Whether to show logs in the output channel
+
+**Default**
+
+```json
+false
+```
+
+#### 🅿️ Property - `FileJumper.fileJumper.allowNotifications` (**OPTIONAL**)
+
+Type: `boolean`
+
+Whether the extension can show relevant messages as notifications in the editor
 
 **Default**
 

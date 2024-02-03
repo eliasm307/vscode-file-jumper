@@ -3,9 +3,7 @@
 import fs from "fs";
 import pathModule from "path";
 import { afterEach, assert, describe, it, vitest } from "vitest";
-
 import LinkManager from "./LinkManager";
-
 import type { DecorationData, LinkedFileData } from "../types";
 import type { RawMainConfig } from "../utils/config";
 
@@ -90,6 +88,73 @@ describe("LinkManager", () => {
     linkManager.revertToInitial();
     // @ts-expect-error [allowed on after each to prevent re-use]
     linkManager = undefined;
+  });
+
+  describe("#autoJumpEnabled", () => {
+    it("should return false by default", () => {
+      linkManager = new LinkManager();
+      assert.isFalse(linkManager.autoJumpEnabled, "autoJumpEnabled default");
+    });
+
+    it("follows given context", () => {
+      linkManager = new LinkManager();
+
+      linkManager.setContext({
+        config: {
+          ...TEST_MAIN_CONFIG,
+          autoJump: true,
+        },
+        paths: [],
+      });
+      assert.isTrue(linkManager.autoJumpEnabled, "autoJumpEnabled is true after setting to true");
+
+      linkManager.setContext({
+        config: {
+          ...TEST_MAIN_CONFIG,
+          autoJump: false,
+        },
+        paths: [],
+      });
+      assert.isFalse(
+        linkManager.autoJumpEnabled,
+        "autoJumpEnabled is false after setting to false again",
+      );
+    });
+  });
+
+  describe("#notificationsAllowed", () => {
+    it("should return false by default", () => {
+      linkManager = new LinkManager();
+      assert.isFalse(linkManager.notificationsAllowed, "notificationsAllowed default");
+    });
+
+    it("follows given context", () => {
+      linkManager = new LinkManager();
+
+      linkManager.setContext({
+        config: {
+          ...TEST_MAIN_CONFIG,
+          allowNotifications: true,
+        },
+        paths: [],
+      });
+      assert.isTrue(
+        linkManager.notificationsAllowed,
+        "notificationsAllowed is true after setting to true",
+      );
+
+      linkManager.setContext({
+        config: {
+          ...TEST_MAIN_CONFIG,
+          allowNotifications: false,
+        },
+        paths: [],
+      });
+      assert.isFalse(
+        linkManager.notificationsAllowed,
+        "notificationsAllowed is false after setting to false again",
+      );
+    });
   });
 
   describe("meta data functionality", () => {
@@ -982,7 +1047,6 @@ describe("LinkManager", () => {
       };
 
       assertFileLinks(initialFileLinks, "initial linked files found");
-      assert.isFalse(linkManager.autoJumpEnabled, "autoJumpEnabled is false");
 
       const linksUpdatedHandler = vitest.fn<[string[] | null]>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
@@ -1078,7 +1142,6 @@ describe("LinkManager", () => {
         [[null]],
         "linksUpdatedHandler called to update all paths after context change",
       );
-      assert.isTrue(linkManager.autoJumpEnabled, "autoJumpEnabled is true");
       linksUpdatedHandler.mockClear();
 
       // Revert context change
@@ -1093,7 +1156,6 @@ describe("LinkManager", () => {
         [[null]],
         "linksUpdatedHandler called to update all paths after context reverted",
       );
-      assert.isFalse(linkManager.autoJumpEnabled, "autoJumpEnabled is false");
     });
 
     it("does nothing if context is unchanged", () => {

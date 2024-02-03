@@ -26,9 +26,13 @@ export default function registerFileWatcher(linkManager: LinkManager): vscode.Di
         // show user error before throwing it internally
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        await vscode.window.showErrorMessage(
-          `${EXTENSION_KEY} Issue handling renamed files: ${message}`,
-        );
+        Logger.error("onDidChangeWorkspaceFolders", message, error);
+        if (linkManager.notificationsAllowed) {
+          await vscode.window.showErrorMessage(
+            `${EXTENSION_KEY} Issue handling renamed files: ${message}`,
+          );
+        }
+
         throw error;
       }
     }),
@@ -53,10 +57,13 @@ async function handleFileDeletion({
 
     // show user error before throwing it internally
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    await vscode.window.showErrorMessage(
-      `${EXTENSION_KEY} Issue handling deleted files: ${message}`,
-    );
+    if (linkManager.notificationsAllowed) {
+      const message = error instanceof Error ? error.message : String(error);
+      await vscode.window.showErrorMessage(
+        `${EXTENSION_KEY} Issue handling deleted files: ${message}`,
+      );
+    }
+
     throw error;
   }
 }
@@ -80,9 +87,13 @@ async function handleFileCreation({
     // show user error before throwing it internally
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    await vscode.window.showErrorMessage(
-      `${EXTENSION_KEY} Issue handling created files: ${message}`,
-    );
+    Logger.error("handleFileCreation", message, error);
+
+    if (linkManager.notificationsAllowed) {
+      await vscode.window.showErrorMessage(
+        `${EXTENSION_KEY} Issue handling created files: ${message}`,
+      );
+    }
     throw error;
   }
 }
