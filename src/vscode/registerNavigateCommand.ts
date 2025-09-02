@@ -9,7 +9,21 @@ export default function registerNavigateCommand(linkManager: LinkManager) {
   // see https://code.visualstudio.com/api/references/when-clause-contexts#in-and-not-in-conditional-operators
   return vscode.commands.registerCommand(
     "fileJumper.navigateCommand",
-    async (fromUri: vscode.Uri) => {
+    async (fromUri?: vscode.Uri) => {
+      // If no URI is provided (e.g., from keyboard shortcut), use the active editor
+      if (!fromUri) {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (!activeEditor) {
+          if (linkManager.notificationsAllowed) {
+            await vscode.window.showErrorMessage(
+              `${EXTENSION_KEY} No active file to navigate from. Please open a file first.`,
+            );
+          }
+          return;
+        }
+        fromUri = activeEditor.document.uri;
+      }
+
       Logger.info("navigateCommand called with uri:", fromUri.path);
 
       try {
