@@ -50,7 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
     Logger.info("Extension not activated due to config issues");
     await logAndShowIssuesWithConfig({
       issues: configIssues,
-      notificationsAllowed: mainConfig.allowNotifications,
+      notificationsAllowed: mainConfig.allowNotifications ?? false,
     });
     return;
   }
