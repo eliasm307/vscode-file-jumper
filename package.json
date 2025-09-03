@@ -8,7 +8,7 @@
   },
   "publisher": "ecm",
   "description": "A VS Code extension to define links and navigate easily between files in your project.",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "engines": {
     "vscode": "^1.79.0"
   },
@@ -37,7 +37,7 @@
     "vscode:list-publishers": "vsce ls-publishers",
     "precompile": "echo 'Cleaning old output...' && rm -rf ./out",
     "compile": "echo 'Compiling...' && tsc -build ./tsconfig.build.json",
-    "typecheck": "tsc -noEmit -p ./tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
     "build": "npm run esbuild-base -- --minify",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "watch": "tsc -watch -p ./tsconfig.build.json",
@@ -49,27 +49,27 @@
     "build:scripts": "echo 'Building scripts...' && tsc -p ./src/scripts/tsconfig.build.json"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
-  },
-  "devDependencies": {
-    "@eliasm307/config": "^0.44.4",
-    "@types/json-schema": "^7.0.15",
-    "@types/node": "^18.16.18",
-    "@types/vscode": "1.79.0",
-    "@typescript-eslint/eslint-plugin": "^6.20.0",
-    "@typescript-eslint/parser": "^6.20.0",
-    "@vitest/coverage-v8": "^1.2.2",
-    "@vscode/test-electron": "^2.3.9",
-    "@vscode/vsce": "^2.23.0",
-    "esbuild": "^0.20.0",
-    "eslint": "^8.56.0",
-    "json-schema-to-typescript": "^13.1.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "vitest": "^1.2.2"
+    "lodash": "4.17.21"
   },
   "devDependenciesNotes": {
     "@types/vscode": "Fixed to 1.79.0 to support older versions"
+  },
+  "devDependencies": {
+    "@eliasm307/config": "0.44.4",
+    "@types/json-schema": "7.0.15",
+    "@types/node": "22.18.0",
+    "@types/vscode": "1.79.0",
+    "@typescript-eslint/eslint-plugin": "6.21.0",
+    "@typescript-eslint/parser": "6.21.0",
+    "@vitest/coverage-v8": "3.2.4",
+    "@vscode/test-electron": "2.5.2",
+    "@vscode/vsce": "3.6.0",
+    "esbuild": "0.25.9",
+    "eslint": "8.57.1",
+    "json-schema-to-typescript": "15.0.4",
+    "ts-node": "10.9.2",
+    "typescript": "5.9.2",
+    "vitest": "3.2.4"
   },
   "capabilities": {
     "untrustedWorkspaces": {

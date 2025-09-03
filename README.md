@@ -10,6 +10,7 @@ File Jumper is a handy VSCode extension that simplifies navigation between relat
 - 👁️ Visualizes related files with customizable icons, e.g. whether a file has tests.
 - 🔄 Updates file links when workspace folders, files, or configuration changes.
 - 🎨 Uses customizable RegEx patterns to accommodate complex folder structures and relations.
+- 🔗 Can jump to related files from the active editor using a keyboard shortcut.
 
 Try File Jumper today and experience a smoother, more connected file navigation experience in VSCode! 🚀
 
@@ -24,6 +25,20 @@ Customize the extension's behavior by modifying the settings [documented here](C
 The extension will automatically detect changes to the configuration and update the file links accordingly.
 
 ![Example of extension reacting to configuration updates](images/Code_vnZxRMrpTg.gif)
+
+## Keyboard Shortcut
+
+You can set a keyboard shortcut for the "Jump to..." command which will jump from the active editor.
+
+For example, a keyboard shortcut can be defined in your VSCode `keybindings.json` as follows:
+
+```json
+{
+  "key": "alt+j",
+  "command": "fileJumper.navigateCommand",
+  "when": "editorTextFocus"
+}
+```
 
 # Usage
 

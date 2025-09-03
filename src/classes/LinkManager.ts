@@ -6,7 +6,7 @@ import Logger from "./Logger";
 import type { FileCreationData, DecorationData, LinkedFileData, NormalisedPath } from "../types";
 import type { RawMainConfig } from "../utils/config";
 
-type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => Promise<void>;
+export type OnFileLinksUpdatedHandler = (affectedPaths: string[] | null) => Promise<void>;
 
 type FileInfo = { pathKey: PathKey; type: FileType };
 

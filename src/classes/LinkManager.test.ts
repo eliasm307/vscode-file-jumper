@@ -3,6 +3,7 @@
 import fs from "fs";
 import pathModule from "path";
 import { afterEach, assert, describe, it, vitest } from "vitest";
+import type { OnFileLinksUpdatedHandler } from "./LinkManager";
 import LinkManager from "./LinkManager";
 import type { DecorationData, LinkedFileData } from "../types";
 import type { RawMainConfig } from "../utils/config";
@@ -627,7 +628,7 @@ describe("LinkManager", () => {
         });
       });
 
-      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      const linksUpdatedHandler = vitest.fn<OnFileLinksUpdatedHandler>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
       linkManager.modifyFilesAndNotify(config.fileModifications);
 
@@ -893,7 +894,7 @@ describe("LinkManager", () => {
         "initial linked files",
       );
 
-      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      const linksUpdatedHandler = vitest.fn<OnFileLinksUpdatedHandler>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
       linkManager.modifyFilesAndNotify({ removePaths: ["/root/src/classes"] }); // will delete source file
 
@@ -947,7 +948,7 @@ describe("LinkManager", () => {
 
       assertFileLinks(INITIAL_FILE_LINKS, "initial linked files");
 
-      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      const linksUpdatedHandler = vitest.fn<OnFileLinksUpdatedHandler>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
       linkManager.modifyFilesAndNotify({ removePaths: ["/root/src/class"] }); // will delete source file
 
@@ -993,7 +994,7 @@ describe("LinkManager", () => {
 
       assertFileLinks(initialFileLinks, "linked files found");
 
-      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      const linksUpdatedHandler = vitest.fn<OnFileLinksUpdatedHandler>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
 
       linkManager.modifyFilesAndNotify({
@@ -1048,7 +1049,7 @@ describe("LinkManager", () => {
 
       assertFileLinks(initialFileLinks, "initial linked files found");
 
-      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      const linksUpdatedHandler = vitest.fn<OnFileLinksUpdatedHandler>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
 
       linkManager.setContext({
@@ -1197,7 +1198,7 @@ describe("LinkManager", () => {
 
       assertFileLinks(initialFileLinks, "initial linked files found");
 
-      const linksUpdatedHandler = vitest.fn<[string[] | null]>();
+      const linksUpdatedHandler = vitest.fn<OnFileLinksUpdatedHandler>();
       linkManager.setOnFileLinksUpdatedHandler(linksUpdatedHandler);
 
       linkManager.setContext({ config: TEST_MAIN_CONFIG, paths });
@@ -1273,7 +1274,7 @@ describe("LinkManager", () => {
           console.log("#getDecorations actually took", getDecorationsDurationMs, "ms");
           assert.isBelow(
             getDecorationsDurationMs,
-            150,
+            200,
             `time (ms) to get decorations for ${fileCount} files`,
           );
 

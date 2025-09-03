@@ -1,6 +1,7 @@
-import { defineConfig, configDefaults, coverageConfigDefaults } from "vitest/config";
+import { defineConfig, configDefaults } from "vitest/config";
 
 export default defineConfig({
+  cacheDir: "node_modules/.cache",
   test: {
     exclude: [
       ...configDefaults.exclude,
@@ -17,9 +18,6 @@ export default defineConfig({
       includeStack: true,
       showDiff: true,
       truncateThreshold: 0,
-    },
-    cache: {
-      dir: "node_modules/.cache/.vitest",
     },
     sequence: { shuffle: true },
     typecheck: {
