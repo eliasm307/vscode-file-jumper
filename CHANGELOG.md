@@ -7,6 +7,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [2.6.0] - 2025-09-03
 
 - Added keyboard shortcut support for the "Jump to..." command
+- Updated tsconfig target to ES2022
 
 ## [0.0.2 - 2.5.0]
 
