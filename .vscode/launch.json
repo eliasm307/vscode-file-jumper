@@ -11,7 +11,7 @@
       "request": "launch",
       "args": [
         "--disable-extensions",
-        "C:\\Github-Repos\\eslint",
+        "D:\\Github-Repos\\eslint",
         // "${workspaceFolder}/src/test/data/exampleStructure",
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],

@@ -14,14 +14,15 @@ export default function registerNavigateCommand(linkManager: LinkManager) {
       if (!fromUri) {
         const activeEditor = vscode.window.activeTextEditor;
         if (!activeEditor) {
+          const message = "No active file to navigate from. Please open a file first.";
+          Logger.error(message);
           if (linkManager.notificationsAllowed) {
-            await vscode.window.showErrorMessage(
-              `${EXTENSION_KEY} No active file to navigate from. Please open a file first.`,
-            );
+            await vscode.window.showErrorMessage(`${EXTENSION_KEY} ${message}`);
           }
           return;
         }
         fromUri = activeEditor.document.uri;
+        Logger.info("navigateCommand uri set to active editor uri", fromUri.path);
       }
 
       Logger.info("navigateCommand called with uri:", fromUri.path);
