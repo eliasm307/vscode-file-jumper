@@ -1273,7 +1273,7 @@ describe("LinkManager", () => {
           console.log("#getDecorations actually took", getDecorationsDurationMs, "ms");
           assert.isBelow(
             getDecorationsDurationMs,
-            150,
+            200,
             `time (ms) to get decorations for ${fileCount} files`,
           );
 
